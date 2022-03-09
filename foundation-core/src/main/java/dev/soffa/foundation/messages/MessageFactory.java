@@ -4,7 +4,7 @@ import dev.soffa.foundation.commons.IdGenerator;
 import dev.soffa.foundation.commons.Mappers;
 import dev.soffa.foundation.commons.ObjectUtil;
 import dev.soffa.foundation.context.Context;
-import dev.soffa.foundation.context.RequestContextHolder;
+import dev.soffa.foundation.context.ContextHolder;
 import lombok.SneakyThrows;
 
 import java.util.Map;
@@ -38,7 +38,7 @@ public final class MessageFactory {
             lPayload = ObjectUtil.serialize(payload);
             payloadType = payload.getClass().getName();
         }
-        Context context = RequestContextHolder.inheritOrCreate();
+        Context context = ContextHolder.inheritOrCreate();
         context.sync();
         Map<String, String> headers = context.getHeaders();
         return new Message(IdGenerator.shortUUID("msg"), operation, lPayload, payloadType, headers);

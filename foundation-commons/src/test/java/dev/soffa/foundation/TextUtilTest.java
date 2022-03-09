@@ -23,7 +23,7 @@ public class TextUtilTest {
     @Test
     void testTrimToEmpty() {
         assertEquals("", TextUtil.trimToEmpty(null));
-        assertEquals("", TextUtil.trimToEmpty( "  "));
-        assertEquals("Hello", TextUtil.trimToEmpty( "Hello  "));
+        assertEquals("", TextUtil.trimToEmpty("  "));
+        assertEquals("Hello", TextUtil.trimToEmpty("Hello  "));
     }
 }

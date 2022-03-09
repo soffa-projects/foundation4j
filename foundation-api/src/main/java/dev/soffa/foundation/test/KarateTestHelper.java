@@ -24,7 +24,7 @@ public final class KarateTestHelper {
         return Karate.run(feature(paths))
             .systemProperty("config", GSON.toJson(Optional.ofNullable(config).orElse(ImmutableMap.of())))
             .karateEnv(env);
-            //.clientFactory(new MockSpringMvcServlet(mvc));
+        //.clientFactory(new MockSpringMvcServlet(mvc));
     }
 
     private static String[] feature(String... paths) {

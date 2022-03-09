@@ -85,12 +85,25 @@ public class Context {
         return context;
     }
 
-    
+    private static boolean isEmpty(String value) {
+        return value == null || value.matches("\\s*");
+    }
+
+    private static boolean isNotEmpty(String value) {
+        return !isEmpty(value);
+    }
+
+    private static String trimToNull(String value) {
+        if (value == null || value.isEmpty()) {
+            return null;
+        }
+        return value;
+    }
+
     public boolean hasAuthorization() {
         return isNotEmpty(authorization);
     }
 
-    
     public String getSender() {
         return sender;
     }
@@ -105,22 +118,18 @@ public class Context {
         return this;
     }
 
-    
     public String getTenantId() {
         return trimToNull(tenantId);
     }
 
-    
     public boolean hasTenant() {
         return isNotEmpty(tenantId);
     }
 
-    
     public boolean isAuthenticated() {
         return authentication != null;
     }
 
-    
     public void setAuthentication(Authentication auth) {
         this.authentication = auth;
         if (auth == null) {
@@ -132,7 +141,6 @@ public class Context {
         }
     }
 
-    
     public Optional<String> getUsername() {
         if (authentication != null) {
             return Optional.ofNullable(authentication.getUsername());
@@ -140,12 +148,10 @@ public class Context {
         return Optional.empty();
     }
 
-    
     public void sync() {
         this.sender = serviceName;
     }
 
-    
     @SneakyThrows
     public Map<String, String> getContextMap() {
         Map<String, String> contextMap = new HashMap<>();
@@ -171,7 +177,6 @@ public class Context {
         return contextMap;
     }
 
-    
     @SneakyThrows
     public Map<String, String> getHeaders() {
         Map<String, String> headers = new HashMap<>();
@@ -195,21 +200,6 @@ public class Context {
             headers.put(Context.AUTHORIZATION, getAuthorization());
         }
         return headers;
-    }
-
-    private static boolean isEmpty(String value) {
-        return value == null || value.matches("\\s*");
-    }
-
-    private static boolean isNotEmpty(String value) {
-        return !isEmpty(value);
-    }
-
-    private static String trimToNull(String value) {
-        if (value==null || value.isEmpty()) {
-            return null;
-        }
-        return value;
     }
 
 }

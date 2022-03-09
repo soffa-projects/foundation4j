@@ -3,13 +3,14 @@ package dev.soffa.foundation.client;
 
 import dev.soffa.foundation.commons.Mappers;
 import dev.soffa.foundation.commons.http.DefaultHttpClient;
+import dev.soffa.foundation.commons.http.HttpClient;
+import dev.soffa.foundation.commons.http.HttpRequest;
+import dev.soffa.foundation.commons.http.HttpResponse;
 import dev.soffa.foundation.context.Context;
 import dev.soffa.foundation.errors.ForbiddenException;
 import dev.soffa.foundation.errors.FunctionalException;
 import dev.soffa.foundation.errors.TechnicalException;
 import dev.soffa.foundation.errors.UnauthorizedException;
-import dev.soffa.foundation.commons.http.HttpRequest;
-import dev.soffa.foundation.commons.http.HttpResponse;
 import dev.soffa.foundation.openapi.ApiInfo;
 
 import java.lang.reflect.InvocationHandler;
@@ -18,11 +19,11 @@ import java.util.Map;
 
 public final class RestClient implements InvocationHandler {
 
-    private final DefaultHttpClient client;
+    private final HttpClient client;
     private final String baseUrl;
     private final Map<String, ApiInfo> infos;
 
-    private RestClient(DefaultHttpClient client, String baseUrl, Class<?> clientInterface) {
+    private RestClient(HttpClient client, String baseUrl, Class<?> clientInterface) {
         this.client = client;
         this.baseUrl = baseUrl.replaceAll("/+$", "");
         this.infos = ApiInfo.of(clientInterface);
@@ -34,7 +35,7 @@ public final class RestClient implements InvocationHandler {
     }
 
     @SuppressWarnings("unchecked")
-    public static <T> T newInstance(Class<T> clientInterface, String baseUrl, DefaultHttpClient client) {
+    public static <T> T newInstance(Class<T> clientInterface, String baseUrl, HttpClient client) {
         return (T) java.lang.reflect.Proxy.newProxyInstance(
             Thread.currentThread().getContextClassLoader(),
             new Class[]{clientInterface},
@@ -53,7 +54,7 @@ public final class RestClient implements InvocationHandler {
         return parseResponse(response, method);
     }
 
-    public Object parseResponse(HttpResponse response, Method method) {
+    private Object parseResponse(HttpResponse response, Method method) {
         if (response.is2xxSuccessful()) {
             return Mappers.JSON.deserialize(response.getBody(), method.getReturnType());
         }

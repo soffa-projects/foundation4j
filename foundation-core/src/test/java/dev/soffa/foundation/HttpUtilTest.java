@@ -1,8 +1,8 @@
 package dev.soffa.foundation;
 
 import dev.soffa.foundation.commons.http.DefaultHttpClient;
-import dev.soffa.foundation.commons.http.HttpUtil;
 import dev.soffa.foundation.commons.http.HttpResponse;
+import dev.soffa.foundation.commons.http.HttpUtil;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.Test;
 

@@ -5,11 +5,11 @@ import com.google.common.collect.ImmutableSet;
 import dev.soffa.foundation.commons.Logger;
 import dev.soffa.foundation.config.AppConfig;
 import dev.soffa.foundation.context.Context;
+import dev.soffa.foundation.messages.pubsub.PubSubClientFactory;
+import dev.soffa.foundation.messages.pubsub.PubSubMessenger;
 import dev.soffa.foundation.models.TenantList;
 import dev.soffa.foundation.models.Token;
 import dev.soffa.foundation.models.TokenType;
-import dev.soffa.foundation.pubsub.PubSubClientFactory;
-import dev.soffa.foundation.pubsub.PubSubMessenger;
 import dev.soffa.foundation.security.TokenProvider;
 import lombok.AllArgsConstructor;
 

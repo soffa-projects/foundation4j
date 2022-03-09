@@ -2,7 +2,7 @@ plugins {
     id("foundation.java8")
     id("foundation.maven-publish")
     id("foundation.test.junit5")
-    id("foundation.qa.coverage.l1")
+    //id("foundation.qa.coverage.l1")
 }
 
 dependencies {
