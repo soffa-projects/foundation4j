@@ -18,7 +18,7 @@ buildscript {
 }
 
 
-apply(plugin = "foundation.sonatype-legacy")
+apply(plugin = "foundation.sonatype-publish")
 
 allprojects {
     apply(plugin = "foundation.default-repositories")
