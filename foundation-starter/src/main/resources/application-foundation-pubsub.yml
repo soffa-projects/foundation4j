@@ -1,0 +1,4 @@
+app.pubsub:
+  enabled: true
+  clients.default:
+    addresses: ${PUBSUB_ADDRESSES}

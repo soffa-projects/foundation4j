@@ -1,0 +1,14 @@
+app.consul.enabled: true
+spring.cloud.consul:
+  enabled: true
+  host: ${app.consul.host:${CONSUL_HOST:localhost}}
+  port: ${app.consul.port:${CONSUL_PORT:8500}}
+  config:
+    enabled: ${app.consul.config:false}
+  discovery:
+    tags: ${app.consul.tags:}
+    enabled: true
+    register: ${app.consul.register:true}
+    healthCheckPath: ${server.servlet.contextPath}/actuator/health
+    healthCheckInterval: ${CONSUL_HEALTH_CHECK_INTERVAL:10s}
+    instanceId: ${spring.application.name}:${vcap.application.instance_id:${spring.application.instance_id:${random.value}}}

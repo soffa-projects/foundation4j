@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd"
+    logicalFilePath="foundations/journal">
+
+    <changeSet id="20220219_CreateJournal" author="tg">
+        <createTable tableName="${table_prefix}f_journal">
+            <column name="id" type="varchar">
+                <constraints primaryKey="true" primaryKeyName="${table_prefix}f_journal_pk"/>
+            </column>
+            <column name="kind" type="varchar(60)">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="subject" type="varchar(60)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="event" type="varchar(60)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="data" type="TEXT"/>
+            <column name="metadata" type="TEXT"/>
+            <column name="status" type="varchar(20)"/>
+            <column name="error" type="varchar"/>
+            <column name="trace_id" type="varchar"/>
+            <column name="span_id" type="varchar"/>
+            <column name="username" type="varchar"/>
+            <column name="user_session" type="varchar"/>
+            <column name="date" type="timestamp"/>
+            <column name="created" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <createIndex tableName="${table_prefix}f_journal" indexName="${table_prefix}f_journal__created_at__idx">
+            <column name="created"/>
+        </createIndex>
+        <createIndex tableName="${table_prefix}f_journal" indexName="${table_prefix}f_journal__date__idx">
+            <column name="date"/>
+        </createIndex>
+        <createIndex tableName="${table_prefix}f_journal" indexName="${table_prefix}f_journal__kind__idx">
+            <column name="kind"/>
+        </createIndex>
+        <createIndex tableName="${table_prefix}f_journal" indexName="${table_prefix}f_journal__trace_id__idx">
+            <column name="trace_id"/>
+        </createIndex>
+        <createIndex tableName="${table_prefix}f_journal" indexName="${table_prefix}f_journal__span_id__idx">
+            <column name="span_id"/>
+        </createIndex>
+        <createIndex tableName="${table_prefix}f_journal" indexName="${table_prefix}f_journal__username__idx">
+            <column name="username"/>
+        </createIndex>
+        <createIndex tableName="${table_prefix}f_journal" indexName="${table_prefix}f_journal__user_session__idx">
+            <column name="user_session"/>
+        </createIndex>
+        <createIndex tableName="${table_prefix}f_journal" indexName="${table_prefix}f_journal__status__idx">
+            <column name="status"/>
+        </createIndex>
+        <createIndex tableName="${table_prefix}f_journal" indexName="${table_prefix}f_journal__subject__idx">
+            <column name="subject"/>
+        </createIndex>
+    </changeSet>
+
+</databaseChangeLog>
