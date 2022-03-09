@@ -1,4 +1,4 @@
-package dev.soffa.foundation.test.karate;
+package dev.soffa.foundation.test.spring.karate;
 
 import dev.soffa.foundation.commons.http.HttpUtil;
 

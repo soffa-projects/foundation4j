@@ -1,4 +1,4 @@
-package dev.soffa.foundation.test.karate;
+package dev.soffa.foundation.test.spring.karate;
 
 import com.google.common.collect.ImmutableMap;
 import com.intuit.karate.core.Config;
@@ -20,7 +20,7 @@ import java.util.List;
 import java.util.Map;
 
 @AllArgsConstructor
-public class MockSpringMvcServlet implements HttpClientFactory, HttpClient {
+public class MockMvcClient implements HttpClientFactory, HttpClient {
 
     private final MockMvc mvc;
 

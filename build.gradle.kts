@@ -1,7 +1,3 @@
-plugins {
-    idea
-}
-
 ext["caffeine.version"] = "2.9.3"
 
 buildscript {
@@ -13,14 +9,13 @@ buildscript {
         }
     }
     dependencies {
-        classpath("dev.soffa.foundation:foundation-gradle-plugin:1.0.2")
+        classpath("dev.soffa.foundation:foundation-gradle-plugin:1.0.3")
     }
 }
 
 
 apply(plugin = "foundation.sonatype-publish")
 
-allprojects {
+subprojects {
     apply(plugin = "foundation.default-repositories")
-    apply(plugin = "foundation.java8")
 }

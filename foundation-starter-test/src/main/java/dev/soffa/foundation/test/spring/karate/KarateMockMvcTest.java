@@ -1,4 +1,4 @@
-package dev.soffa.foundation.test.karate;
+package dev.soffa.foundation.test.spring.karate;
 
 import com.intuit.karate.junit5.Karate;
 import dev.soffa.foundation.commons.Mappers;
@@ -6,7 +6,6 @@ import dev.soffa.foundation.test.KarateTestHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.test.web.servlet.MockMvc;
-
 import java.util.Arrays;
 import java.util.Map;
 
@@ -40,7 +39,7 @@ public class KarateMockMvcTest {
         return Karate.run(feature(paths))
             .systemProperty("config", Mappers.JSON.serialize(config))
             .karateEnv(env)
-            .clientFactory(new MockSpringMvcServlet(mvc));
+            .clientFactory(new MockMvcClient(mvc));
     }
 
 }

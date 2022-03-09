@@ -1,19 +1,18 @@
 plugins {
     id("foundation.java8")
-    id("foundation.springboot.library")
+    id("foundation.test.karate")
+    //id("foundation.springboot.library")
     id("foundation.maven-publish")
 }
 
 dependencies {
     compileOnly(project(":foundation-core"))
     api(project(":foundation-commons"))
-    api("com.intuit.karate:karate-junit5:1.2.0.RC4")
 
-    api("org.springframework.boot:spring-boot-starter-test") {
+    api("org.springframework.boot:spring-boot-starter-test:2.6.4") {
         exclude(group = "com.vaadin.external.google")
     }
-
-    compileOnly("org.springframework.boot:spring-boot-starter-web")
+    compileOnly("org.springframework.boot:spring-boot-starter-web:2.6.4")
 
     @Suppress("GradlePackageUpdate")
     api("com.h2database:h2:2.1.210")
@@ -23,7 +22,6 @@ dependencies {
     api("org.awaitility:awaitility:4.1.1")
     api("com.github.javafaker:javafaker:1.0.2")
 
-    // implementation("org.mock-server:mockserver-netty:5.11.2")
-    testImplementation("org.springframework.boot:spring-boot-starter-web")
+    testImplementation("org.springframework.boot:spring-boot-starter-web:2.6.4")
 }
 
