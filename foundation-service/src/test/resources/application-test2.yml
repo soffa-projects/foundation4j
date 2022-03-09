@@ -1,0 +1,13 @@
+spring.application.name: test2
+
+app.package: dev.soffa
+app.db.datasources:
+  default:
+    url: h2://mem/default2
+    migration: test
+  __TENANT__:
+    url: h2://mem/__TENANT__
+    migration: test
+
+spring.config.import:
+  - classpath:application-foundation.yml

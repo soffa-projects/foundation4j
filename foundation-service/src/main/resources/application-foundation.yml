@@ -1,0 +1,146 @@
+spring.main.banner-mode: off
+
+logging.level.ROOT: WARN
+logging.level.io.leangen: ERROR
+logging.level.ext.springboot: INFO
+logging.level.org.springframework: ${SPRING_LOG_LEVEL:WARN}
+logging.level.liquibase: ERROR
+logging.level.dev.soffa: ${PLATFORM_LOG_LEVEL:INFO}
+logging.level.foundation: ${PLATFORM_LOG_LEVEL:INFO}
+logging.level.app: ${LOG_LEVEL:INFO}
+logging.level.service: ${LOG_LEVEL:INFO}
+
+
+#
+
+spring.jackson:
+  default-property-inclusion: non_empty
+  #property-naming-strategy: com.fasterxml.jackson.databind.PropertyNamingStrategy.SnakeCaseStrategy
+  #com.fasterxml.jackson.databind.PropertyNamingStrategy.LowerCamelCaseStrategy
+  serialization:
+    write-dates-as-timestamps: true
+
+spring.output.ansi.enabled: always
+
+server:
+  compression.enabled: true
+  forward-headers-strategy: framework
+  port: ${PORT:8080}
+
+management:
+  endpoints.web.exposure.include: "info,health,prometheus,metrics,refresh"
+  metrics.export:
+    simple.enabled: true
+  health.diskspace.enabled: true
+  health.db.enabled: true
+  health.rabbit.enabled: true
+  endpoint.health.enabled: true
+  endpoint:
+    health.show-components: when-authorized
+    health.show-details: when-authorized
+
+spring.groovy.template.check-template-location: false
+
+springdoc:
+  api-docs.enabled: true
+  show-actuator: false
+  paths-to-exclude: graphiql, /graphiql, error, /error, /oauth/*, /user/auth, /actuator/*, /healthz
+  show-login-endpoint: false
+  swagger-ui:
+    operations-sorter: alpha
+    tags-sorter: alpha
+
+spring.cloud.consul:
+  enabled: false
+  config:
+    enabled: false
+  discovery:
+    enabled: false
+
+spring.autoconfigure.exclude: org.springframework.boot.autoconfigure.amqp.RabbitAutoConfiguration
+management.endpoint.health.group.liveness.include: livenessstate,cacheCheck
+management.endpoint.health.probes.enabled: true
+
+spring.cloud.vault:
+  enabled: false
+  kv.enabled: false
+
+app.redoc.enabled: true
+
+spring.jpa:
+  #defer-datasource-initialization: false
+  open-in-view: false
+  show-sql: false
+  properties.hibernate:
+    dialect: org.hibernate.dialect.PostgreSQLDialect
+    jdbc.batch_size: 500
+  hibernate:
+    ddl-auto: none
+    naming:
+      #implicit-strategy:
+      physical-strategy: dev.soffa.foundation.data.CustomPhysicalNamingStrategy
+
+spring.liquibase.enabled: false
+
+app.openapi:
+  enabled: true
+  access: permitAll
+  title: ${spring.application.name}
+
+app.health.root.enabled: false
+
+org.jobrunr.background-job-server.enabled: ${app.jobs.enabled:false}
+org.jobrunr.dashboard.enabled: ${app.jobs.enabled:false}
+org.jobrunr.database.skip_create: true
+org.jobrunr.dashboard.port: 8000
+junit.jupiter.execution.parallel.enabled: true
+
+
+spring.sleuth.web.skipPattern: (^cleanup.*|.+favicon.*)
+
+spring.zipkin:
+  enabled: ${ZIPKIN_ENABLED:true}
+  base-url: ${ZIPKIN_BASE_URL:localhost:9411}
+
+spring.sleuth.web.client:
+  enabled: ${ZIPKIN_ENABLED:true}
+
+#https://cloud.spring.io/spring-cloud-sleuth/reference/html/appendix.html
+
+---
+
+spring.config.activate.on-profile: vault
+
+spring.cloud.vault:
+  enabled: true
+  uri: ${app.vault.uri:${VAULT_URI:http://localhost:8200}}
+  token: ${app.vault.token:${VAULT_TOKEN:0000000000}}
+  kv:
+    enabled: true
+    default-context: ${app.vault.context:${VAULT_CONTEXT:services/${spring.application.name}}}
+    application-name: ${spring.application.name}
+  connection-timeout: 5000
+  read-timeout: 3000
+
+spring.config.import:
+  - vault://
+
+---
+spring.config.activate.on-profile: json-logs
+logging.config: classpath:logback-spring-json.xml
+logging.file.name: ${LOGGING_FILE_NAME:${spring.application.name}.log}
+
+---
+spring.config.activate.on-profile: test
+management.health.vault.enabled: false
+logging.level.dev.soffa: DEBUG
+logging.level.foundation: DEBUG
+
+management.endpoint.health:
+  show-components: always
+  health.show-details: always
+
+#---
+#spring.config.activate.on-profile: amqp
+#spring.config.import: classpath:foundation-amqp.yml
+

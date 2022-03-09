@@ -1,0 +1,30 @@
+package dev.soffa.foundation.spring.config;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.web.method.support.HandlerMethodReturnValueHandler;
+import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter;
+
+import javax.annotation.PostConstruct;
+import java.util.ArrayList;
+import java.util.List;
+
+//@Configuration
+public class LocalRequestMappingHandlerAdapter {
+
+    @Autowired
+    private RequestMappingHandlerAdapter requestMappingHandlerAdapter;
+
+    @PostConstruct
+    void configure() {
+        List<HandlerMethodReturnValueHandler> returnValueHandlers = requestMappingHandlerAdapter.getReturnValueHandlers();
+        if (returnValueHandlers == null) {
+            returnValueHandlers = new ArrayList<>();
+        }
+        List<HandlerMethodReturnValueHandler> newReturnValueHandlers = new ArrayList<>(returnValueHandlers.size() + 1);
+        newReturnValueHandlers.add(0, new ResponseEntityInterceptor());
+        newReturnValueHandlers.addAll(returnValueHandlers);
+        requestMappingHandlerAdapter.setReturnValueHandlers(newReturnValueHandlers);
+    }
+
+}

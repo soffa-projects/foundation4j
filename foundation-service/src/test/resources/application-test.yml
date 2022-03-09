@@ -1,0 +1,23 @@
+spring.application.name: test
+
+app.package: dev.soffa
+app.db:
+  tables-prefix:
+  datasources:
+    default:
+      url: h2://mem/default_${random.int}
+      #url: pg://postgres:postgres@localhost/soffa-test
+      migration: true
+    T1:
+      url: h2://mem/t1_${random.int}
+      migration: true
+    T2:
+      url: h2://mem/t2_${random.int}
+      migration: true
+
+app.security.tokens:
+  public-jwks: /security/jwks-dev.pub.json
+  private-jwks: /security/jwks-dev.priv.json
+
+spring.config.import:
+  - classpath:application-foundation.yml

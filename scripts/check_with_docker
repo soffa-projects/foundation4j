@@ -1,0 +1,3 @@
+#!/bin/bash
+
+docker run -v $(pwd):/app -w /app -e NO_PUBLISH=true -e CI=false gradle gradle check -x jar

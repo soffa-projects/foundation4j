@@ -1,0 +1,14 @@
+app.db:
+  tables-prefix: test
+  datasources:
+    default:
+      url: h2://mem/default
+      migration: true # will use application name as the migration filename
+    T1:
+      url: h2://mem/tenant1
+      migration: sample
+    T2:
+      url: h2://mem/tenant2
+      migration: sample
+
+app.consul.discovery: false

@@ -1,0 +1,3 @@
+#!/usr/bin/env sh
+
+gradle check publishToMavenLocal  $@ && sync

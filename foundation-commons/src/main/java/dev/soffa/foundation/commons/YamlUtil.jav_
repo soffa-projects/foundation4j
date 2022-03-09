@@ -1,0 +1,76 @@
+package dev.soffa.foundation.commons;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.dataformat.yaml.YAMLMapper;
+import lombok.SneakyThrows;
+
+import java.io.File;
+import java.io.InputStream;
+import java.util.List;
+import java.util.Map;
+
+public final class YamlUtil {
+
+
+    private static final ObjectMapper MAPPER = ObjectFactory.create(new YAMLMapper(), false);
+    // private static final ObjectMapper MAPPER_FULL_ACCESS = ObjectFactory.create(new YAMLMapper(), true);
+
+    private YamlUtil() {
+    }
+
+    @SneakyThrows
+    public static <T> T deserialize(String yamlString, Class<T> type) {
+        return ObjectFactory.deserialize(MAPPER, yamlString, type);
+    }
+
+    public static <T> T convert(Object input, Class<T> type) {
+        return ObjectFactory.convert(MAPPER, input, type);
+    }
+
+    public static String serialize(Object src) {
+        return ObjectFactory.serialize(MAPPER, src);
+    }
+
+    public static void serializeToFile(Object content, File file) {
+        ObjectFactory.serializeToFile(MAPPER, content, file);
+    }
+
+    public static <T> Map<String, T> deserializeMap(String input) {
+        return ObjectFactory.deserializeMap(MAPPER, input);
+    }
+
+    public static <T> Map<String, T> deserializeMap(InputStream input) {
+        return ObjectFactory.deserializeMap(MAPPER, input);
+    }
+
+    public static <T> Map<String, T> deserializeMap(InputStream input, Class<T> type) {
+        return ObjectFactory.deserializeMap(MAPPER, input, type);
+    }
+
+    public static <T> Map<String, T> deserializeMap(String input, Class<T> type) {
+        return ObjectFactory.deserializeMap(MAPPER, input, type);
+    }
+
+    public static <T> T deserializeParametricType(String input, Class<?> rawType, Class<?>... parameterClasses) {
+        return ObjectFactory.deserializeParametricType(MAPPER, input, rawType, parameterClasses);
+
+    }
+
+    public static <T> List<T> deserializeList(String input, Class<T> type) {
+        return ObjectFactory.deserializeList(MAPPER, input, type);
+    }
+
+    public static <T> List<T> deserializeList(InputStream input, Class<T> type) {
+        return ObjectFactory.deserializeList(MAPPER, input, type);
+    }
+
+    public static Map<String, Object> toMap(Object input) {
+        return toMap(input, Object.class);
+    }
+
+    public static <E> Map<String, E> toMap(Object input, Class<E> valueClass) {
+        return ObjectFactory.toMap(MAPPER, input, valueClass);
+    }
+
+
+}

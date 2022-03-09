@@ -1,0 +1,110 @@
+package dev.soffa.foundation.pubsub.kafka;
+
+import dev.soffa.foundation.commons.Logger;
+import dev.soffa.foundation.commons.ObjectUtil;
+import dev.soffa.foundation.model.Message;
+import dev.soffa.foundation.model.OperationResult;
+import dev.soffa.foundation.support.pubsub.AbstractPubSubClient;
+import dev.soffa.foundation.support.pubsub.MessageHandler;
+import dev.soffa.foundation.support.pubsub.PubSubClient;
+import dev.soffa.foundation.support.pubsub.PubSubClientConfig;
+import org.apache.kafka.clients.consumer.ConsumerConfig;
+import org.apache.kafka.clients.consumer.ConsumerRecord;
+import org.apache.kafka.clients.producer.ProducerConfig;
+import org.apache.kafka.common.serialization.StringDeserializer;
+import org.apache.kafka.common.serialization.StringSerializer;
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
+import org.springframework.kafka.core.*;
+import org.springframework.kafka.listener.ConcurrentMessageListenerContainer;
+import org.springframework.kafka.listener.ContainerProperties;
+import org.springframework.kafka.listener.KafkaMessageListenerContainer;
+import org.springframework.kafka.listener.MessageListener;
+import org.springframework.kafka.requestreply.ReplyingKafkaTemplate;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.CompletableFuture;
+
+import static org.springframework.kafka.support.KafkaHeaders.GROUP_ID;
+
+public class KafkaClient extends AbstractPubSubClient implements PubSubClient {
+
+    private static final Logger LOG = Logger.get(KafkaClient.class);
+    private final PubSubClientConfig config;
+    private KafkaTemplate<String, byte[]> kafkaTemplate;
+    private ConsumerFactory<String, byte[]> consumerFactory;
+    private ReplyingKafkaTemplate<String, byte[], byte[][]> replyingKafkaTemplate;
+
+    public KafkaClient(PubSubClientConfig config, String broadcasting) {
+        super(config, broadcasting);
+        this.config = config;
+        configure();
+    }
+
+    public void configure() {
+        configurePublisher();
+        configureConsumer();
+    }
+
+    private void configurePublisher() {
+        Map<String, Object> configurations = new HashMap<>();
+        configurations.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, config.getAddresses());
+        configurations.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
+        configurations.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
+        ProducerFactory<String, byte[]> producerFactory = new DefaultKafkaProducerFactory<>(configurations);
+        kafkaTemplate = new KafkaTemplate<>(producerFactory);
+
+        ConsumerFactory<String, byte[]> consumerFactory = new DefaultKafkaConsumerFactory<>(configurations);
+
+        ConcurrentKafkaListenerContainerFactory<String, byte[]> factory = new ConcurrentKafkaListenerContainerFactory<>();
+        factory.setConsumerFactory(consumerFactory);
+        factory.setReplyTemplate(kafkaTemplate);
+
+        ContainerProperties containerProperties = new ContainerProperties(subject);
+
+        KafkaMessageListenerContainer mlc = new KafkaMessageListenerContainer(consumerFactory, configurations);
+
+        replyingKafkaTemplate = new ReplyingKafkaTemplate<String, byte[], byte[]>(producerFactory, consumerFactory);
+    }
+
+    private void configureConsumer() {
+        Map<String, Object> configurations = new HashMap<>();
+        configurations.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, config.getAddresses());
+        configurations.put(ConsumerConfig.GROUP_ID_CONFIG, GROUP_ID);
+        configurations.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
+        configurations.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
+        consumerFactory = new DefaultKafkaConsumerFactory<>(configurations);
+    }
+
+    @Override
+    public void subscribe(@NonNull String subject, boolean broadcast, MessageHandler handler) {
+        ContainerProperties containerProperties = new ContainerProperties(subject);
+        containerProperties.setMessageListener(new MessageListener<String, byte[]>(){
+            @Override
+            public void onMessage(@NonNull ConsumerRecord<String, byte[]> record) {
+                dev.soffa.foundation.model.Message message = ObjectUtil.deserialize(record.value(), dev.soffa.foundation.model.Message.class);
+                OperationResult response = OperationResult.create(handler.handle(message).orElse(null), null);
+
+            }
+        });
+        ConcurrentMessageListenerContainer<String, String> container = new ConcurrentMessageListenerContainer<>(consumerFactory, containerProperties);
+        container.start();
+    }
+
+    @Override
+    public void publish(@NonNull String subject, Message message) {
+        kafkaTemplate.send(subject, ObjectUtil.serialize(message));
+    }
+
+    @Override
+    public void broadcast(@NonNull String target, Message message) {
+        String sub = resolveBroadcast(target);
+        kafkaTemplate.send(sub, ObjectUtil.serialize(message));
+    }
+
+    @Override
+    public CompletableFuture<byte[]> internalRequest(@NonNull String subject, Message message) {
+        return null;
+    }
+}
