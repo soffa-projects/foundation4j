@@ -1,11 +1,11 @@
-package dev.soffa.foundation.extras.mail.adapters;
+package dev.soffa.foundation.mail.adapters;
 
 import dev.soffa.foundation.commons.Logger;
 import dev.soffa.foundation.commons.Mappers;
 import dev.soffa.foundation.commons.RandomUtil;
-import dev.soffa.foundation.extras.mail.EmailSender;
-import dev.soffa.foundation.extras.mail.models.Email;
-import dev.soffa.foundation.extras.mail.models.EmailAck;
+import dev.soffa.foundation.mail.EmailSender;
+import dev.soffa.foundation.mail.models.Email;
+import dev.soffa.foundation.mail.models.EmailAck;
 
 import java.util.concurrent.atomic.AtomicInteger;
 

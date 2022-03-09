@@ -1,7 +1,5 @@
-package dev.soffa.foundation.messages.pubsub;
+package dev.soffa.foundation.messages;
 
-
-import dev.soffa.foundation.messages.Message;
 
 import java.util.Optional;
 

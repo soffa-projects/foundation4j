@@ -4,7 +4,7 @@ import dev.soffa.foundation.commons.Logger;
 import dev.soffa.foundation.commons.TextUtil;
 import dev.soffa.foundation.errors.TechnicalException;
 import dev.soffa.foundation.messages.Message;
-import dev.soffa.foundation.messages.pubsub.MessageHandler;
+import dev.soffa.foundation.messages.MessageHandler;
 import dev.soffa.foundation.messages.pubsub.PubSubClient;
 import dev.soffa.foundation.messages.pubsub.PubSubClientConfig;
 import dev.soffa.foundation.pubsub.AbstractPubSubClient;

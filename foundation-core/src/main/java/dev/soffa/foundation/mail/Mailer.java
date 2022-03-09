@@ -1,8 +1,8 @@
-package dev.soffa.foundation.extras.mail;
+package dev.soffa.foundation.mail;
 
 
-import dev.soffa.foundation.extras.mail.models.Email;
-import dev.soffa.foundation.extras.mail.models.EmailAck;
+import dev.soffa.foundation.mail.models.Email;
+import dev.soffa.foundation.mail.models.EmailAck;
 
 import java.util.Map;
 

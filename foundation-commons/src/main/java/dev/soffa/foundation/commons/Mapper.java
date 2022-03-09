@@ -19,6 +19,8 @@ public interface Mapper {
 
     String serialize(Object data);
 
+    byte[] serializeAsBytes(Object data);
+
     <T> T deserialize(String data, Class<T> type);
 
     <T> T deserialize(byte[] data, Class<T> type);

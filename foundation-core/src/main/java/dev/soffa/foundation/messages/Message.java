@@ -2,7 +2,7 @@ package dev.soffa.foundation.messages;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import dev.soffa.foundation.commons.IdGenerator;
-import dev.soffa.foundation.commons.ObjectUtil;
+import dev.soffa.foundation.commons.Mappers;
 import dev.soffa.foundation.commons.TextUtil;
 import dev.soffa.foundation.context.Context;
 import lombok.AllArgsConstructor;
@@ -11,6 +11,7 @@ import lombok.NoArgsConstructor;
 
 import java.beans.Transient;
 import java.io.Serializable;
+import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
 
@@ -48,7 +49,7 @@ public class Message implements Serializable {
             if (payload instanceof byte[]) {
                 this.payload = (byte[]) payload;
             } else {
-                this.payload = ObjectUtil.serialize(payload);
+                this.payload = Mappers.JSON.serialize(payload).getBytes(StandardCharsets.UTF_8);
                 this.payloadType = payload.getClass().getName();
             }
         }

@@ -1,7 +1,10 @@
 package dev.soffa.foundation.commons.http;
 
+import dev.soffa.foundation.commons.TextUtil;
+import dev.soffa.foundation.http.HttpConstants;
 import lombok.Data;
 
+import java.util.HashMap;
 import java.util.Map;
 
 @Data
@@ -29,5 +32,45 @@ public class HttpRequest {
         this.body = data;
         this.headers = headers;
     }
+
+    public HttpRequest withBody(Object body) {
+        this.body = body;
+        return this;
+    }
+    public HttpRequest withContentType(String type) {
+        this.contentType = type;
+        return this;
+    }
+
+    public HttpRequest header(String name, String value) {
+        if (TextUtil.isNotEmpty(value)) {
+            if (headers == null) {
+                headers = new HashMap<>();
+            }
+            headers.put(name, value);
+        }
+        return this;
+    }
+
+    public static HttpRequest get(String url) {
+        return new HttpRequest(HttpConstants.GET, url);
+    }
+
+    public static HttpRequest post(String url) {
+        return new HttpRequest(HttpConstants.POST, url);
+    }
+
+    public static HttpRequest patch(String url) {
+        return new HttpRequest(HttpConstants.PATCH, url);
+    }
+
+    public static HttpRequest put(String url) {
+        return new HttpRequest(HttpConstants.PUT, url);
+    }
+
+    public static HttpRequest delete(String url) {
+        return new HttpRequest(HttpConstants.DELETE, url);
+    }
+
 
 }

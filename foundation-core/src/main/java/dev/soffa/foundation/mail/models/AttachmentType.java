@@ -1,4 +1,4 @@
-package dev.soffa.foundation.extras.mail.models;
+package dev.soffa.foundation.mail.models;
 
 public enum AttachmentType {
     IMAGE,

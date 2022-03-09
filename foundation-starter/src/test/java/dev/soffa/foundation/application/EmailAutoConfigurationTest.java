@@ -1,7 +1,7 @@
 package dev.soffa.foundation.application;
 
-import dev.soffa.foundation.extras.mail.Mailer;
-import dev.soffa.foundation.extras.mail.adapters.FakeEmailSender;
+import dev.soffa.foundation.mail.Mailer;
+import dev.soffa.foundation.mail.adapters.FakeEmailSender;
 import dev.soffa.foundation.mail.adapters.SendgridEmailSender;
 import dev.soffa.foundation.mail.adapters.SmtpEmailSender;
 import org.junit.jupiter.api.Test;

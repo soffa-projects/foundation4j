@@ -2,16 +2,15 @@ package dev.soffa.foundation.pubsub;
 
 import dev.soffa.foundation.commons.Logger;
 import dev.soffa.foundation.commons.Mappers;
-import dev.soffa.foundation.commons.ObjectUtil;
 import dev.soffa.foundation.commons.TextUtil;
 import dev.soffa.foundation.errors.ForbiddenException;
 import dev.soffa.foundation.errors.FunctionalException;
 import dev.soffa.foundation.errors.TechnicalException;
 import dev.soffa.foundation.errors.UnauthorizedException;
 import dev.soffa.foundation.messages.Message;
+import dev.soffa.foundation.messages.MessageResponse;
 import dev.soffa.foundation.messages.pubsub.PubSubClient;
 import dev.soffa.foundation.messages.pubsub.PubSubClientConfig;
-import dev.soffa.foundation.models.ByteResponseEntity;
 import dev.soffa.foundation.models.ResponseStatus;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
@@ -65,7 +64,7 @@ public abstract class AbstractPubSubClient implements PubSubClient {
         if (data == null) {
             return null;
         }
-        ByteResponseEntity response = ObjectUtil.deserialize(data, ByteResponseEntity.class);
+        MessageResponse response = Mappers.JSON.deserialize(data, MessageResponse.class);
         if (response.isSuccess()) {
             return Mappers.JSON.deserialize(response.getData(), responseClass);
         } else {

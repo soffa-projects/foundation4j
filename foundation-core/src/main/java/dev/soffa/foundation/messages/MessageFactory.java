@@ -2,11 +2,11 @@ package dev.soffa.foundation.messages;
 
 import dev.soffa.foundation.commons.IdGenerator;
 import dev.soffa.foundation.commons.Mappers;
-import dev.soffa.foundation.commons.ObjectUtil;
 import dev.soffa.foundation.context.Context;
 import dev.soffa.foundation.context.ContextHolder;
 import lombok.SneakyThrows;
 
+import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
 public final class MessageFactory {
@@ -35,7 +35,7 @@ public final class MessageFactory {
         byte[] lPayload = null;
         String payloadType = null;
         if (payload != null) {
-            lPayload = ObjectUtil.serialize(payload);
+            lPayload = Mappers.JSON.serialize(payload).getBytes(StandardCharsets.UTF_8);
             payloadType = payload.getClass().getName();
         }
         Context context = ContextHolder.inheritOrCreate();

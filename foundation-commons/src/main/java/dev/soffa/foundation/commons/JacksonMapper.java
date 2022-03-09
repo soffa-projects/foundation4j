@@ -58,8 +58,14 @@ public class JacksonMapper implements Mapper {
     @Override
     public String serialize(Object data) {
         if (data == null) return null;
-        if (data instanceof String) return data.toString();
         return mapper.writeValueAsString(data);
+    }
+
+    @SneakyThrows
+    @Override
+    public byte[] serializeAsBytes(Object data) {
+        if (data == null) return null;
+        return mapper.writeValueAsBytes(data);
     }
 
     @SneakyThrows
@@ -67,9 +73,6 @@ public class JacksonMapper implements Mapper {
     public <T> T deserialize(String data, Class<T> type) {
         if (StringUtils.isEmpty(data)) {
             return null;
-        }
-        if (type == String.class) {
-            return type.cast(data);
         }
         return mapper.readValue(data, type);
     }

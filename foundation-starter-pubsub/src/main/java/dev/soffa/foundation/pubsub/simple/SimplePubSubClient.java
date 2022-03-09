@@ -1,11 +1,11 @@
 package dev.soffa.foundation.pubsub.simple;
 
-import dev.soffa.foundation.commons.ObjectUtil;
+import dev.soffa.foundation.commons.Mappers;
 import dev.soffa.foundation.errors.ConfigurationException;
 import dev.soffa.foundation.messages.Message;
-import dev.soffa.foundation.messages.pubsub.MessageHandler;
+import dev.soffa.foundation.messages.MessageHandler;
+import dev.soffa.foundation.messages.MessageResponse;
 import dev.soffa.foundation.messages.pubsub.PubSubClient;
-import dev.soffa.foundation.models.ByteResponseEntity;
 import dev.soffa.foundation.pubsub.AbstractPubSubClient;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
@@ -36,8 +36,8 @@ public class SimplePubSubClient extends AbstractPubSubClient implements PubSubCl
             if (result == null) {
                 return null;
             }
-            ByteResponseEntity opr = ByteResponseEntity.create(ObjectUtil.serialize(result), null);
-            return ObjectUtil.serialize(opr);
+            MessageResponse opr = MessageResponse.of(result, null);
+            return Mappers.JSON.serializeAsBytes(opr);
         });
     }
 

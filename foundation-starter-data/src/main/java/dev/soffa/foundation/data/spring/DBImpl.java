@@ -295,7 +295,10 @@ public final class DBImpl extends AbstractDataSource implements ApplicationListe
             LOG.info("Loading tenants with TenantsLoader");
             try {
                 TenantsLoader tenantsLoader = context.getBean(TenantsLoader.class);
-                tenants.addAll(tenantsLoader.getTenantList());
+                Set<String> tenantList = tenantsLoader.getTenantList();
+                if (tenantList!=null) {
+                    tenants.addAll(tenantsLoader.getTenantList());
+                }
             } catch (NoSuchBeanDefinitionException e) {
                 LOG.error("No TenantsLoader defined");
             } catch (Exception e) {

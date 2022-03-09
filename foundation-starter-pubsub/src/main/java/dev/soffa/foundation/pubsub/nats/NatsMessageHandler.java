@@ -1,10 +1,10 @@
 package dev.soffa.foundation.pubsub.nats;
 
 import dev.soffa.foundation.commons.Logger;
-import dev.soffa.foundation.commons.ObjectUtil;
+import dev.soffa.foundation.commons.Mappers;
 import dev.soffa.foundation.commons.TextUtil;
 import dev.soffa.foundation.errors.ManagedException;
-import dev.soffa.foundation.models.ByteResponseEntity;
+import dev.soffa.foundation.messages.MessageResponse;
 import io.nats.client.Connection;
 import io.nats.client.Message;
 import io.nats.client.MessageHandler;
@@ -18,7 +18,7 @@ public class NatsMessageHandler implements MessageHandler {
     private static final Logger LOG = Logger.get(NatsMessageHandler.class);
 
     private final Connection connection;
-    private final dev.soffa.foundation.messages.pubsub.MessageHandler handler;
+    private final dev.soffa.foundation.messages.MessageHandler handler;
 
     private boolean accept(Message msg) {
         if (msg == null) {
@@ -41,7 +41,7 @@ public class NatsMessageHandler implements MessageHandler {
         dev.soffa.foundation.messages.Message message;
 
         try {
-            message = ObjectUtil.deserialize(msg.getData(), dev.soffa.foundation.messages.Message.class);
+            message = Mappers.JSON.deserialize(msg.getData(), dev.soffa.foundation.messages.Message.class);
         } catch (Exception e) {
             //TODO: handle lost payloads (audit)
             LOG.error(e, "Invalid payload, message will be discarded -- %s", e.getMessage());
@@ -59,9 +59,9 @@ public class NatsMessageHandler implements MessageHandler {
                 Class<?> clazz = result.getClass();
                 boolean isNoop = "kotlin.Unit".equalsIgnoreCase(clazz.getName()) || clazz == Void.class;
                 if (!isNoop) {
-                    ByteResponseEntity response = ByteResponseEntity.create(operationResult.orElse(null), null);
+                    MessageResponse response = MessageResponse.ok(operationResult.orElse(null));
                     LOG.debug("Sending response back to %s [SID:%s]", msg.getReplyTo(), msg.getSID());
-                    connection.publish(msg.getReplyTo(), msg.getSubject(), ObjectUtil.serialize(response));
+                    connection.publish(msg.getReplyTo(), msg.getSubject(), Mappers.JSON.serializeAsBytes(response));
                 }
             }
             LOG.info("Message SID=%s processed with no error", msg.getSID());
@@ -69,7 +69,11 @@ public class NatsMessageHandler implements MessageHandler {
             LOG.error("Nats event handling failed with error", e);
             if (e instanceof ManagedException) {
                 if (sendReply) {
-                    connection.publish(msg.getReplyTo(), msg.getSubject(), ObjectUtil.serialize(ByteResponseEntity.create(null, e)));
+                    connection.publish(
+                        msg.getReplyTo(),
+                        msg.getSubject(),
+                        Mappers.JSON.serializeAsBytes(MessageResponse.error(e))
+                    );
                 }
             } else {
                 throw e;

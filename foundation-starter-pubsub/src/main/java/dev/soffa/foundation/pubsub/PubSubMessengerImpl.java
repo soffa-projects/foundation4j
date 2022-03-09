@@ -2,7 +2,7 @@ package dev.soffa.foundation.pubsub;
 
 import dev.soffa.foundation.commons.EventBus;
 import dev.soffa.foundation.messages.Message;
-import dev.soffa.foundation.messages.pubsub.MessageHandler;
+import dev.soffa.foundation.messages.MessageHandler;
 import dev.soffa.foundation.messages.pubsub.PubSubClient;
 import dev.soffa.foundation.messages.pubsub.PubSubMessenger;
 import org.checkerframework.checker.nullness.qual.NonNull;

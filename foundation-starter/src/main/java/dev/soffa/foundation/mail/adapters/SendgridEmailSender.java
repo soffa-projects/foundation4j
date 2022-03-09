@@ -11,8 +11,8 @@ import com.sendgrid.helpers.mail.objects.Personalization;
 import dev.soffa.foundation.commons.Logger;
 import dev.soffa.foundation.commons.TextUtil;
 import dev.soffa.foundation.errors.TechnicalException;
-import dev.soffa.foundation.extras.mail.EmailSender;
-import dev.soffa.foundation.extras.mail.models.EmailAck;
+import dev.soffa.foundation.mail.EmailSender;
+import dev.soffa.foundation.mail.models.EmailAck;
 import dev.soffa.foundation.models.EmailAddress;
 import dev.soffa.foundation.models.ResponseStatus;
 import lombok.SneakyThrows;
@@ -38,7 +38,7 @@ public class SendgridEmailSender implements EmailSender {
 
     @SneakyThrows
     @Override
-    public EmailAck send(dev.soffa.foundation.extras.mail.models.Email message) {
+    public EmailAck send(dev.soffa.foundation.mail.models.Email message) {
         EmailAddress sender = new EmailAddress(defaultSender);
         com.sendgrid.helpers.mail.objects.Email from = new Email(sender.getAddress(), sender.getName());
 

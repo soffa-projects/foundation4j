@@ -1,6 +1,6 @@
 package dev.soffa.foundation.pubsub.nats;
 
-import dev.soffa.foundation.commons.ObjectUtil;
+import dev.soffa.foundation.commons.Mappers;
 import dev.soffa.foundation.messages.Message;
 import io.nats.client.Connection;
 import io.nats.client.Subscription;
@@ -45,7 +45,7 @@ public final class NatsUtil {
 
     @SneakyThrows
     static NatsMessage createNatsMessage(String subject, Message message) {
-        byte[] data = ObjectUtil.serialize(message);
+        byte[] data = Mappers.JSON.serializeAsBytes(message);
         return new NatsMessage(
             subject,
             "",

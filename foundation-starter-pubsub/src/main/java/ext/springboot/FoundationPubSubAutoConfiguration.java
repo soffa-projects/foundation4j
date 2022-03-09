@@ -3,10 +3,10 @@ package ext.springboot;
 import dev.soffa.foundation.events.OnServiceStarted;
 import dev.soffa.foundation.messages.Message;
 import dev.soffa.foundation.messages.MessageFactory;
-import dev.soffa.foundation.messages.pubsub.MessageHandler;
+import dev.soffa.foundation.messages.MessageHandler;
 import dev.soffa.foundation.messages.pubsub.PubSubConfig;
 import dev.soffa.foundation.messages.pubsub.PubSubMessenger;
-import dev.soffa.foundation.models.ServiceInfo;
+import dev.soffa.foundation.models.ServiceId;
 import dev.soffa.foundation.pubsub.PubSubMessengerFactory;
 import lombok.AllArgsConstructor;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -53,7 +53,7 @@ public class FoundationPubSubAutoConfiguration {
 
         @Override
         public void onApplicationEvent(@NonNull ContextRefreshedEvent event) {
-            Message msg = MessageFactory.create(OnServiceStarted.class.getSimpleName(), new ServiceInfo(serviceId));
+            Message msg = MessageFactory.create(OnServiceStarted.class.getSimpleName(), new ServiceId(serviceId));
             messenger.broadcast("*", msg);
         }
     }

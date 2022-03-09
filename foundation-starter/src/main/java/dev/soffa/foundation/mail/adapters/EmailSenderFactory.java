@@ -4,9 +4,8 @@ import dev.soffa.foundation.commons.TextUtil;
 import dev.soffa.foundation.commons.UrlInfo;
 import dev.soffa.foundation.errors.ConfigurationException;
 import dev.soffa.foundation.errors.NotImplementedException;
-import dev.soffa.foundation.extras.mail.EmailSender;
-import dev.soffa.foundation.extras.mail.adapters.FakeEmailSender;
-import dev.soffa.foundation.extras.mail.models.MailerConfig;
+import dev.soffa.foundation.mail.EmailSender;
+import dev.soffa.foundation.mail.models.MailerConfig;
 
 import java.util.Objects;
 

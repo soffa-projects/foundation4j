@@ -21,7 +21,7 @@ public class DBConfiguration {
     @Bean
     @ConditionalOnMissingBean
     public TenantsLoader createDefaultTenantsLoader() {
-        return TenantsLoader.NOOP;
+        return new TenantsLoader(){};
     }
 
     @Bean

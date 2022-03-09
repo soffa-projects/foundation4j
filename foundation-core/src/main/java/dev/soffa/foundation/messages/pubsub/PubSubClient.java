@@ -2,6 +2,7 @@ package dev.soffa.foundation.messages.pubsub;
 
 
 import dev.soffa.foundation.messages.Message;
+import dev.soffa.foundation.messages.MessageHandler;
 import lombok.SneakyThrows;
 import org.checkerframework.checker.nullness.qual.NonNull;
 

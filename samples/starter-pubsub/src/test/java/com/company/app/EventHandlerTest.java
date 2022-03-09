@@ -3,7 +3,7 @@ package com.company.app;
 import com.company.app.core.Echo;
 import com.company.app.core.Ping;
 import dev.soffa.foundation.messages.MessageFactory;
-import dev.soffa.foundation.messages.pubsub.MessageHandler;
+import dev.soffa.foundation.messages.MessageHandler;
 import dev.soffa.foundation.metrics.MetricsRegistry;
 import dev.soffa.foundation.multitenancy.TenantHolder;
 import org.junit.jupiter.api.Test;

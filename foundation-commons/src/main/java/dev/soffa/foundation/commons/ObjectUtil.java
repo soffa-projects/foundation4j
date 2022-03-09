@@ -15,7 +15,7 @@ public final class ObjectUtil {
     }
 
     @SneakyThrows
-    public static byte[] serialize(Object input) {
+    private static byte[] serialize(Object input) {
         if (input == null) {
             return null;
         }
@@ -30,7 +30,7 @@ public final class ObjectUtil {
     }
 
     @SneakyThrows
-    public static <T> T deserialize(byte[] input, Class<T> type) {
+    private static <T> T deserialize(byte[] input, Class<T> type) {
         if (input == null || input.length == 0) {
             return null;
         }

@@ -10,7 +10,7 @@ import dev.soffa.foundation.core.Operation;
 import dev.soffa.foundation.errors.TechnicalException;
 import dev.soffa.foundation.messages.Message;
 import dev.soffa.foundation.messages.MessageFactory;
-import dev.soffa.foundation.messages.pubsub.MessageHandler;
+import dev.soffa.foundation.messages.MessageHandler;
 import dev.soffa.foundation.metrics.MetricsRegistry;
 import dev.soffa.foundation.multitenancy.TenantHolder;
 import dev.soffa.foundation.security.PlatformAuthManager;
