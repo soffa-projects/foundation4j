@@ -58,12 +58,8 @@ public class HttpMock implements HttpResponseProvider {
                 }
             }
         }
-        //noinspection RedundantIfStatement
-        if (TextUtil.isNotEmpty(contentType) && !headers.contentTypeIs(contentType)) {
-            return false;
-        }
+        return !TextUtil.isNotEmpty(contentType) || headers.contentTypeIs(contentType);
         // All conditions are met, so we can return true
-        return true;
     }
 
     public HttpResponse getResponse() {

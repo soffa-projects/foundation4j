@@ -117,18 +117,20 @@ public final class HttpUtil {
         return builder.build();
     }
 
+    @SneakyThrows
     public static void loadMocks(String path) {
-        InputStream input = HttpUtil.class.getResourceAsStream(path);
-        List<HttpMock> mocks = Mappers.YAML.deserializeList(input, HttpMock.class);
-        addInterceptor(chain -> {
-            Request request = chain.request();
-            for (HttpMock mock : mocks) {
-                if (mock.matches(request.url().url(), HttpHeaders.of(chain.request().headers()))) {
-                    return handleRequest(request, mock);
+        try(InputStream input = HttpUtil.class.getResourceAsStream(path)) {
+            List<HttpMock> mocks = Mappers.YAML.deserializeList(input, HttpMock.class);
+            addInterceptor(chain -> {
+                Request request = chain.request();
+                for (HttpMock mock : mocks) {
+                    if (mock.matches(request.url().url(), HttpHeaders.of(chain.request().headers()))) {
+                        return handleRequest(request, mock);
+                    }
                 }
-            }
-            return chain.proceed(request);
-        });
+                return chain.proceed(request);
+            });
+        }
     }
 
     public static void mockResponse(BiFunction<URL, HttpHeaders, Boolean> delegate, HttpResponseProvider handler) {
