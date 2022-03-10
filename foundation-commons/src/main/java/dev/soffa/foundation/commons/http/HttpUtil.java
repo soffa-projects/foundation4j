@@ -144,7 +144,7 @@ public final class HttpUtil {
 
     private static Response handleRequest(Request request, HttpResponseProvider handler) {
         HttpResponse res = handler.apply(request.url().url(), HttpHeaders.of(request.headers()));
-        MediaType contentType = MediaType.parse(res.getContentType());
+        MediaType contentType = MediaType.parse(Optional.ofNullable(res.getContentType()).orElse("application/json"));
         return new Response.Builder()
             .request(request)
             .protocol(Protocol.HTTP_1_1)
