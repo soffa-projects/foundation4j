@@ -1,0 +1,11 @@
+- host: devbox.local
+  response:
+    - content-type: text/plain
+      body: PONG
+
+- host: www.github.com
+  path: /hello
+  response:
+    - content-type: application/json
+      body: |
+        { "message": "Hi" }

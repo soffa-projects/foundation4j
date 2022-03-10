@@ -15,22 +15,15 @@ public class HttpUtilTest {
     @Test
     public void testInterceptor() {
 
-        HttpUtil.mockResponse((url, headers) -> {
-            //EL
-            return "devbox.local".equals(url.getHost());
-        }, (url, headers) -> HttpResponse.ok("text/plain", "PONG"));
-        DefaultHttpClient client = new DefaultHttpClient(HttpUtil.newOkHttpClient());
+        HttpUtil.loadMocks("/http-mocks.yml");
+
+        DefaultHttpClient client = DefaultHttpClient.getInstance();
+
         HttpResponse res = client.get("https://devbox.local");
         assertEquals(200, res.getStatus());
         assertEquals("text/plain", res.getContentType());
         assertEquals("\"PONG\"", res.getBody()); // Because it's a JSON response
 
-        HttpUtil.mockResponse((url, headers) -> {
-            //EL
-            return "www.github.com".equals(url.getHost()) && "/hello".equals(url.getPath());
-        }, (url, headers) -> HttpResponse.ok("application/json", "Hi"));
-
-        client = new DefaultHttpClient(HttpUtil.newOkHttpClient());
         res = client.get("https://www.github.com/hello");
         assertEquals(200, res.getStatus());
         assertEquals("application/json", res.getContentType());

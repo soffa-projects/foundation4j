@@ -4,6 +4,7 @@ package dev.soffa.foundation.commons.http;
 import dev.soffa.foundation.commons.Logger;
 import dev.soffa.foundation.commons.Mappers;
 import dev.soffa.foundation.commons.TextUtil;
+import dev.soffa.foundation.commons.http.mocks.HttpMock;
 import lombok.SneakyThrows;
 import okhttp3.*;
 
@@ -11,6 +12,7 @@ import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
+import java.io.InputStream;
 import java.net.InetSocketAddress;
 import java.net.Proxy;
 import java.net.URL;
@@ -113,6 +115,20 @@ public final class HttpUtil {
             builder.addInterceptor(interceptor);
         }
         return builder.build();
+    }
+
+    public static void loadMocks(String path) {
+        InputStream input = HttpUtil.class.getResourceAsStream(path);
+        List<HttpMock> mocks = Mappers.YAML.deserializeList(input, HttpMock.class);
+        addInterceptor(chain -> {
+            Request request = chain.request();
+            for (HttpMock mock : mocks) {
+                if (mock.matches(request.url().url(), HttpHeaders.of(chain.request().headers()))) {
+                    return handleRequest(request, mock);
+                }
+            }
+            return chain.proceed(request);
+        });
     }
 
     public static void mockResponse(BiFunction<URL, HttpHeaders, Boolean> delegate, HttpResponseProvider handler) {
