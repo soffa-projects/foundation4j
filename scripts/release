@@ -1,5 +1,5 @@
 #!/bin/bash
 
 CI=true
-gradle sign publishMavenPublicationToSonatypeRepository closeAndReleaseSonatypeStagingRepository
+gradle clean sign publishMavenPublicationToSonatypeRepository closeAndReleaseSonatypeStagingRepository
 

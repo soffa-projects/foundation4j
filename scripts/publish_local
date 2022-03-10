@@ -1,4 +1,4 @@
 #!/usr/bin/env sh
 
-gradle assemble publishToMavenLocal -x test
+gradle clean assemble publishToMavenLocal -x test
 sync
