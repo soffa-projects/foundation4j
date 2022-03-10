@@ -9,7 +9,7 @@ buildscript {
         }
     }
     dependencies {
-        classpath("dev.soffa.foundation:foundation-gradle-plugin:1.0.4")
+        classpath("dev.soffa.foundation:foundation-gradle-plugin:1.0.5")
     }
 }
 
@@ -19,3 +19,4 @@ apply(plugin = "foundation.sonatype-publish")
 subprojects {
     apply(plugin = "foundation.default-repositories")
 }
+
