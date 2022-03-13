@@ -2,7 +2,7 @@ package dev.soffa.foundation.commons;
 
 
 import com.google.gson.internal.Primitives;
-import dev.soffa.foundation.errors.TechnicalException;
+import dev.soffa.foundation.error.TechnicalException;
 import lombok.SneakyThrows;
 import org.apache.commons.lang3.reflect.TypeUtils;
 import org.checkerframework.checker.nullness.qual.NonNull;

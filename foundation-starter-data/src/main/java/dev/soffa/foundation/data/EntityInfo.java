@@ -1,11 +1,11 @@
 package dev.soffa.foundation.data;
 
-import dev.soffa.foundation.annotations.Store;
-import dev.soffa.foundation.annotations.StoreId;
+import dev.soffa.foundation.annotation.Store;
+import dev.soffa.foundation.annotation.StoreId;
 import dev.soffa.foundation.commons.ClassUtil;
 import dev.soffa.foundation.commons.TextUtil;
-import dev.soffa.foundation.errors.ConfigurationException;
-import dev.soffa.foundation.errors.TechnicalException;
+import dev.soffa.foundation.error.ConfigurationException;
+import dev.soffa.foundation.error.TechnicalException;
 import lombok.Getter;
 import org.apache.commons.lang3.reflect.FieldUtils;
 

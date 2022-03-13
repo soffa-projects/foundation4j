@@ -1,8 +1,8 @@
 package dev.soffa.foundation.pubsub;
 
 import dev.soffa.foundation.context.Context;
-import dev.soffa.foundation.messages.Message;
-import dev.soffa.foundation.messages.pubsub.PubSubClient;
+import dev.soffa.foundation.message.Message;
+import dev.soffa.foundation.message.pubsub.PubSubClient;
 import dev.soffa.foundation.pubsub.simple.SimplePubSubClient;
 import org.junit.jupiter.api.Test;
 

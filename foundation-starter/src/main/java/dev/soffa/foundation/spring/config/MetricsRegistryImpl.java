@@ -3,7 +3,7 @@ package dev.soffa.foundation.spring.config;
 import com.google.common.base.CaseFormat;
 import dev.soffa.foundation.commons.MapUtil;
 import dev.soffa.foundation.commons.TextUtil;
-import dev.soffa.foundation.metrics.MetricsRegistry;
+import dev.soffa.foundation.metric.MetricsRegistry;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.search.MeterNotFoundException;
 import lombok.AllArgsConstructor;

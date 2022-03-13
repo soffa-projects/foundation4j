@@ -1,7 +1,7 @@
 package dev.soffa.foundation.pubsub.nats;
 
 import dev.soffa.foundation.commons.Mappers;
-import dev.soffa.foundation.messages.Message;
+import dev.soffa.foundation.message.Message;
 import io.nats.client.Connection;
 import io.nats.client.Subscription;
 import io.nats.client.impl.NatsMessage;

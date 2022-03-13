@@ -2,7 +2,7 @@ package dev.soffa.foundation.multitenancy;
 
 import dev.soffa.foundation.commons.Logger;
 import dev.soffa.foundation.commons.TextUtil;
-import dev.soffa.foundation.models.TenantId;
+import dev.soffa.foundation.model.TenantId;
 import lombok.SneakyThrows;
 
 import java.util.Objects;

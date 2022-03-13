@@ -4,7 +4,7 @@ import com.google.common.collect.ImmutableMap;
 import dev.soffa.foundation.commons.*;
 import dev.soffa.foundation.context.Context;
 import dev.soffa.foundation.context.ContextHolder;
-import dev.soffa.foundation.errors.ErrorUtil;
+import dev.soffa.foundation.error.ErrorUtil;
 import dev.soffa.foundation.multitenancy.TenantHolder;
 import dev.soffa.foundation.security.PlatformAuthManager;
 import lombok.NoArgsConstructor;

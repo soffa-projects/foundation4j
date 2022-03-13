@@ -1,8 +1,8 @@
 package dev.soffa.foundation.starter.test;
 
 import com.google.common.collect.ImmutableMap;
-import dev.soffa.foundation.models.Token;
-import dev.soffa.foundation.models.TokenType;
+import dev.soffa.foundation.model.Token;
+import dev.soffa.foundation.model.TokenType;
 import dev.soffa.foundation.security.TokenProvider;
 import dev.soffa.foundation.test.spring.HttpExpect;
 import org.junit.jupiter.api.Test;
@@ -12,6 +12,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
+
 @SpringBootTest
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
@@ -20,7 +21,8 @@ public class EndpointTest {
     private final HttpExpect test;
     private final TokenProvider tokens;
 
-    public EndpointTest(@Autowired MockMvc mvc, @Autowired TokenProvider tokens) {
+    @Autowired
+    public EndpointTest(MockMvc mvc, TokenProvider tokens) {
         this.tokens = tokens;
         this.test = new HttpExpect(mvc);
     }

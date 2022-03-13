@@ -1,7 +1,7 @@
 package dev.soffa.foundation.data;
 
-import dev.soffa.foundation.errors.TodoException;
-import dev.soffa.foundation.models.TenantId;
+import dev.soffa.foundation.error.TodoException;
+import dev.soffa.foundation.model.TenantId;
 
 import javax.sql.DataSource;
 import java.time.Duration;

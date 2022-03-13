@@ -4,8 +4,8 @@ import com.google.common.collect.ImmutableMap;
 import dev.soffa.foundation.commons.Logger;
 import dev.soffa.foundation.data.DB;
 import dev.soffa.foundation.data.SimpleEntityRepository;
-import dev.soffa.foundation.extras.jobs.PendingJob;
-import dev.soffa.foundation.extras.jobs.PendingJobRepository;
+import dev.soffa.foundation.extra.jobs.PendingJob;
+import dev.soffa.foundation.extra.jobs.PendingJobRepository;
 import org.springframework.stereotype.Component;
 
 import java.util.List;

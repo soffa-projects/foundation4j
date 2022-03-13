@@ -1,8 +1,8 @@
 package dev.soffa.foundation;
 
 import com.google.common.collect.ImmutableMap;
-import dev.soffa.foundation.models.Authentication;
-import dev.soffa.foundation.models.TokenType;
+import dev.soffa.foundation.model.Authentication;
+import dev.soffa.foundation.model.TokenType;
 import dev.soffa.foundation.security.DefaultTokenProvider;
 import dev.soffa.foundation.security.TokenProvider;
 import dev.soffa.foundation.security.TokensConfig;

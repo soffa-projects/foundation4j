@@ -1,11 +1,11 @@
 package dev.soffa.foundation.pubsub.simple;
 
 import dev.soffa.foundation.commons.Mappers;
-import dev.soffa.foundation.errors.ConfigurationException;
-import dev.soffa.foundation.messages.Message;
-import dev.soffa.foundation.messages.MessageHandler;
-import dev.soffa.foundation.messages.MessageResponse;
-import dev.soffa.foundation.messages.pubsub.PubSubClient;
+import dev.soffa.foundation.error.ConfigurationException;
+import dev.soffa.foundation.message.Message;
+import dev.soffa.foundation.message.MessageHandler;
+import dev.soffa.foundation.message.MessageResponse;
+import dev.soffa.foundation.message.pubsub.PubSubClient;
 import dev.soffa.foundation.pubsub.AbstractPubSubClient;
 import org.checkerframework.checker.nullness.qual.NonNull;
 

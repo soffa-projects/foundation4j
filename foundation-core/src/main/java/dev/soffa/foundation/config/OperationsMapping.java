@@ -1,10 +1,10 @@
 package dev.soffa.foundation.config;
 
-import dev.soffa.foundation.annotations.Handle;
+import dev.soffa.foundation.annotation.Handle;
 import dev.soffa.foundation.commons.TextUtil;
 import dev.soffa.foundation.context.Context;
 import dev.soffa.foundation.core.Operation;
-import dev.soffa.foundation.errors.TechnicalException;
+import dev.soffa.foundation.error.TechnicalException;
 import lombok.Getter;
 import lombok.SneakyThrows;
 import org.springframework.aop.framework.Advised;
@@ -29,8 +29,17 @@ public class OperationsMapping {
         return registry.isEmpty();
     }
 
-    public Optional<Operation<?,?>> lookup(String name) {
-        return Optional.ofNullable((Operation<?,?>)internal.get(name));
+    public Optional<Operation<?, ?>> lookup(String name) {
+        return Optional.ofNullable((Operation<?, ?>) internal.get(name));
+    }
+
+    @SuppressWarnings("unchecked")
+    public <I, O, T extends Operation<I, O>> T require(String name) {
+        return (T) lookup(name).orElseThrow(() -> new TechnicalException("Operation not found: " + name));
+    }
+
+    public <I, O, T extends Operation<I, O>> T require(Class<T> operationClass) {
+        return require(operationClass.getName());
     }
 
     @SneakyThrows

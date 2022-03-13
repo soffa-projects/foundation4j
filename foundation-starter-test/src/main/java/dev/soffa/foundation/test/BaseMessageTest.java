@@ -1,6 +1,6 @@
 package dev.soffa.foundation.test;
 
-import dev.soffa.foundation.messages.MessageHandler;
+import dev.soffa.foundation.message.MessageHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;

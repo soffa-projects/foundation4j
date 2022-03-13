@@ -2,7 +2,7 @@ package dev.soffa.foundation.data.jdbi;
 
 import dev.soffa.foundation.commons.ClassUtil;
 import dev.soffa.foundation.commons.Mappers;
-import dev.soffa.foundation.models.VO;
+import dev.soffa.foundation.model.VO;
 import org.jdbi.v3.core.argument.Argument;
 import org.jdbi.v3.core.argument.ArgumentFactory;
 import org.jdbi.v3.core.config.ConfigRegistry;

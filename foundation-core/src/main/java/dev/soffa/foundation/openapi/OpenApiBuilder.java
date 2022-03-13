@@ -4,6 +4,7 @@ import com.google.common.base.Preconditions;
 import dev.soffa.foundation.commons.CollectionUtil;
 import dev.soffa.foundation.commons.Logger;
 import dev.soffa.foundation.commons.TextUtil;
+import dev.soffa.foundation.resource.OpenApi;
 import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Info;

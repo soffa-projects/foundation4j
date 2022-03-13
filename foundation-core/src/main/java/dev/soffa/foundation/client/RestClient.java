@@ -7,10 +7,10 @@ import dev.soffa.foundation.commons.http.HttpClient;
 import dev.soffa.foundation.commons.http.HttpRequest;
 import dev.soffa.foundation.commons.http.HttpResponse;
 import dev.soffa.foundation.context.Context;
-import dev.soffa.foundation.errors.ForbiddenException;
-import dev.soffa.foundation.errors.FunctionalException;
-import dev.soffa.foundation.errors.TechnicalException;
-import dev.soffa.foundation.errors.UnauthorizedException;
+import dev.soffa.foundation.error.ForbiddenException;
+import dev.soffa.foundation.error.FunctionalException;
+import dev.soffa.foundation.error.TechnicalException;
+import dev.soffa.foundation.error.UnauthorizedException;
 import dev.soffa.foundation.openapi.ApiInfo;
 
 import java.lang.reflect.InvocationHandler;

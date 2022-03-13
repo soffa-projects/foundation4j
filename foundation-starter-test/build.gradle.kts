@@ -17,11 +17,14 @@ dependencies {
 
     @Suppress("GradlePackageUpdate")
     api("com.h2database:h2:2.1.210")
-    api("com.google.guava:guava:31.0.1-jre")
+    api("com.google.guava:guava:31.1-jre")
     @Suppress("GradlePackageUpdate")
     api("commons-io:commons-io:2.8.0")
-    api("org.awaitility:awaitility:4.1.1")
+    api("org.awaitility:awaitility:4.2.0")
     api("com.github.javafaker:javafaker:1.0.2")
 
     testImplementation("org.springframework.boot:spring-boot-starter-web:2.6.4")
+}
+repositories {
+    mavenCentral()
 }

@@ -3,8 +3,8 @@ package dev.soffa.foundation.spring.aop;
 import dev.soffa.foundation.commons.Logger;
 import dev.soffa.foundation.commons.TextUtil;
 import dev.soffa.foundation.context.Context;
-import dev.soffa.foundation.errors.UnauthorizedException;
-import dev.soffa.foundation.errors.ValidationException;
+import dev.soffa.foundation.error.UnauthorizedException;
+import dev.soffa.foundation.error.ValidationException;
 import dev.soffa.foundation.multitenancy.TenantHolder;
 import lombok.SneakyThrows;
 import org.aspectj.lang.JoinPoint;
@@ -29,7 +29,7 @@ public class SecurityAspect {
     private static final Throwable ERR_TENANT_REQUIRED = new ValidationException("A TenantId is required to access this resource.");
 
     @SneakyThrows
-    @Before("@within(dev.soffa.foundation.annotations.Authenticated) || @annotation(dev.soffa.foundation.annotations.Authenticated)")
+    @Before("@within(dev.soffa.foundation.annotation.Authenticated) || @annotation(dev.soffa.foundation.annotation.Authenticated)")
     public void checkAuthenticated(JoinPoint point) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         if (!auth.isAuthenticated() || auth instanceof AnonymousAuthenticationToken) {
@@ -39,7 +39,7 @@ public class SecurityAspect {
     }
 
     @SneakyThrows
-    @Before("@within(dev.soffa.foundation.annotations.ApplicationRequired) || @annotation(dev.soffa.foundation.annotations.ApplicationRequired)")
+    @Before("@within(dev.soffa.foundation.annotation.ApplicationRequired) || @annotation(dev.soffa.foundation.annotation.ApplicationRequired)")
     public void checkApplication(JoinPoint point) {
         Context context = getRequestContext().orElseThrow(() -> ERR_APP_REQUIRED);
         if (TextUtil.isEmpty(context.getApplicationName())) {
@@ -49,7 +49,7 @@ public class SecurityAspect {
     }
 
     @SneakyThrows
-    @Before("@within(dev.soffa.foundation.annotations.TenantRequired) || @annotation(dev.soffa.foundation.annotations.TenantRequired)")
+    @Before("@within(dev.soffa.foundation.annotation.TenantRequired) || @annotation(dev.soffa.foundation.annotation.TenantRequired)")
     public void checkTenant(JoinPoint point) {
         LOG.debug("Enforcing TenantRequired");
         if (TenantHolder.isEmpty() || TenantHolder.isDefault()) {

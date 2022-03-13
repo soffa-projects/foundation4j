@@ -1,7 +1,7 @@
 package dev.soffa.foundation.commons;
 
 import com.mgnt.utils.TextUtils;
-import dev.soffa.foundation.errors.ErrorUtil;
+import dev.soffa.foundation.error.ErrorUtil;
 import org.slf4j.LoggerFactory;
 
 import java.text.MessageFormat;

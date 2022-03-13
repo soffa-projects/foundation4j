@@ -1,8 +1,8 @@
 package dev.soffa.foundation.context;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import dev.soffa.foundation.models.Authentication;
-import dev.soffa.foundation.models.SideEffects;
+import dev.soffa.foundation.model.Authentication;
+import dev.soffa.foundation.model.SideEffects;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.SneakyThrows;

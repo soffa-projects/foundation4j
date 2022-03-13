@@ -1,9 +1,9 @@
 package dev.soffa.foundation.starter.test;
 
 import dev.soffa.foundation.mail.Mailer;
-import dev.soffa.foundation.mail.adapters.FakeEmailSender;
-import dev.soffa.foundation.mail.adapters.SendgridEmailSender;
-import dev.soffa.foundation.mail.adapters.SmtpEmailSender;
+import dev.soffa.foundation.mail.adapter.FakeEmailSender;
+import dev.soffa.foundation.mail.adapter.SendgridEmailSender;
+import dev.soffa.foundation.mail.adapter.SmtpEmailSender;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;

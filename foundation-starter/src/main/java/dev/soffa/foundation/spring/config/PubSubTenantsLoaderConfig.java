@@ -1,7 +1,7 @@
 package dev.soffa.foundation.spring.config;
 
 import dev.soffa.foundation.config.AppConfig;
-import dev.soffa.foundation.messages.pubsub.PubSubMessenger;
+import dev.soffa.foundation.message.pubsub.PubSubMessenger;
 import dev.soffa.foundation.multitenancy.PubSubTenantsLoader;
 import dev.soffa.foundation.multitenancy.TenantsLoader;
 import dev.soffa.foundation.security.TokenProvider;

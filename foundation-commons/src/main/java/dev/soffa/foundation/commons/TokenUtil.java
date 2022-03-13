@@ -11,7 +11,7 @@ import com.nimbusds.jose.jwk.JWK;
 import com.nimbusds.jose.jwk.RSAKey;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
-import dev.soffa.foundation.errors.TechnicalException;
+import dev.soffa.foundation.error.TechnicalException;
 import lombok.SneakyThrows;
 import org.json.JSONObject;
 

@@ -1,7 +1,7 @@
 package dev.soffa.foundation.data.spring;
 
 import com.google.common.base.Preconditions;
-import dev.soffa.foundation.annotations.Repository;
+import dev.soffa.foundation.annotation.Repository;
 import dev.soffa.foundation.commons.ClassUtil;
 import dev.soffa.foundation.commons.CollectionUtil;
 import dev.soffa.foundation.commons.Logger;

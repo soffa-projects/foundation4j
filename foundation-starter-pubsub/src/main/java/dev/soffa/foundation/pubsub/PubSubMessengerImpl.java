@@ -1,10 +1,10 @@
 package dev.soffa.foundation.pubsub;
 
 import dev.soffa.foundation.commons.EventBus;
-import dev.soffa.foundation.messages.Message;
-import dev.soffa.foundation.messages.MessageHandler;
-import dev.soffa.foundation.messages.pubsub.PubSubClient;
-import dev.soffa.foundation.messages.pubsub.PubSubMessenger;
+import dev.soffa.foundation.message.Message;
+import dev.soffa.foundation.message.MessageHandler;
+import dev.soffa.foundation.message.pubsub.PubSubClient;
+import dev.soffa.foundation.message.pubsub.PubSubMessenger;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
 import javax.validation.constraints.NotNull;

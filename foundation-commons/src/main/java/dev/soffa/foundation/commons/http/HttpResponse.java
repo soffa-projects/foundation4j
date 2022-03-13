@@ -4,7 +4,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.SneakyThrows;
 
-import static dev.soffa.foundation.models.ResponseStatus.*;
+import static dev.soffa.foundation.model.ResponseStatus.*;
 
 @Data
 @Builder

@@ -13,7 +13,7 @@ import com.amazonaws.services.s3.model.GeneratePresignedUrlRequest;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import dev.soffa.foundation.commons.DateUtil;
 import dev.soffa.foundation.commons.Logger;
-import dev.soffa.foundation.errors.TechnicalException;
+import dev.soffa.foundation.error.TechnicalException;
 import dev.soffa.foundation.storage.ObjectStorageClient;
 import dev.soffa.foundation.storage.model.ObjectStorageConfig;
 import lombok.SneakyThrows;

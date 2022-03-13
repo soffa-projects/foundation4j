@@ -2,7 +2,7 @@ package dev.soffa.foundation.context;
 
 import dev.soffa.foundation.commons.Logger;
 import dev.soffa.foundation.commons.http.HttpContextHolder;
-import dev.soffa.foundation.errors.FunctionalException;
+import dev.soffa.foundation.error.FunctionalException;
 
 import java.util.Optional;
 

@@ -3,7 +3,7 @@ package dev.soffa.foundation.data.config;
 import dev.soffa.foundation.commons.Logger;
 import dev.soffa.foundation.commons.TextUtil;
 import dev.soffa.foundation.commons.UrlInfo;
-import dev.soffa.foundation.errors.TechnicalException;
+import dev.soffa.foundation.error.TechnicalException;
 import lombok.Builder;
 import lombok.Data;
 import lombok.SneakyThrows;

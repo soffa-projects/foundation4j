@@ -4,5 +4,6 @@ plugins {
 }
 
 dependencies {
+    compileOnly("org.springframework:spring-web:5.3.16")
 }
 

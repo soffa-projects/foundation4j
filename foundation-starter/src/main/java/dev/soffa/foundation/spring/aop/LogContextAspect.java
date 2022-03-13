@@ -1,6 +1,6 @@
 package dev.soffa.foundation.spring.aop;
 
-import dev.soffa.foundation.annotations.LogContext;
+import dev.soffa.foundation.annotation.LogContext;
 import dev.soffa.foundation.commons.Logger;
 import dev.soffa.foundation.commons.TemplateHelper;
 import dev.soffa.foundation.commons.TextUtil;

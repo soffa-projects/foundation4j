@@ -88,6 +88,15 @@ public class JacksonMapper implements Mapper {
 
     @SneakyThrows
     @Override
+    public <T> T deserialize(InputStream source, Class<T> type) {
+        if (source == null) {
+            return null;
+        }
+        return mapper.readValue(source, type);
+    }
+
+    @SneakyThrows
+    @Override
     public String prettyPrint(Object data) {
         if (data == null) return null;
         return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(data);

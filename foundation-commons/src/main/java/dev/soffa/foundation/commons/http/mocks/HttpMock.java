@@ -6,8 +6,8 @@ import dev.soffa.foundation.commons.TextUtil;
 import dev.soffa.foundation.commons.http.HttpHeaders;
 import dev.soffa.foundation.commons.http.HttpResponse;
 import dev.soffa.foundation.commons.http.HttpResponseProvider;
-import dev.soffa.foundation.errors.TechnicalException;
-import dev.soffa.foundation.models.ResponseStatus;
+import dev.soffa.foundation.error.TechnicalException;
+import dev.soffa.foundation.model.ResponseStatus;
 import lombok.Data;
 
 import java.net.URL;

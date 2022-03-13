@@ -1,8 +1,8 @@
 package dev.soffa.foundation.spring.aop;
 
-import dev.soffa.foundation.errors.DatabaseException;
-import dev.soffa.foundation.errors.ErrorUtil;
-import dev.soffa.foundation.errors.ManagedException;
+import dev.soffa.foundation.error.DatabaseException;
+import dev.soffa.foundation.error.ErrorUtil;
+import dev.soffa.foundation.error.ManagedException;
 import dev.soffa.foundation.multitenancy.TenantHolder;
 import lombok.AllArgsConstructor;
 import org.aspectj.lang.ProceedingJoinPoint;

@@ -25,6 +25,8 @@ public interface Mapper {
 
     <T> T deserialize(byte[] data, Class<T> type);
 
+    <T> T deserialize(InputStream source, Class<T> type);
+
     String prettyPrint(Object data);
 
     @SneakyThrows

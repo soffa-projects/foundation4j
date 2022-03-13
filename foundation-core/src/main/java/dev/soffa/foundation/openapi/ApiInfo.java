@@ -1,7 +1,7 @@
 package dev.soffa.foundation.openapi;
 
 import dev.soffa.foundation.commons.TextUtil;
-import dev.soffa.foundation.errors.TechnicalException;
+import dev.soffa.foundation.error.TechnicalException;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

@@ -1,7 +1,7 @@
 package dev.soffa.foundation;
 
-import dev.soffa.foundation.errors.*;
-import dev.soffa.foundation.models.ResponseStatus;
+import dev.soffa.foundation.error.*;
+import dev.soffa.foundation.model.ResponseStatus;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;

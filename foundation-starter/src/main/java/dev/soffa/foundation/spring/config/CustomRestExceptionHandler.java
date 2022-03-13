@@ -2,8 +2,8 @@ package dev.soffa.foundation.spring.config;
 
 import dev.soffa.foundation.commons.Logger;
 import dev.soffa.foundation.context.ContextHolder;
-import dev.soffa.foundation.errors.ErrorUtil;
-import dev.soffa.foundation.errors.FunctionalException;
+import dev.soffa.foundation.error.ErrorUtil;
+import dev.soffa.foundation.error.FunctionalException;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.Ordered;

@@ -2,11 +2,11 @@ package dev.soffa.foundation.pubsub.nats;
 
 import dev.soffa.foundation.commons.Logger;
 import dev.soffa.foundation.commons.TextUtil;
-import dev.soffa.foundation.errors.TechnicalException;
-import dev.soffa.foundation.messages.Message;
-import dev.soffa.foundation.messages.MessageHandler;
-import dev.soffa.foundation.messages.pubsub.PubSubClient;
-import dev.soffa.foundation.messages.pubsub.PubSubClientConfig;
+import dev.soffa.foundation.error.TechnicalException;
+import dev.soffa.foundation.message.Message;
+import dev.soffa.foundation.message.MessageHandler;
+import dev.soffa.foundation.message.pubsub.PubSubClient;
+import dev.soffa.foundation.message.pubsub.PubSubClientConfig;
 import dev.soffa.foundation.pubsub.AbstractPubSubClient;
 import io.nats.client.*;
 import io.nats.client.api.AckPolicy;

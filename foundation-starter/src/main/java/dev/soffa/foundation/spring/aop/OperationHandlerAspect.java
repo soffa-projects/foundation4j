@@ -6,12 +6,12 @@ import dev.soffa.foundation.commons.Logger;
 import dev.soffa.foundation.commons.ValidationUtil;
 import dev.soffa.foundation.context.Context;
 import dev.soffa.foundation.context.ContextUtil;
-import dev.soffa.foundation.errors.ErrorUtil;
-import dev.soffa.foundation.errors.ManagedException;
-import dev.soffa.foundation.errors.TechnicalException;
-import dev.soffa.foundation.errors.UnauthorizedException;
-import dev.soffa.foundation.metrics.MetricsRegistry;
-import dev.soffa.foundation.models.Validatable;
+import dev.soffa.foundation.error.ErrorUtil;
+import dev.soffa.foundation.error.ManagedException;
+import dev.soffa.foundation.error.TechnicalException;
+import dev.soffa.foundation.error.UnauthorizedException;
+import dev.soffa.foundation.metric.MetricsRegistry;
+import dev.soffa.foundation.model.Validatable;
 import lombok.AllArgsConstructor;
 import lombok.SneakyThrows;
 import org.aspectj.lang.ProceedingJoinPoint;
@@ -25,7 +25,7 @@ import javax.validation.Valid;
 import java.lang.reflect.Method;
 import java.util.Map;
 
-import static dev.soffa.foundation.metrics.CoreMetrics.OPERATION_PREFIX;
+import static dev.soffa.foundation.metric.CoreMetrics.OPERATION_PREFIX;
 
 @Aspect
 @Component

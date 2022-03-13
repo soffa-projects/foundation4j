@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd"
+    logicalFilePath="{{ id }}">
+
+    {% for cs in change_sets %}
+        <changeSet id="{{ cs.key }}" author="{{ cs.value.author }}">
+            {% for c in changes %}
+                {% if c.op == "create_table" %}
+                    <createTable tableName="${prefix}{{ c.name }}">
+                        {% for col in c.columns %}
+                            {{ f0_column(col.val) }}
+                            {{ f1_column(col.val) }}
+                            <column name="{{ col.key }}" type="{{ col.val }}">
+                                <constraints primaryKey="true" primaryKeyName="${prefix}f_journal_pk"/>
+                            </column>
+                        {% endfor %}
+                    </createTable>
+                {% endif %}
+            {% endfor %}
+        </changeSet>
+    {% endfor %}
+
+</databaseChangeLog>

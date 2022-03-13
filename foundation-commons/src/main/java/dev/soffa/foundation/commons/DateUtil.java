@@ -2,7 +2,7 @@ package dev.soffa.foundation.commons;
 
 import com.joestelmach.natty.DateGroup;
 import com.joestelmach.natty.Parser;
-import dev.soffa.foundation.errors.TechnicalException;
+import dev.soffa.foundation.error.TechnicalException;
 import lombok.SneakyThrows;
 import org.joda.time.DateTime;
 

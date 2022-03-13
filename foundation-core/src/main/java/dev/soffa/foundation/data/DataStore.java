@@ -1,7 +1,7 @@
 package dev.soffa.foundation.data;
 
 
-import dev.soffa.foundation.models.TenantId;
+import dev.soffa.foundation.model.TenantId;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
 import java.util.List;

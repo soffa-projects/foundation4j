@@ -8,7 +8,7 @@ dependencies {
     api(project(":foundation-api"))
     api(project(":foundation-core"))
 
-    api("org.springframework.boot:spring-boot-starter-data-jpa") {
+    implementation("org.springframework.boot:spring-boot-starter-data-jpa") {
         exclude(group = "com.zaxxer")
         exclude(group = "com.github.ben-manes.caffeine")
     }
@@ -22,6 +22,7 @@ dependencies {
     implementation("com.zaxxer:HikariCP:4.0.3") {
         exclude(group = "com.github.ben-manes.caffeine")
     }
+    implementation("io.pebbletemplates:pebble:3.1.5")
     implementation("org.reflections:reflections:0.10.2")
     implementation("net.javacrumbs.shedlock:shedlock-provider-jdbc-template:4.33.0")
     implementation("net.javacrumbs.shedlock:shedlock-spring:4.33.0")

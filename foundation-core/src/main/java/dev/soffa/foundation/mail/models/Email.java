@@ -1,7 +1,7 @@
 package dev.soffa.foundation.mail.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import dev.soffa.foundation.models.EmailAddress;
+import dev.soffa.foundation.model.EmailAddress;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

@@ -1,27 +1,27 @@
 package ext.springboot;
 
 import dev.soffa.foundation.events.OnServiceStarted;
-import dev.soffa.foundation.messages.Message;
-import dev.soffa.foundation.messages.MessageFactory;
-import dev.soffa.foundation.messages.MessageHandler;
-import dev.soffa.foundation.messages.pubsub.PubSubConfig;
-import dev.soffa.foundation.messages.pubsub.PubSubMessenger;
-import dev.soffa.foundation.models.ServiceId;
+import dev.soffa.foundation.message.Message;
+import dev.soffa.foundation.message.MessageFactory;
+import dev.soffa.foundation.message.MessageHandler;
+import dev.soffa.foundation.message.pubsub.PubSubConfig;
+import dev.soffa.foundation.message.pubsub.PubSubMessenger;
+import dev.soffa.foundation.model.ServiceId;
 import dev.soffa.foundation.pubsub.PubSubMessengerFactory;
 import lombok.AllArgsConstructor;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.event.ContextRefreshedEvent;
 
 @Configuration
-@ConditionalOnProperty(name = "app.pubsub.enabled", havingValue = "true", matchIfMissing = true)
+@PropertySource("classpath:application-foundation-pubsub.properties")
 public class FoundationPubSubAutoConfiguration {
 
     @Bean

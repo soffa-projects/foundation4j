@@ -1,6 +1,6 @@
 package dev.soffa.foundation.commons;
 
-import dev.soffa.foundation.errors.ValidationException;
+import dev.soffa.foundation.error.ValidationException;
 
 import javax.validation.ConstraintViolation;
 import javax.validation.Validation;

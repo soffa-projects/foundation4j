@@ -1,11 +1,11 @@
 package dev.soffa.foundation.spring.aop;
 
-import dev.soffa.foundation.annotations.Publish;
+import dev.soffa.foundation.annotation.Publish;
 import dev.soffa.foundation.commons.Logger;
-import dev.soffa.foundation.messages.Message;
-import dev.soffa.foundation.messages.MessageFactory;
-import dev.soffa.foundation.messages.pubsub.PubSubClient;
-import dev.soffa.foundation.models.ResponseEntity;
+import dev.soffa.foundation.message.Message;
+import dev.soffa.foundation.message.MessageFactory;
+import dev.soffa.foundation.message.pubsub.PubSubClient;
+import dev.soffa.foundation.model.ResponseEntity;
 import lombok.SneakyThrows;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;

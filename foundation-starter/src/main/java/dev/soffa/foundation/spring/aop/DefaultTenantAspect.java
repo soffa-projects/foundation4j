@@ -1,6 +1,6 @@
 package dev.soffa.foundation.spring.aop;
 
-import dev.soffa.foundation.annotations.DefaultTenant;
+import dev.soffa.foundation.annotation.DefaultTenant;
 import dev.soffa.foundation.commons.Logger;
 import dev.soffa.foundation.multitenancy.TenantHolder;
 import lombok.AllArgsConstructor;

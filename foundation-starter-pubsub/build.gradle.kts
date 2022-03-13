@@ -15,7 +15,7 @@ dependencies {
     compileOnly("org.springframework.boot:spring-boot-autoconfigure")
     testImplementation(project(":foundation-starter"))
     testImplementation(project(":foundation-starter-test"))
-    testImplementation("berlin.yuna:nats-server-embedded:2.2.76")
+    testImplementation("berlin.yuna:nats-server-embedded:2.2.77")
 
 }
 repositories {

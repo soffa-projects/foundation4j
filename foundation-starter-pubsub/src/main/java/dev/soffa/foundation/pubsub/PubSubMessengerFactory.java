@@ -3,14 +3,14 @@ package dev.soffa.foundation.pubsub;
 
 import dev.soffa.foundation.commons.Logger;
 import dev.soffa.foundation.commons.TextUtil;
-import dev.soffa.foundation.errors.ConfigurationException;
-import dev.soffa.foundation.errors.NotImplementedException;
-import dev.soffa.foundation.errors.TodoException;
-import dev.soffa.foundation.messages.MessageHandler;
-import dev.soffa.foundation.messages.pubsub.PubSubClient;
-import dev.soffa.foundation.messages.pubsub.PubSubClientConfig;
-import dev.soffa.foundation.messages.pubsub.PubSubConfig;
-import dev.soffa.foundation.messages.pubsub.PubSubMessenger;
+import dev.soffa.foundation.error.ConfigurationException;
+import dev.soffa.foundation.error.NotImplementedException;
+import dev.soffa.foundation.error.TodoException;
+import dev.soffa.foundation.message.MessageHandler;
+import dev.soffa.foundation.message.pubsub.PubSubClient;
+import dev.soffa.foundation.message.pubsub.PubSubClientConfig;
+import dev.soffa.foundation.message.pubsub.PubSubConfig;
+import dev.soffa.foundation.message.pubsub.PubSubMessenger;
 import dev.soffa.foundation.pubsub.nats.NatsClient;
 import dev.soffa.foundation.pubsub.simple.SimplePubSubClient;
 

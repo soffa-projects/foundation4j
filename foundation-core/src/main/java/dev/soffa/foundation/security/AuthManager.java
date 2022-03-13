@@ -1,7 +1,7 @@
 package dev.soffa.foundation.security;
 
 import dev.soffa.foundation.context.Context;
-import dev.soffa.foundation.models.Authentication;
+import dev.soffa.foundation.model.Authentication;
 
 public interface AuthManager {
 

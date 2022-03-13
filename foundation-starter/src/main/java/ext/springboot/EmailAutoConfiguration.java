@@ -2,7 +2,7 @@ package ext.springboot;
 
 import dev.soffa.foundation.mail.EmailSender;
 import dev.soffa.foundation.mail.Mailer;
-import dev.soffa.foundation.mail.adapters.EmailSenderFactory;
+import dev.soffa.foundation.mail.adapter.EmailSenderFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;

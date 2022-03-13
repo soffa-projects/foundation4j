@@ -9,7 +9,7 @@ et le versioning du projet respect les règles  [Semantic Versioning](https://se
 ## [0.9.3] - 2022-03-13
 
 ### Added
-- Spring boot abstraction
+- Spring boot api subset
 
 ### Removed
 - Samples are now in a dedicated repository https://github.com/soffalabs/foundation4j-samples

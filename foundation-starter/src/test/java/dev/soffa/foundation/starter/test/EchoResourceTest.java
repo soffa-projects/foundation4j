@@ -2,8 +2,8 @@ package dev.soffa.foundation.starter.test;
 
 import dev.soffa.foundation.commons.Mappers;
 import dev.soffa.foundation.starter.test.app.EchoResource;
-import dev.soffa.foundation.starter.test.app.operations.Echo;
-import dev.soffa.foundation.starter.test.app.operations.EchoInput;
+import dev.soffa.foundation.starter.test.app.operation.Echo;
+import dev.soffa.foundation.starter.test.app.operation.EchoInput;
 import dev.soffa.foundation.test.spring.HttpExpect;
 import lombok.SneakyThrows;
 import org.checkerframework.com.google.common.collect.ImmutableMap;
@@ -13,13 +13,9 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
 
-import java.lang.reflect.Method;
-
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @SpringBootTest
 @ActiveProfiles("test")
@@ -43,16 +39,6 @@ public class EchoResourceTest {
         assertNotNull(resource);
         assertNotNull(echoUseCase);
 
-        assertTrue(resource.getClass().isAnnotationPresent(RestController.class));
-        assertTrue(resource.getClass().isAnnotationPresent(RequestMapping.class));
-
-        Method method = resource.getClass().getMethod("echo", EchoInput.class);
-        assertNotNull(method);
-        assertTrue(method.isAnnotationPresent(RequestMapping.class));
-        RequestMapping anno = method.getAnnotation(RequestMapping.class);
-
-        assertEquals(RequestMethod.POST, anno.method()[0]);
-        assertEquals("/v1/echo", anno.value()[0]);
 
         HttpExpect client = new HttpExpect(mockMvc);
         client.get("/v3/api-docs")
