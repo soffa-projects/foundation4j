@@ -5,7 +5,6 @@ import dev.soffa.foundation.data.DB;
 import dev.soffa.foundation.multitenancy.TenantsLoader;
 import org.jdbi.v3.core.Jdbi;
 import org.jdbi.v3.sqlobject.SqlObjectPlugin;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -27,7 +26,10 @@ public class DBConfiguration {
     @Bean
     public DB createDB(AppConfig appConfig, ApplicationContext context) {
         appConfig.configure();
-        return new DBImpl(context, appConfig);
+        DB db = new DBImpl(context, appConfig);
+        DynamicRepositoryBuilder builder = new DynamicRepositoryBuilder(context, appConfig.getPkg(), db);
+        builder.register();
+        return db;
     }
 
     @Bean
@@ -37,12 +39,10 @@ public class DBConfiguration {
     }
 
     @Bean
-    @ConditionalOnBean(DataSource.class)
     public Jdbi jdbi(DB datasource) {
         return Jdbi.create(new TransactionAwareDataSourceProxy((DataSource) datasource))
             //.installPlugin(new PostgresPlugin())
             .installPlugin(new SqlObjectPlugin());
     }
-
 
 }

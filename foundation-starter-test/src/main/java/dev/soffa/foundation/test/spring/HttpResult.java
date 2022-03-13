@@ -10,6 +10,7 @@ import lombok.SneakyThrows;
 import org.hamcrest.Matcher;
 import org.hamcrest.Matchers;
 import org.springframework.test.web.servlet.ResultActions;
+import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import java.util.function.Consumer;
@@ -36,6 +37,13 @@ public class HttpResult {
     @SneakyThrows
     public HttpResult isOK() {
         result.andExpect(MockMvcResultMatchers.status().isOk());
+        return this;
+    }
+
+
+    @SneakyThrows
+    public HttpResult print() {
+        result.andDo(MockMvcResultHandlers.print());
         return this;
     }
 

@@ -1,4 +1,4 @@
 #!/usr/bin/env sh
 
-gradle clean assemble publishToMavenLocal -x test
+gradle classes publishToMavenLocal -x test -x check -x javadoc
 sync

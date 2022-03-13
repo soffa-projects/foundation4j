@@ -17,13 +17,20 @@ import java.util.*;
 public class OperationsMapping {
 
     private final Set<Operation<?, ?>> registry;
-    // private final Set<NoInputOperation<?>> registry0;
     private final Map<String, Object> internal = new HashMap<>();
     private final Map<String, Class<?>> inputTypes = new HashMap<>();
 
     public OperationsMapping(Set<Operation<?, ?>> registry) {
         this.registry = registry;
         register(registry);
+    }
+
+    public boolean isEmpty() {
+        return registry.isEmpty();
+    }
+
+    public Optional<Operation<?,?>> lookup(String name) {
+        return Optional.ofNullable((Operation<?,?>)internal.get(name));
     }
 
     @SneakyThrows

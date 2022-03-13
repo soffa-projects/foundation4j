@@ -22,6 +22,7 @@ dependencies {
     implementation("com.zaxxer:HikariCP:4.0.3") {
         exclude(group = "com.github.ben-manes.caffeine")
     }
+    implementation("org.reflections:reflections:0.10.2")
     implementation("net.javacrumbs.shedlock:shedlock-provider-jdbc-template:4.33.0")
     implementation("net.javacrumbs.shedlock:shedlock-spring:4.33.0")
     api("org.hibernate.javax.persistence:hibernate-jpa-2.1-api:1.0.2.Final")
@@ -31,6 +32,9 @@ dependencies {
     implementation("org.liquibase:liquibase-core:4.8.0")
     implementation("org.jdbi:jdbi3-postgres:3.27.2")
     implementation("org.jdbi:jdbi3-sqlobject:3.27.2")
+
+    testImplementation(project(":foundation-starter"))
+    testImplementation(project(":foundation-starter-test"))
 }
 repositories {
     mavenCentral()

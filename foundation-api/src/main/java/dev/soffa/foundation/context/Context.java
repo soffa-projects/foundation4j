@@ -35,6 +35,7 @@ public class Context {
     @JsonIgnore
     private transient SideEffects sideEffects = new SideEffects();
 
+
     @JsonIgnore
     private transient Authentication authentication;
 
@@ -42,6 +43,10 @@ public class Context {
         this.traceId = UUID.randomUUID().toString();
         this.spanId = UUID.randomUUID().toString();
         this.sender = serviceName;
+    }
+
+    public void sideEffect(String event) {
+        sideEffects.of("service", serviceName).add(event);
     }
 
     public static Context create(String tenantId) {
@@ -105,6 +110,10 @@ public class Context {
     }
 
     public String getSender() {
+        return sender;
+    }
+
+    public String getServceName() {
         return sender;
     }
 

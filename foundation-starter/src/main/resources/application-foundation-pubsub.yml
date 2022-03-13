@@ -1,4 +1,4 @@
-app.pubsub:
-  enabled: true
-  clients.default:
-    addresses: ${PUBSUB_ADDRESSES}
+app.pubsub.enabled: ${PUBSUB_ENABLED:false}
+
+app.pubsub.clients.default:
+    addresses: ${PUBSUB_ADDRESSES:noop}

@@ -18,8 +18,6 @@ public class PendingJobRepositoryImpl extends SimpleEntityRepository<PendingJob>
     private static final Logger LOG = Logger.get(PendingJobRepository.class);
     private static final String OPERATION = "operation";
     private static final String SUBJECT = "subject";
-    private static final String FILTER_BY_OPERATION_AND_SUBJECT = "operation=:operation AND subject=:subject";
-    private static final String FILTER_BY_OPERATION = "operation=:operation";
     private static final int RETRIES_TRESHOLD = 10;
 
 
@@ -29,17 +27,17 @@ public class PendingJobRepositoryImpl extends SimpleEntityRepository<PendingJob>
 
     @Override
     public boolean isPending(String operation, String subject) {
-        return count(FILTER_BY_OPERATION_AND_SUBJECT, ImmutableMap.of(OPERATION, operation, SUBJECT, subject)) > 0;
+        return count(ImmutableMap.of(OPERATION, operation, SUBJECT, subject)) > 0;
     }
 
     @Override
     public void delete(String operation, String subject) {
-        delete(FILTER_BY_OPERATION_AND_SUBJECT, ImmutableMap.of(OPERATION, operation, SUBJECT, subject));
+        delete(ImmutableMap.of(OPERATION, operation, SUBJECT, subject));
     }
 
     @Override
     public boolean consume(String operation, String subject) {
-        PendingJob job = get(FILTER_BY_OPERATION_AND_SUBJECT, ImmutableMap.of(OPERATION, operation, SUBJECT, subject)).orElse(null);
+        PendingJob job = get(ImmutableMap.of(OPERATION, operation, SUBJECT, subject)).orElse(null);
         if (job == null) {
             return false;
         }
@@ -48,7 +46,7 @@ public class PendingJobRepositoryImpl extends SimpleEntityRepository<PendingJob>
 
     @Override
     public void consume(String operation, Function<PendingJob, Boolean> consumer) {
-        List<PendingJob> jobs = find(FILTER_BY_OPERATION, ImmutableMap.of(OPERATION, operation));
+        List<PendingJob> jobs = find(ImmutableMap.of(OPERATION, operation));
         if (jobs == null || jobs.isEmpty()) {
             return;
         }

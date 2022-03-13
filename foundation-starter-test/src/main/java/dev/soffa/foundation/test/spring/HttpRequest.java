@@ -1,7 +1,8 @@
 package dev.soffa.foundation.test.spring;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import dev.soffa.foundation.commons.Mappers;
 import dev.soffa.foundation.commons.http.HttpUtil;
+import dev.soffa.foundation.context.Context;
 import lombok.SneakyThrows;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -19,7 +20,7 @@ public class HttpRequest {
     private final String uri;
     private final MockMvc mvc;
     private final HttpHeaders headers = new HttpHeaders();
-    private final MediaType contentType = MediaType.APPLICATION_JSON;
+    private MediaType contentType = MediaType.APPLICATION_JSON;
     private String body;
 
     HttpRequest(MockMvc mvc, String method, String uri) {
@@ -40,18 +41,18 @@ public class HttpRequest {
 
     @SneakyThrows
     public HttpRequest withJson(Object any) {
-        body = new ObjectMapper().writeValueAsString(any);
+        body = Mappers.JSON.serialize(any);
+        this.contentType = MediaType.APPLICATION_JSON;
         return this;
     }
 
     public HttpRequest withTenant(String tenantId) {
-        return header("X-TenantId", tenantId);
+        return header(Context.TENANT_ID, tenantId);
     }
 
-
     public HttpRequest withTrace(String spanId, String traceId) {
-        header("X-SpanId", spanId);
-        header("X-TraceId", traceId);
+        header(Context.SPAN_ID, spanId);
+        header(Context.TRACE_ID, traceId);
         return this;
     }
 

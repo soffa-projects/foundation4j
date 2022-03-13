@@ -34,5 +34,7 @@ public final class CollectionUtil {
         return map == null || map.isEmpty();
     }
 
-
+    public static boolean isNotEmpty(Object... array) {
+        return array!=null && array.length>0;
+    }
 }

@@ -7,7 +7,7 @@ plugins {
 dependencies {
     api(project(":foundation-core"))
 
-    api("org.springframework.boot:spring-boot-starter-web") {
+    implementation("org.springframework.boot:spring-boot-starter-web") {
         exclude(module = "spring-boot-starter-tomcat")
     }
     runtimeOnly("org.springframework.boot:spring-boot-starter-undertow")
@@ -30,8 +30,10 @@ dependencies {
     implementation("org.springdoc:springdoc-openapi-security:1.6.6") {
         exclude(group = "io.github.classgraph")
     }
+    implementation("org.reflections:reflections:0.10.2")
     implementation("io.github.classgraph:classgraph:4.8.140")
     implementation("com.h2database:h2:2.1.210")
+    implementation("net.bytebuddy:byte-buddy:1.12.8")
     testImplementation(project(":foundation-starter-test"))
 }
 repositories {

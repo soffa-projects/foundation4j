@@ -7,6 +7,7 @@ import dev.soffa.foundation.messages.Message;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
 import javax.validation.constraints.NotNull;
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -19,7 +20,7 @@ public final class PubSubClientFactory {
 
     @SuppressWarnings("unchecked")
     public static <I, O, T extends Operation<I, O>> T of(@NotNull Class<T> operationClass, @NonNull String subjet, PubSubClient client) {
-        Class<?> returnType = ClassUtil.getClassFromGenericInterface(operationClass, Operation.class, 1);
+        Class<?> returnType = Objects.requireNonNull(ClassUtil.lookupGeneric(operationClass, Operation.class))[1];
         return (T) java.lang.reflect.Proxy.newProxyInstance(
             Thread.currentThread().getContextClassLoader(),
             new Class[]{operationClass},

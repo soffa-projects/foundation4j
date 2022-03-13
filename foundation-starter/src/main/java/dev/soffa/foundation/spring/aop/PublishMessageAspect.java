@@ -5,6 +5,7 @@ import dev.soffa.foundation.commons.Logger;
 import dev.soffa.foundation.messages.Message;
 import dev.soffa.foundation.messages.MessageFactory;
 import dev.soffa.foundation.messages.pubsub.PubSubClient;
+import dev.soffa.foundation.models.ResponseEntity;
 import lombok.SneakyThrows;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
@@ -33,7 +34,11 @@ public class PublishMessageAspect {
             try {
                 String event = publish.event();
                 String subject = publish.target();
-                Message msg = MessageFactory.create(event, result);
+                Object payload = result;
+                if (result instanceof ResponseEntity<?>) {
+                    payload = ((ResponseEntity<?>) result).getData();
+                }
+                Message msg = MessageFactory.create(event, payload);
                 if (msg.getContext() != null) {
                     msg.getContext().setAuthorization(null);
                 }

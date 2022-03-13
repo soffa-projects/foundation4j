@@ -1,6 +1,5 @@
 package dev.soffa.foundation.data;
 
-import com.google.common.collect.ImmutableMap;
 import com.zaxxer.hikari.HikariDataSource;
 import dev.soffa.foundation.commons.IdGenerator;
 import dev.soffa.foundation.commons.TextUtil;
@@ -11,6 +10,7 @@ import dev.soffa.foundation.data.jdbi.SerializableArgumentFactory;
 import dev.soffa.foundation.errors.DatabaseException;
 import dev.soffa.foundation.models.TenantId;
 import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.jdbi.v3.core.Handle;
 import org.jdbi.v3.core.Jdbi;
 import org.jdbi.v3.core.statement.Query;
@@ -22,7 +22,6 @@ import javax.sql.DataSource;
 import java.time.Instant;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.function.BiFunction;
 import java.util.stream.Collectors;
@@ -104,14 +103,13 @@ public class SimpleDataStore implements DataStore {
     }
 
     @Override
-    public <E> int delete(TenantId tenant, @NonNull Class<E> entityClass, @NonNull String where,
-                          Map<String, Object> binding) {
+    public <E> int delete(TenantId tenant, @NonNull Class<E> entityClass, @NonNull Criteria criteria) {
         return inTransaction(tenant, entityClass, (handle, info) -> {
             // EL
             return handle.createUpdate("DELETE FROM <table> WHERE <where>")
                 .define(TABLE, info.getTableName())
-                .define(WHERE, where)
-                .bindMap(binding)
+                .define(WHERE, criteria.getWhere())
+                .bindMap(criteria.getBinding())
                 .execute();
         });
     }
@@ -120,29 +118,25 @@ public class SimpleDataStore implements DataStore {
     public <E> List<E> findAll(TenantId tenant, Class<E> entityClass) {
         return withHandle(tenant, entityClass, (handle, info) -> {
             // EL
-            return buildQuery(handle, entityClass, "1=1", ImmutableMap.of())
+            return buildQuery(handle, entityClass, null)
                 .map(BeanMapper.of(info)).collect(Collectors.toList());
         });
     }
 
     @Override
-    public <E> List<E> find(TenantId tenant, Class<E> entityClass,
-                            String where,
-                            Map<String, Object> binding) {
+    public <E> List<E> find(TenantId tenant, Class<E> entityClass, Criteria criteria) {
         return withHandle(tenant, entityClass, (handle, info) -> {
             //EL
-            return buildQuery(handle, entityClass, where, binding)
+            return buildQuery(handle, entityClass, criteria)
                 .map(BeanMapper.of(info)).collect(Collectors.toList());
         });
     }
 
     @Override
-    public <E> Optional<E> get(TenantId tenant, Class<E> entityClass,
-                               String where,
-                               Map<String, Object> binding) {
+    public <E> Optional<E> get(TenantId tenant, Class<E> entityClass, Criteria criteria) {
         return withHandle(tenant, entityClass, (handle, info) -> {
             //EL
-            return buildQuery(handle, entityClass, where, binding)
+            return buildQuery(handle, entityClass, criteria)
                 .map(BeanMapper.of(info)).findFirst();
         });
     }
@@ -171,31 +165,32 @@ public class SimpleDataStore implements DataStore {
     }
 
     @Override
-    public <E> long count(TenantId tenant, @NonNull Class<E> entityClass,
-                          @NonNull String where,
-                          Map<String, Object> binding) {
+    public <E> long count(TenantId tenant, @NonNull Class<E> entityClass, @Nullable Criteria criteria) {
         return withHandle(tenant, entityClass, (handle, info) -> {
             // EL
-            return handle.createQuery("SELECT COUNT(*) from <table> WHERE <where>")
-                .define(TABLE, info.getTableName())
-                .define(WHERE, where)
-                .bindMap(binding)
+            return buildQuery(handle, entityClass, "SELECT COUNT(*)", criteria)
                 .mapTo(Long.class).first();
         });
     }
 
     // =================================================================================================================
 
-    private <E> Query buildQuery(Handle handle,
-                                 Class<E> entityClass,
-                                 String where,
-                                 Map<String, Object> binding) {
+    private <E> Query buildQuery(Handle handle, Class<E> entityClass, @Nullable Criteria criteria) {
+        return buildQuery(handle, entityClass, "SELECT *", criteria);
+    }
+
+    private <E> Query buildQuery(Handle handle, Class<E> entityClass, String baseQuery, @Nullable Criteria criteria) {
         EntityInfo<E> info = EntityInfo.get(entityClass, db.getTablesPrefix());
-        return handle.createQuery("SELECT * FROM <table> WHERE <where>")
-            .define(TABLE, info.getTableName())
-            .define(WHERE, where)
-            .defineList(BINDING, binding)
-            .bindMap(binding);
+        if (criteria == null) {
+            return handle.createQuery(baseQuery + " FROM <table>")
+                .define(TABLE, info.getTableName());
+        } else {
+            return handle.createQuery(baseQuery + " FROM <table> WHERE <where>")
+                .define(TABLE, info.getTableName())
+                .define(WHERE, criteria.getWhere())
+                .defineList(BINDING, criteria.getBinding())
+                .bindMap(criteria.getBinding());
+        }
     }
 
     private <T, E> T inTransaction(TenantId tenant,

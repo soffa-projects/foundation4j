@@ -1,0 +1,7 @@
+app.name: foundation-data
+app.db:
+  datasources:
+    default:
+      url: h2://mem/default
+      migration: application
+

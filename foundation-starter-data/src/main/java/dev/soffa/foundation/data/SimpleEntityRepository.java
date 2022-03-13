@@ -4,23 +4,30 @@ import dev.soffa.foundation.commons.TextUtil;
 import dev.soffa.foundation.models.TenantId;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 public class SimpleEntityRepository<E> implements EntityRepository<E> {
 
     private final DataStore ds;
     private final Class<E> entityClass;
+    private TenantId lockedTenant = TenantId.CONTEXT;
 
     public SimpleEntityRepository(DataStore ds, Class<E> entityClass) {
         this(ds, entityClass, null);
     }
 
     public SimpleEntityRepository(DataStore ds, Class<E> entityClass, String tableName) {
+        this(ds, entityClass, tableName, null);
+    }
+
+    public SimpleEntityRepository(DataStore ds, Class<E> entityClass, String tableName, String tenant) {
         this.ds = ds;
         this.entityClass = entityClass;
         if (TextUtil.isNotEmpty(tableName)) {
             EntityInfo.registerTable(entityClass, tableName);
+        }
+        if (TextUtil.isNotEmpty(tenant)) {
+            lockedTenant = TenantId.of(tenant);
         }
     }
 
@@ -33,29 +40,30 @@ public class SimpleEntityRepository<E> implements EntityRepository<E> {
     }
 
     @Override
+    public long count(Criteria criteria) {
+        return ds.count(getLockedTenant(), entityClass, criteria);
+    }
+
+    @Override
     public long count() {
         return ds.count(getLockedTenant(), entityClass);
     }
 
     @Override
-    public long count(String where, Map<String, Object> binding) {
-        return ds.count(getLockedTenant(), entityClass, where, binding);
-    }
-
-    @Override
     public List<E> findAll() {
-        return ds.findAll(getLockedTenant(), entityClass);
+        return find((Criteria) null);
     }
 
     @Override
-    public List<E> find(String where, Map<String, Object> binding) {
-        return ds.find(getLockedTenant(), entityClass, where, binding);
+    public List<E> find(Criteria criteria) {
+        return ds.find(getLockedTenant(), entityClass, criteria);
     }
 
     @Override
-    public Optional<E> get(String where, Map<String, Object> binding) {
-        return ds.get(getLockedTenant(), entityClass, where, binding);
+    public Optional<E> get(Criteria criteria) {
+        return ds.get(getLockedTenant(), entityClass, criteria);
     }
+
 
     @Override
     public Optional<E> findById(Object id) {
@@ -78,13 +86,13 @@ public class SimpleEntityRepository<E> implements EntityRepository<E> {
     }
 
     @Override
-    public int delete(String where, Map<String, Object> binding) {
-        return ds.delete(getLockedTenant(), entityClass, where, binding);
+    public int delete(Criteria criteria) {
+        return ds.delete(getLockedTenant(), entityClass, criteria);
     }
 
     protected TenantId getLockedTenant() {
-        return TenantId.INHERIT;
+        return lockedTenant;
     }
-
+    
 
 }

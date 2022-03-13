@@ -1,4 +1,4 @@
-spring.application.name: test2
+app.name: test2
 
 app.package: dev.soffa
 app.db.datasources:
@@ -9,5 +9,3 @@ app.db.datasources:
     url: h2://mem/__TENANT__
     migration: test
 
-spring.config.import:
-  - classpath:application-foundation.yml

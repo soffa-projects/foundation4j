@@ -4,6 +4,7 @@ import com.mgnt.utils.TextUtils;
 import dev.soffa.foundation.errors.ErrorUtil;
 import org.slf4j.LoggerFactory;
 
+import java.text.MessageFormat;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Supplier;
@@ -115,6 +116,9 @@ public class Logger {
     private String formatMessage(String message, Object... args) {
         if (TextUtil.isEmpty(tag)) {
             return TextUtil.format(message, args);
+        }
+        if (message.contains("{}") && !message.contains("%")) {
+            return "[" + tag + "] " + MessageFormat.format(message, args);
         }
         return "[" + tag + "] " + TextUtil.format(message, args);
     }

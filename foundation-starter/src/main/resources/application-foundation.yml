@@ -11,11 +11,23 @@ logging.level.app: ${LOG_LEVEL:INFO}
 logging.level.service: ${LOG_LEVEL:INFO}
 
 
-#
+spring.application.name: ${app.name:application}
+
+spring.profiles.group:
+  production: ${environments.production.include:default}
+  staging: ${environments.staging.include:default}
+  qa: ${environments.qa.include:default}
+  uat: ${environments.uat.include:default}
+  dev: ${environments.dev.include:default}
+  integration: ${environments.integration.include:default}
+  local: ${environments.local.include:default}
+
 
 spring.jackson:
   default-property-inclusion: non_empty
-  #property-naming-strategy: com.fasterxml.jackson.databind.PropertyNamingStrategy.SnakeCaseStrategy
+  property-naming-strategy: ${jackson.property-naming-strategy:LOWER_CAMEL_CASE}
+  #com.fasterxml.jackson.databind.PropertyNamingStrategy.SnakeCaseStrategy
+  #property-naming-strategy: com.fasterxml.jackson.databind.PropertyNamingStrategy.LowerCamelCaseStrategy
   #com.fasterxml.jackson.databind.PropertyNamingStrategy.LowerCamelCaseStrategy
   serialization:
     write-dates-as-timestamps: true

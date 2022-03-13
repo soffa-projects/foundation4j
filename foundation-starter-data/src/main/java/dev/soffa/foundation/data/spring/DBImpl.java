@@ -134,7 +134,7 @@ public final class DBImpl extends AbstractDataSource implements ApplicationListe
     private void register(String id, DataSourceConfig config, boolean migrate) {
         String sourceId = id.toLowerCase();
         if (registry.containsKey(sourceId)) {
-            LOG.warn("Datasource with id {} is already registered", id);
+            LOG.warn("Datasource with id %s is already registered", id);
             return;
         }
         String url = config.getUrl().replace(TENANT_PLACEHOLDER, id).replace(TENANT_PLACEHOLDER.toUpperCase(), id);
@@ -164,7 +164,7 @@ public final class DBImpl extends AbstractDataSource implements ApplicationListe
     @Override
     public DataSource determineTargetDataSource(TenantId tenant) {
         Object lookupKey;
-        if (tenant.equals(TenantId.INHERIT)) {
+        if (tenant.equals(TenantId.CONTEXT)) {
             lookupKey = determineCurrentLookupKey();
         } else {
             lookupKey = tenant.getValue();

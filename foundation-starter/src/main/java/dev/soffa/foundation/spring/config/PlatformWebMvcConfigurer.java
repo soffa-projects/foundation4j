@@ -21,7 +21,7 @@ class PlatformWebMvcConfigurer implements WebMvcConfigurer {
         registry.addViewController("/health").setViewName("forward:/actuator/health");
     }
 
-    /*
+/*
     @Override
     public void addReturnValueHandlers(List<HandlerMethodReturnValueHandler> handlers) {
         handlers.add(new ResponseEntityInterceptor());

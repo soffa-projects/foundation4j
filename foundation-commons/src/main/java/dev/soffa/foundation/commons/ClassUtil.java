@@ -16,10 +16,6 @@ import java.util.stream.Collectors;
 
 public class ClassUtil {
 
-    public static Class<?> getClassFromGenericInterface(Class<?> type, Type interfaceType) {
-        return getClassFromGenericInterface(type, interfaceType, 0);
-    }
-
     public static List<Field> getDeclaredFields(Class<?> type) {
         return Arrays.stream(type.getDeclaredFields()).filter(field -> {
             // EL
@@ -27,37 +23,43 @@ public class ClassUtil {
         }).collect(Collectors.toList());
     }
 
-    /*public static List<Type> lookupGenericInterfaces(Class<?> type) {
-        List<Type> interfaces = new ArrayList<>(Arrays.asList(type.getGenericInterfaces()));
+    @NonNull
+    public static Class<?>[] lookupGeneric(@NonNull Class<?> type, @NonNull Class<?> genericClass) {
+        List<Type> parents = new ArrayList<>();
         if (type.getSuperclass() != null) {
-            interfaces.addAll(lookupGenericInterfaces(type.getSuperclass()));
+            parents.addAll(Collections.singletonList(type.getSuperclass()));
         }
-        return interfaces;
-    }*/
+        parents.addAll(Arrays.asList(type.getInterfaces()));
 
-    public static Class<?> getClassFromGenericInterface(Class<?> type, Type interfaceType, int argumentIndex) {
+        if (parents.isEmpty() || parents.size() == 1 && type.getSuperclass() == Object.class) {
+            return null;
+        }
 
-        List<Type> parents = new ArrayList<>(Arrays.asList(type.getGenericInterfaces()));
-        parents.addAll(Collections.singletonList(type.getGenericSuperclass()));
-
-        for (Type gi : parents) {
-            if (!(gi instanceof ParameterizedType)) {
+        for (Type candidate : parents) {
+            if (candidate == null) {
                 continue;
             }
-            Type rawType = ((ParameterizedType) gi).getRawType();
-            if (TypeUtils.isAssignable(rawType, interfaceType)) {
-                ParameterizedType ptype = (ParameterizedType) gi;
-                Object arg = ptype.getActualTypeArguments()[argumentIndex];
-                if (arg instanceof Class) {
-                    return (Class<?>) arg;
-                }
-                if (arg instanceof ParameterizedType) {
-                    return (Class<?>) ((ParameterizedType) arg).getActualTypeArguments()[0];
+            if (candidate == genericClass) {
+                for (Type gi : type.getGenericInterfaces()) {
+                    if (TypeUtils.isAssignable(gi, genericClass)) {
+                        return Arrays.stream(((ParameterizedType) gi).getActualTypeArguments()).map(t -> {
+                            //EL
+                            return (Class<?>) t;
+                        }).toArray(Class<?>[]::new);
+                    }
                 }
             }
         }
-        return null;
+
+        for (Type parent : parents) {
+            Class<?>[] match = lookupGeneric((Class<?>) parent, genericClass);
+            if (match.length > 0) {
+                return match;
+            }
+        }
+        return new Class<?>[]{};
     }
+
 
     public static boolean isCollection(Class<?> type) {
         return Collection.class.isAssignableFrom(type) || type.isArray();

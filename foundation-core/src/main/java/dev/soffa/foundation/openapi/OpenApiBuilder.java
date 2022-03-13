@@ -43,7 +43,6 @@ public class OpenApiBuilder {
             api = new OpenAPI().openapi(version);
         }
         api.setComponents(components);
-
         return api;
     }
 

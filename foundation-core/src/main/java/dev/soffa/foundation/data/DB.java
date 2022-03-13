@@ -16,7 +16,7 @@ public interface DB {
     boolean tenantExists(String tenant);
 
     default DataSource determineTargetDataSource() {
-        return determineTargetDataSource(TenantId.INHERIT);
+        return determineTargetDataSource(TenantId.CONTEXT);
     }
 
     DataSource determineTargetDataSource(TenantId tenant);

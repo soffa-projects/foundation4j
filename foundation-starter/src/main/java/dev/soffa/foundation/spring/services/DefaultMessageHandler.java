@@ -12,6 +12,7 @@ import dev.soffa.foundation.messages.Message;
 import dev.soffa.foundation.messages.MessageFactory;
 import dev.soffa.foundation.messages.MessageHandler;
 import dev.soffa.foundation.metrics.MetricsRegistry;
+import dev.soffa.foundation.models.ResponseEntity;
 import dev.soffa.foundation.multitenancy.TenantHolder;
 import dev.soffa.foundation.security.PlatformAuthManager;
 import lombok.AllArgsConstructor;
@@ -94,6 +95,10 @@ public class DefaultMessageHandler implements MessageHandler {
                     Object result = ((Operation<Object, Object>) operation).handle(payload.get(), context);
                     if (result == null) {
                         return Optional.empty();
+                    }
+                    if (result instanceof ResponseEntity) {
+                        //TODO: handle status ?
+                        result = ((ResponseEntity<?>) result).getData();
                     }
                     return Optional.of(result);
                 }

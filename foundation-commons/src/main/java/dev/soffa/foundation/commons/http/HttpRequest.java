@@ -1,9 +1,9 @@
 package dev.soffa.foundation.commons.http;
 
 import dev.soffa.foundation.commons.TextUtil;
-import dev.soffa.foundation.http.HttpConstants;
 import lombok.Data;
 
+import javax.ws.rs.HttpMethod;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -53,23 +53,23 @@ public class HttpRequest {
     }
 
     public static HttpRequest get(String url) {
-        return new HttpRequest(HttpConstants.GET, url);
+        return new HttpRequest(HttpMethod.GET, url);
     }
 
     public static HttpRequest post(String url) {
-        return new HttpRequest(HttpConstants.POST, url);
+        return new HttpRequest(HttpMethod.POST, url);
     }
 
     public static HttpRequest patch(String url) {
-        return new HttpRequest(HttpConstants.PATCH, url);
+        return new HttpRequest(HttpMethod.PATCH, url);
     }
 
     public static HttpRequest put(String url) {
-        return new HttpRequest(HttpConstants.PUT, url);
+        return new HttpRequest(HttpMethod.PUT, url);
     }
 
     public static HttpRequest delete(String url) {
-        return new HttpRequest(HttpConstants.DELETE, url);
+        return new HttpRequest(HttpMethod.DELETE, url);
     }
 
 
