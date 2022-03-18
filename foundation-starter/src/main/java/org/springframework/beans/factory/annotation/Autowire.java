@@ -32,6 +32,7 @@ import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
  * @see Configurable
  * @see AutowireCapableBeanFactory
  */
+@SuppressWarnings("PMD")
 public enum Autowire {
 
 	/**

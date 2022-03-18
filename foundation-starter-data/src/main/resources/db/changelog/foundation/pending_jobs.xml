@@ -7,9 +7,9 @@
     logicalFilePath="foundations/sysjobs">
 
     <changeSet id="20220219_CreatePendingJobs" author="tg">
-        <createTable tableName="${table_prefix}f_pending_jobs">
+        <createTable tableName="${prefix}f_pending_jobs">
             <column name="id" type="varchar">
-                <constraints primaryKey="true" primaryKeyName="${table_prefix}f_pending_jobs_pk"/>
+                <constraints primaryKey="true" primaryKeyName="${prefix}f_pending_jobs_pk"/>
             </column>
             <column name="operation" type="varchar(60)">
                 <constraints nullable="false"/>
@@ -24,18 +24,18 @@
                 <constraints nullable="false"/>
             </column>
         </createTable>
-        <createIndex tableName="${table_prefix}f_pending_jobs" indexName="${table_prefix}f_pending_jobs__created__idx">
+        <createIndex tableName="${prefix}f_pending_jobs" indexName="${prefix}f_pending_jobs__created__idx">
             <column name="created"/>
         </createIndex>
-        <createIndex tableName="${table_prefix}f_pending_jobs" indexName="${table_prefix}f_pending_jobs__subject__idx">
+        <createIndex tableName="${prefix}f_pending_jobs" indexName="${prefix}f_pending_jobs__subject__idx">
             <column name="subject"/>
         </createIndex>
-        <createIndex tableName="${table_prefix}f_pending_jobs"
-                     indexName="${table_prefix}f_pending_jobs__operation__idx">
+        <createIndex tableName="${prefix}f_pending_jobs"
+                     indexName="${prefix}f_pending_jobs__operation__idx">
             <column name="operation"/>
         </createIndex>
-        <addUniqueConstraint tableName="${table_prefix}f_pending_jobs" columnNames="operation,subject"
-                             constraintName="${table_prefix}f_pending_jobs__uniq_01"/>
+        <addUniqueConstraint tableName="${prefix}f_pending_jobs" columnNames="operation,subject"
+                             constraintName="${prefix}f_pending_jobs__uniq_01"/>
     </changeSet>
 
 

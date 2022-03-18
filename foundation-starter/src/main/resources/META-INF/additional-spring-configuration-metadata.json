@@ -1,0 +1,120 @@
+{
+    "properties": [
+        {
+            "name": "app.name",
+            "type": "java.lang.String",
+            "description": "Nom de votre service. Assurez-vous que ce nom soit unique dans le contexte de votre annuaire de services."
+        },
+        {
+            "name": "app.openapi.info.title",
+            "type": "java.lang.String",
+            "description": "Titre du service tel qui apparaît dans la définition OpenAPI."
+        },
+        {
+            "name": "app.openapi.info.version",
+            "type": "java.lang.String",
+            "description": "Version de l'API."
+        },
+        {
+            "name": "app.openapi.info.description",
+            "type": "java.lang.String",
+            "description": "Document me."
+        },
+        {
+            "name": "app.openapi.contact.name",
+            "type": "java.lang.String",
+            "description": "Document me."
+        },
+        {
+            "name": "app.openapi.contact.url",
+            "type": "java.lang.String",
+            "description": "Document me."
+        },
+        {
+            "name": "app.openapi.contact.email",
+            "type": "java.lang.String",
+            "description": "Document me."
+        },
+        {
+            "name": "app.openapi.security.bearerAuth",
+            "type": "java.lang.Boolean",
+            "description": "Document me."
+        },
+        {
+            "name": "app.openapi.security.basicAuth",
+            "type": "java.lang.String",
+            "description": "Document me."
+        },
+        {
+            "name": "app.openapi.security.oauth2.url",
+            "type": "java.lang.String",
+            "description": "Document me."
+        },
+        {
+            "name": "app.openapi.security.oauth2.scopes",
+            "type": "java.lang.String",
+            "description": "Document me."
+        },
+        {
+            "name": "app.openapi.security.oauth2.authorizationCode",
+            "type": "java.lang.Boolean",
+            "description": "Document me."
+        },
+        {
+            "name": "app.openapi.parameters",
+            "type": "java.util.Map",
+            "description": "Document me."
+        },
+        {
+            "name": "app.redoc.enabled",
+            "type": "java.lang.Boolean",
+            "defaultValue": "true",
+            "description": "Document me."
+        },
+        {
+            "name": "app.swagger-ui.enabled",
+            "type": "java.lang.Boolean",
+            "defaultValue": "true",
+            "description": "Document me."
+        },
+        {
+            "name": "app.consul.enabled",
+            "type": "java.lang.Boolean",
+            "defaultValue": "false",
+            "description": "Document me."
+        },
+        {
+            "name": "app.openapi.enabled",
+            "type": "java.lang.Boolean",
+            "defaultValue": "true",
+            "description": "Document me."
+        },
+        {
+            "name": "app.openapi.access",
+            "type": "java.lang.String",
+            "defaultValue": "permitAll",
+            "description": "Document me."
+        },
+        {
+            "name": "app.health.root.enabled",
+            "type": "java.lang.Boolean",
+            "defaultValue": "false",
+            "description": "Document me."
+        }
+    ],
+    "hints": [
+        {
+            "name": "app.openapi.access",
+            "values": [
+                {
+                    "value": "permitAll",
+                    "description": "Document me."
+                },
+                {
+                    "value": "authenticated",
+                    "description": "Document me."
+                }
+            ]
+        }
+    ]
+}
