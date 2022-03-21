@@ -26,6 +26,7 @@ public class RedocController {
             "    <meta charset=\"utf-8\"/>\n" +
             "    <meta content=\"width=device-width, initial-scale=1\" name=\"viewport\">\n" +
             "    <link rel=\"stylesheet\" type=\"text/css\" href=\"%1$s/redoc.css\">\n\n" +
+            "    <link rel=\"shortcut icon\" href=\"%1$s/redoc.ico\">\n\n" +
             "    <link href=\"https://fonts.googleapis.com/css?family=Montserrat:300,400,700|Roboto:300,400,700\" rel=\"stylesheet\">\n" +
             "    <style>\n" +
             "        body {\n" +
