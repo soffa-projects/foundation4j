@@ -1,7 +1,5 @@
 package dev.soffa.foundation.commons;
 
-import com.jsoniter.JsonIterator;
-import com.jsoniter.output.JsonStream;
 import lombok.SneakyThrows;
 
 import java.nio.charset.StandardCharsets;
@@ -26,7 +24,7 @@ public final class ObjectUtil {
             Optional<?> opt = (Optional<?>) input;
             return opt.map(ObjectUtil::serialize).orElse(null);
         }
-        return JsonStream.serialize(input).getBytes(StandardCharsets.UTF_8);
+        return Mappers.JSON.serialize(input).getBytes(StandardCharsets.UTF_8);
     }
 
     @SneakyThrows
@@ -34,7 +32,7 @@ public final class ObjectUtil {
         if (input == null || input.length == 0) {
             return null;
         }
-        return JsonIterator.deserialize(input, type);
+        return Mappers.JSON.deserialize(input, type);
     }
 
     @SuppressWarnings("unchecked")

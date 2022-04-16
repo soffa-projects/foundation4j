@@ -22,7 +22,7 @@ public class HttpUtilTest {
         HttpResponse res = client.get("https://devbox.local");
         assertEquals(200, res.getStatus());
         assertEquals("text/plain", res.getContentType());
-        assertEquals("\"PONG\"", res.getBody()); // Because it's a JSON response
+        assertEquals("PONG", res.getBody()); // Because it's a JSON response
 
         res = client.get("https://www.github.com/hello");
         assertEquals(200, res.getStatus());

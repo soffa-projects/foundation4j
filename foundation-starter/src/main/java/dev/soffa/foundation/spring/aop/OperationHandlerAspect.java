@@ -10,45 +10,52 @@ import dev.soffa.foundation.error.ErrorUtil;
 import dev.soffa.foundation.error.ManagedException;
 import dev.soffa.foundation.error.TechnicalException;
 import dev.soffa.foundation.error.UnauthorizedException;
+import dev.soffa.foundation.extra.audit.AuditService;
 import dev.soffa.foundation.metric.MetricsRegistry;
 import dev.soffa.foundation.model.Validatable;
-import lombok.AllArgsConstructor;
 import lombok.SneakyThrows;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.reflect.MethodSignature;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.stereotype.Component;
 
 import javax.validation.Valid;
 import java.lang.reflect.Method;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicReference;
 
 import static dev.soffa.foundation.metric.CoreMetrics.OPERATION_PREFIX;
 
 @Aspect
 @Component
-@AllArgsConstructor
 public class OperationHandlerAspect {
 
     private final MetricsRegistry metricsRegistry;
+    private final AuditService auditService;
+
+    public OperationHandlerAspect(MetricsRegistry metricsRegistry, @Autowired(required = false) AuditService auditService) {
+        this.metricsRegistry = metricsRegistry;
+        this.auditService = auditService;
+    }
 
     @SneakyThrows
     @Around("execution(* dev.soffa.foundation.core.Operation.*(..))")
     public Object handleOperation(ProceedingJoinPoint jp) {
         Object[] args = jp.getArgs();
 
-        Object input;
+        AtomicReference<Object> input = new AtomicReference<>(null);
         Context context;
         boolean hasInput = args.length == 2;
 
         if (hasInput) {
-            input = args[0];
+            input.set(args[0]);
             context = (Context) args[1];
-            if (input != null) {
-                if (input instanceof Validatable) {
-                    ((Validatable) input).validate();
+            if (input.get() != null) {
+                if (input.get() instanceof Validatable) {
+                    ((Validatable) input.get()).validate();
                 } else {
                     //TODO: use caching here
                     MethodSignature signature = (MethodSignature) jp.getSignature();
@@ -68,22 +75,36 @@ public class OperationHandlerAspect {
         return Logger.withContext(ImmutableMap.of("operation", operationId), () -> {
             //noinspection Convert2Lambda
             return metricsRegistry.track(OPERATION_PREFIX + operationId, tags, new Supplier<Object>() {
-                @SneakyThrows
                 @Override
                 public Object get() {
-                    try {
-                        return jp.proceed(args);
-                    } catch (AuthenticationCredentialsNotFoundException e) {
-                        throw new UnauthorizedException(e.getMessage(), ErrorUtil.getStacktrace(e));
-                    } catch (Exception e) {
-                        if (e instanceof ManagedException) {
-                            throw e;
-                        }
-                        throw new TechnicalException(e);
-                    }
+                    return doProceed(jp, operationId, input.get(), args, context);
                 }
             });
         });
+    }
+
+    @SneakyThrows
+    private Object doProceed(ProceedingJoinPoint jp, String operationId, Object input, Object[] args, Context context) {
+        try {
+            Object result = jp.proceed(args);
+            if (auditService != null) {
+                auditService.log(operationId, input, result, context);
+            }
+            return result;
+        } catch (AuthenticationCredentialsNotFoundException e) {
+            if (auditService != null) {
+                auditService.log(operationId, input, null, e, context);
+            }
+            throw new UnauthorizedException(e.getMessage(), ErrorUtil.getStacktrace(e));
+        } catch (Exception e) {
+            if (auditService != null) {
+                auditService.log(operationId, input, null, e, context);
+            }
+            if (e instanceof ManagedException) {
+                throw e;
+            }
+            throw new TechnicalException(e);
+        }
     }
 
 

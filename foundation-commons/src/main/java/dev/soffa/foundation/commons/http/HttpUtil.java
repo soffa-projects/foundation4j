@@ -152,7 +152,7 @@ public final class HttpUtil {
             .protocol(Protocol.HTTP_1_1)
             .code(res.getStatus())
             .message("Mocked response")
-            .body(ResponseBody.create(Mappers.JSON.serialize(res.getBody()), contentType))
+            .body(ResponseBody.create(res.getBody(), contentType))
             .build();
     }
 

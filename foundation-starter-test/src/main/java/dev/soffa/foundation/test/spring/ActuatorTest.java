@@ -21,4 +21,6 @@ public class ActuatorTest extends ApplicationContextTest {
         http.get("/actuator/health").expect().isOK().json("status", "UP");
     }
 
+
+
 }

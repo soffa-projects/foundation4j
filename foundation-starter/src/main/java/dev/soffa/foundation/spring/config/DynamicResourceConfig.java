@@ -1,6 +1,7 @@
 package dev.soffa.foundation.spring.config;
 
 import dev.soffa.foundation.commons.CollectionUtil;
+import dev.soffa.foundation.commons.JavaUtil;
 import dev.soffa.foundation.commons.Logger;
 import dev.soffa.foundation.config.AppConfig;
 import dev.soffa.foundation.config.OperationsMapping;
@@ -20,6 +21,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.lang.invoke.MethodHandles;
+import java.lang.invoke.MethodType;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Proxy;
 import java.util.HashSet;
@@ -67,22 +69,37 @@ public class DynamicResourceConfig implements ApplicationContextAware {
 
         LOG.info("Found %d resources", resources.size());
 
-
         Dispatcher dispatcher = new OperationDispatcher(operationsMapping);
 
         for (Class<?> clazz : resources) {
             String className = clazz.getName() + "Controller";
             if (!LOADED.contains(className)) {
                 LOADED.add(className);
+                MethodHandles.Lookup tmpInstance = null;
+                if (JavaUtil.isJava8()) {
+                    Constructor<MethodHandles.Lookup> constructor = MethodHandles.Lookup.class.getDeclaredConstructor(Class.class, int.class);
+                    constructor.setAccessible(true);
+                    tmpInstance = constructor.newInstance(clazz, MethodHandles.Lookup.PRIVATE);
+                }
 
-                Constructor<MethodHandles.Lookup> constructor = MethodHandles.Lookup.class.getDeclaredConstructor(Class.class, int.class);
-                constructor.setAccessible(true);
-                MethodHandles.Lookup instance = constructor.newInstance(clazz, MethodHandles.Lookup.PRIVATE);
+                final MethodHandles.Lookup instance = tmpInstance;
 
                 Object controller = Proxy.newProxyInstance(
-                    ClassLoader.getSystemClassLoader(),
+                    Thread.currentThread().getContextClassLoader(), // here is the trick
                     new Class[]{clazz}, (proxy, method, args) -> {
                         if (method.isDefault()) {
+
+                            if (instance == null) {
+                                return MethodHandles.lookup()
+                                    .findSpecial(
+                                        clazz,
+                                        method.getName(),
+                                        MethodType.methodType(method.getReturnType(), method.getParameterTypes()),
+                                        clazz)
+                                    .bindTo(proxy)
+                                    .invokeWithArguments(args);
+                            }
+
                             return instance.unreflectSpecial(method, clazz).
                                 bindTo(proxy).
                                 invokeWithArguments(args);

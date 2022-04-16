@@ -12,7 +12,7 @@ dependencies {
     }
     runtimeOnly("org.springframework.boot:spring-boot-starter-undertow")
     implementation("org.apache.commons:commons-email:1.5")
-    implementation("com.sendgrid:sendgrid-java:4.8.3")
+    implementation("com.sendgrid:sendgrid-java:4.9.1")
     implementation("org.springframework.cloud:spring-cloud-starter-consul-discovery")
     implementation("org.springframework.boot:spring-boot-starter-actuator")
     implementation("org.springframework.boot:spring-boot-starter-validation")
@@ -23,7 +23,7 @@ dependencies {
     implementation("net.logstash.logback:logstash-logback-encoder:7.0.1")
     implementation("org.springframework.cloud:spring-cloud-starter-vault-config")
     implementation("io.micrometer:micrometer-registry-prometheus")
-    implementation("org.springdoc:springdoc-openapi-ui:1.6.6") {
+    implementation("org.springdoc:springdoc-openapi-ui:1.6.7") {
         exclude(group = "io.github.classgraph")
     }
     implementation("org.springdoc:springdoc-openapi-kotlin:1.6.6")
@@ -33,7 +33,7 @@ dependencies {
     implementation("org.reflections:reflections:0.10.2")
     implementation("io.github.classgraph:classgraph:4.8.140")
     implementation("com.h2database:h2:2.1.210")
-    implementation("net.bytebuddy:byte-buddy:1.12.8")
+    // implementation("net.bytebuddy:byte-buddy:1.12.8")
     testImplementation(project(":foundation-starter-test"))
 }
 repositories {

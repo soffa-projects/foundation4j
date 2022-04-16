@@ -27,12 +27,12 @@ dependencies {
     implementation("net.javacrumbs.shedlock:shedlock-provider-jdbc-template:4.33.0")
     implementation("net.javacrumbs.shedlock:shedlock-spring:4.33.0")
     api("org.hibernate.javax.persistence:hibernate-jpa-2.1-api:1.0.2.Final")
-    implementation("org.jdbi:jdbi3-core:3.27.2") {
+    implementation("org.jdbi:jdbi3-core:3.28.0") {
         exclude(group = "com.github.ben-manes.caffeine")
     }
-    implementation("org.liquibase:liquibase-core:4.8.0")
-    implementation("org.jdbi:jdbi3-postgres:3.27.2")
-    implementation("org.jdbi:jdbi3-sqlobject:3.27.2")
+    implementation("org.liquibase:liquibase-core:4.9.1")
+    implementation("org.jdbi:jdbi3-postgres:3.28.0")
+    implementation("org.jdbi:jdbi3-sqlobject:3.28.0")
 
     testImplementation(project(":foundation-starter"))
     testImplementation(project(":foundation-starter-test"))

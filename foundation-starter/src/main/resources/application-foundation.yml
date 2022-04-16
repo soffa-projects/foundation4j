@@ -109,12 +109,14 @@ spring.config.import:
 ---
 spring.config.activate.on-profile: test
 
-management:
-  health:
-    vault:
-      enabled:: false
+management.health.vault.enabled: false
 logging.level.dev.soffa: DEBUG
 logging.level.foundation: DEBUG
 management.endpoint.health.show-components: always
 management.endpoint.health.show-details: always
 
+
+---
+spring.config.activate.on-profile: production,prd,prod
+spring.config.import:
+  - classpath:application-json-logs.yml

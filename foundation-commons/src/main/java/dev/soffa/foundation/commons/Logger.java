@@ -7,9 +7,12 @@ import org.slf4j.LoggerFactory;
 import java.text.MessageFormat;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
-public class Logger {
+@SuppressWarnings("PMD.MoreThanOneLogger")
+public final class Logger {
 
     static {
         Logger.setRelevantPackage("dev.soffa");
@@ -17,24 +20,38 @@ public class Logger {
 
     private final org.slf4j.Logger log;
     private String tag;
+    private static Logger appLogger = Logger.get("dev.soffa");
 
-    public Logger(org.slf4j.Logger logger) {
+    private Logger(org.slf4j.Logger logger) {
         this.log = logger;
     }
 
-    public Logger(org.slf4j.Logger logger, String tag) {
+    private Logger(org.slf4j.Logger logger, String tag) {
         this(logger);
         this.tag = tag;
     }
 
+    public static void withContext(Map<String, String> context, Consumer<Logger> consumer) {
+        withContext(context, logger -> {
+            consumer.accept(appLogger);
+            return null;
+        });
+    }
+
     public static void withContext(Map<String, String> context, Runnable runnable) {
-        withContext(context, () -> {
+        withContext(context, logger -> {
             runnable.run();
             return null;
         });
     }
 
     public static <T> T withContext(Map<String, String> context, Supplier<T> supplier) {
+        return withContext(context, logger -> {
+            return supplier.get();
+        });
+    }
+
+    public static <T> T withContext(Map<String, String> context, Function<Logger, T> fn) {
         Map<String, String> current = org.slf4j.MDC.getCopyOfContextMap();
         if (current == null) {
             current = new HashMap<>();
@@ -43,7 +60,7 @@ public class Logger {
         try {
             current.putAll(context);
             setContext(current);
-            return supplier.get();
+            return fn.apply(appLogger);
         } finally {
             setContext(backup);
         }
@@ -70,6 +87,7 @@ public class Logger {
             TextUtils.setRelevantPackage(null);
         } else {
             TextUtils.setRelevantPackage(pkg);
+            appLogger = get(pkg);
         }
     }
 
