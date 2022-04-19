@@ -7,10 +7,7 @@ import dev.soffa.foundation.commons.TextUtil;
 import dev.soffa.foundation.config.AppConfig;
 import dev.soffa.foundation.data.*;
 import dev.soffa.foundation.data.config.DataSourceProperties;
-import dev.soffa.foundation.error.ConfigurationException;
-import dev.soffa.foundation.error.InvalidTenantException;
-import dev.soffa.foundation.error.NotImplementedException;
-import dev.soffa.foundation.error.TechnicalException;
+import dev.soffa.foundation.error.*;
 import dev.soffa.foundation.events.DatabaseReadyEvent;
 import dev.soffa.foundation.model.TenantId;
 import dev.soffa.foundation.multitenancy.TenantHolder;
@@ -144,6 +141,18 @@ public final class DBImpl extends AbstractDataSource implements ApplicationListe
             DataSource ds = DBHelper.createDataSource(DataSourceProperties.create(appConfig.getName(), id, url), config);
             DatasourceInfo di = new DatasourceInfo(id, config, ds);
             // di.configureTx(entityManagerFactoryBuilder, appConfig.getPkg());
+
+            // Ping the database to check if it is alive
+            Jdbi jdbi = Jdbi.create(ds);
+            try {
+                jdbi.withHandle(handle -> {
+                    // EL
+                    return handle.createQuery("SELECT 1").mapTo(Integer.class).findFirst();
+                });
+            }catch (Exception e) {
+                throw new DatabaseException("Error while connecting to database: " + di.getName(), e);
+            }
+
             registry.put(sourceId, di);
             if (migrate) {
                 applyMigrations(id);

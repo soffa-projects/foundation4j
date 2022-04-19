@@ -10,13 +10,11 @@ import dev.soffa.foundation.error.ConfigurationException;
 import dev.soffa.foundation.error.ErrorUtil;
 import dev.soffa.foundation.metric.MetricsRegistry;
 import dev.soffa.foundation.openapi.OpenApiBuilder;
-import dev.soffa.foundation.security.AuthManager;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.swagger.v3.oas.models.OpenAPI;
 import org.springdoc.core.SpringDocUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -42,12 +40,6 @@ public class PlatformBeansFactory {
     @Bean
     public OperationsMapping createOperationsMapping(Set<Operation<?, ?>> operations) {
         return new OperationsMapping(operations);
-    }
-
-    @Bean
-    @ConditionalOnMissingBean(AuthManager.class)
-    public AuthManager createDefaultAuthManager() {
-        return new NoopAuthManager();
     }
 
     @Bean

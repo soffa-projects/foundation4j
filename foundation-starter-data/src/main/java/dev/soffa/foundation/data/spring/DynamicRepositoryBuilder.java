@@ -42,6 +42,7 @@ class DynamicRepositoryBuilder {
     @SuppressWarnings("PMD.CloseResource")
     void register() {
         if (db == null) {
+            LOG.warn("No database specified, skipping repository registration");
             return;
         }
         Reflections reflections = new Reflections(basePackage);
@@ -52,6 +53,7 @@ class DynamicRepositoryBuilder {
         );
 
         if (CollectionUtil.isEmpty(resources)) {
+            LOG.info("No annotated @Repository found, skipping registration");
             return;
         }
 
@@ -60,11 +62,14 @@ class DynamicRepositoryBuilder {
 
         SimpleDataStore sds = new SimpleDataStore(db);
         for (Class<?> resourceClass : resources) {
+
+            LOG.debug("Registering repository: %s",  resourceClass.getName());
+
             Repository res = resourceClass.getAnnotation(Repository.class);
             String collection = res.collection();
             String tenant = res.fixedTenant();
             Class<?>[] parameterizedTypes = ClassUtil.lookupGeneric(resourceClass, EntityRepository.class);
-            Preconditions.checkArgument(parameterizedTypes!=null && parameterizedTypes.length == 1, "Entity class not found for repository %s", resourceClass);
+            Preconditions.checkArgument(parameterizedTypes != null && parameterizedTypes.length == 1, "Entity class not found for repository %s", resourceClass);
             SimpleEntityRepository<?> repo = new SimpleEntityRepository<>(sds, parameterizedTypes[0], collection, tenant);
 
             AtomicReference<MethodHandles.Lookup> instance = new AtomicReference<>(null);

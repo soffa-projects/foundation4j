@@ -122,13 +122,15 @@ public final class Logger {
     }
 
     public void trace(String message, Object... args) {
-        if (log.isDebugEnabled()) {
+        if (log.isTraceEnabled()) {
             log.trace(formatMessage(message, args));
         }
     }
 
     public void info(String message, Object... args) {
-        log.info(formatMessage(message, args));
+        if (log.isInfoEnabled()) {
+            log.info(formatMessage(message, args));
+        }
     }
 
     private String formatMessage(String message, Object... args) {

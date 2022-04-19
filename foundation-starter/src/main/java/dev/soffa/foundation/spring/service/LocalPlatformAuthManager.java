@@ -9,34 +9,44 @@ import dev.soffa.foundation.model.Authentication;
 import dev.soffa.foundation.security.AuthManager;
 import dev.soffa.foundation.security.PlatformAuthManager;
 import dev.soffa.foundation.security.TokenProvider;
+import dev.soffa.foundation.spring.config.NoopAuthManager;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
-import java.util.Base64;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Component
 public class LocalPlatformAuthManager implements PlatformAuthManager {
 
     private static final Logger LOG = Logger.get(PlatformAuthManager.class);
     private final TokenProvider tokens;
-    private final AuthManager authManger;
+    //private final AuthManager authManger;
 
-    public LocalPlatformAuthManager(@Autowired AuthManager authManger, @Autowired(required = false) TokenProvider tokens) {
+    private final ApplicationContext context;
+
+    public LocalPlatformAuthManager(ApplicationContext context, @Autowired(required = false) TokenProvider tokens) {
         this.tokens = tokens;
-        this.authManger = authManger;
+        this.context = context;
+        // this.authManger = authManger;
+    }
+
+    private AuthManager getAuthManager() {
+        String[] beans = context.getBeanNamesForType(AuthManager.class);
+        if (beans.length == 0) {
+            return new NoopAuthManager();
+        }
+        return context.getBean(AuthManager.class); // Cache this;
     }
 
     private Authentication authenticate(Context context, String token) {
-        Authentication auth = authManger.authenticate(context, token);
+        Authentication auth = getAuthManager().authenticate(context, token);
         if (auth != null) {
-            LOG.info("Authentication provided by local %s", authManger.getClass().getName());
+            LOG.info("Authentication provided by local %s", getAuthManager().getClass().getName());
             return auth;
         }
         if (tokens == null) {
@@ -48,7 +58,7 @@ public class LocalPlatformAuthManager implements PlatformAuthManager {
     }
 
     private Authentication authenticate(Context context, String username, String password) {
-        return authManger.authenticate(context, username, password);
+        return getAuthManager().authenticate(context, username, password);
     }
 
     @Override
