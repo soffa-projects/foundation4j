@@ -21,7 +21,7 @@ dependencies {
     api("com.google.code.findbugs:jsr305:3.0.2")
     api("org.hamcrest:hamcrest-core:2.2")
     compileOnly("com.google.code.gson:gson:2.9.0")
-    compileOnly("com.intuit.karate:karate-junit5:1.2.0.RC4")
+    compileOnly("com.intuit.karate:karate-junit5:1.2.0.RC6")
 
 }
 repositories {

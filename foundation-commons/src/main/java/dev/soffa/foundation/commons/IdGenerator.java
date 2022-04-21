@@ -1,11 +1,13 @@
 package dev.soffa.foundation.commons;
 
-import com.aventrix.jnanoid.jnanoid.NanoIdUtils;
-
-import java.util.UUID;
+import java.security.SecureRandom;
+import java.util.Base64;
 
 @SuppressWarnings("PMD.ClassNamingConventions")
 public final class IdGenerator {
+
+    private static final Base64.Encoder ENCODER = Base64.getUrlEncoder().withoutPadding();
+    private static final SecureRandom RANDOM = new SecureRandom();
 
     private IdGenerator() {
     }
@@ -15,15 +17,9 @@ public final class IdGenerator {
     }
 
     public static String generate(String... prefix) {
-        return TextUtil.prefix(UUID.randomUUID().toString(), prefix);
+        byte[] buffer = new byte[20];
+        RANDOM.nextBytes(buffer);
+        return TextUtil.prefix(ENCODER.encodeToString(buffer), prefix);
     }
-    public static String secureRandomId() {
-        return secureRandomId("");
-    }
-
-    public static String secureRandomId(String prefix) {
-        return TextUtil.prefix(NanoIdUtils.randomNanoId(), prefix);
-    }
-
 
 }
