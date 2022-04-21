@@ -26,12 +26,12 @@ dependencies {
     implementation("org.springdoc:springdoc-openapi-ui:1.6.7") {
         exclude(group = "io.github.classgraph")
     }
-    implementation("org.springdoc:springdoc-openapi-kotlin:1.6.6")
-    implementation("org.springdoc:springdoc-openapi-security:1.6.6") {
+    implementation("org.springdoc:springdoc-openapi-kotlin:1.6.7")
+    implementation("org.springdoc:springdoc-openapi-security:1.6.7") {
         exclude(group = "io.github.classgraph")
     }
     implementation("org.reflections:reflections:0.10.2")
-    implementation("io.github.classgraph:classgraph:4.8.140")
+    implementation("io.github.classgraph:classgraph:4.8.143")
     implementation("com.h2database:h2:2.1.210")
     // implementation("net.bytebuddy:byte-buddy:1.12.8")
     testImplementation(project(":foundation-starter-test"))
