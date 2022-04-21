@@ -42,7 +42,7 @@ public final class DBHelper {
         hc.setUsername(config.getUsername());
         hc.setPassword(config.getPassword());
         hc.setJdbcUrl(config.getUrl());
-        hc.setPoolName(IdGenerator.shortUUID(config.getName() + "_"));
+        hc.setPoolName(IdGenerator.generate(config.getName() + "_"));
         hc.setConnectionTestQuery("select 1");
 
         Properties props = new Properties(config.getProperties());

@@ -38,7 +38,7 @@ public class Message implements Serializable {
     }
 
     public Message(String id, String operation, Object payload, String payloadType, Context context) {
-        this.id = TextUtil.isEmpty(id) ? IdGenerator.shortUUID("msg_") : id;
+        this.id = TextUtil.isEmpty(id) ? IdGenerator.generate("msg_") : id;
         this.operation = operation;
         this.payloadType = payloadType;
         if (context != null) {

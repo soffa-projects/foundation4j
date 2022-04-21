@@ -1,5 +1,6 @@
 package dev.soffa.foundation.commons;
 
+import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.RandomUtils;
 
 public final class RandomUtil {
@@ -8,7 +9,7 @@ public final class RandomUtil {
     }
 
     public static String nextString() {
-        return IdGenerator.shortUUID();
+        return RandomStringUtils.random(32, true, true);
     }
 
     public static int nextInt() {

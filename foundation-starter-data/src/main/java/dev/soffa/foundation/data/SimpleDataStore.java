@@ -55,7 +55,7 @@ public class SimpleDataStore implements DataStore {
                 em.setCreated(Date.from(Instant.now()));
             }
             if (TextUtil.isEmpty(em.getId())) {
-                em.setId(IdGenerator.shortUUID());
+                em.setId(IdGenerator.generate());
             }
         }
 

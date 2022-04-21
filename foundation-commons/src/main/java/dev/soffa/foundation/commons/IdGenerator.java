@@ -11,16 +11,13 @@ public final class IdGenerator {
     private IdGenerator() {
     }
 
-    public static String shortUUID() {
-        return shortUUID("");
+    public static String generate() {
+        return generate("");
     }
 
-    public static String shortUUID(String... prefix) {
-        UUID uuid = UUID.randomUUID();
-        long l = ByteBuffer.wrap(uuid.toString().getBytes()).getLong();
-        return TextUtil.prefix(Long.toString(l, Character.MAX_RADIX), prefix);
+    public static String generate(String... prefix) {
+        return TextUtil.prefix(UUID.randomUUID().toString(), prefix);
     }
-
     public static String secureRandomId() {
         return secureRandomId("");
     }

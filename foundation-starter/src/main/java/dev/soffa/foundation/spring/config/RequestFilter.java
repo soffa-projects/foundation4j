@@ -122,10 +122,10 @@ public class RequestFilter extends OncePerRequestFilter {
         }
 
         if (TextUtil.isEmpty(context.getSpanId())) {
-            context.setSpanId(IdGenerator.shortUUID(prefix));
+            context.setSpanId(IdGenerator.generate(prefix));
         }
         if (TextUtil.isEmpty(context.getTraceId())) {
-            context.setTraceId(IdGenerator.shortUUID(prefix));
+            context.setTraceId(IdGenerator.generate(prefix));
         }
     }
 
