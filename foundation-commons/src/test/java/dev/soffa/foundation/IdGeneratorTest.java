@@ -15,13 +15,13 @@ public class IdGeneratorTest {
 
     @Test
     public void testIdGenerator() {
-        assertTrue(IdGenerator.shortUUID(CH).startsWith(CH_));
-        assertTrue(IdGenerator.shortUUID(CH_).startsWith(CH_));
+        assertTrue(IdGenerator.generate(CH).startsWith(CH_));
+        assertTrue(IdGenerator.generate(CH_).startsWith(CH_));
 
-        assertTrue(IdGenerator.shortUUID(CH, LIVE).startsWith(CH_LIVE));
-        assertTrue(IdGenerator.shortUUID(CH, LIVE_).startsWith(CH_LIVE));
-        assertTrue(IdGenerator.shortUUID(CH_, LIVE_).startsWith(CH_LIVE));
-        assertTrue(IdGenerator.shortUUID(CH_, LIVE).startsWith(CH_LIVE));
+        assertTrue(IdGenerator.generate(CH, LIVE).startsWith(CH_LIVE));
+        assertTrue(IdGenerator.generate(CH, LIVE_).startsWith(CH_LIVE));
+        assertTrue(IdGenerator.generate(CH_, LIVE_).startsWith(CH_LIVE));
+        assertTrue(IdGenerator.generate(CH_, LIVE).startsWith(CH_LIVE));
     }
 
 }

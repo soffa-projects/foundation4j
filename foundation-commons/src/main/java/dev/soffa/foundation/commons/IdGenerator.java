@@ -2,7 +2,6 @@ package dev.soffa.foundation.commons;
 
 import com.aventrix.jnanoid.jnanoid.NanoIdUtils;
 
-import java.nio.ByteBuffer;
 import java.util.UUID;
 
 @SuppressWarnings("PMD.ClassNamingConventions")
