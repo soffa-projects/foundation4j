@@ -102,7 +102,7 @@ public class EntityInfo<T> {
     }
 
     private static String escapeTableName(String value) {
-        return TextUtil.format("`%s`", value);
+        return TextUtil.format("%s", value);
     }
 
     public void addProperty(String property, Class<?> type) {
