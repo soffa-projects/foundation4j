@@ -1,5 +1,7 @@
 package dev.soffa.foundation.data;
 
+import com.google.common.collect.ImmutableMap;
+
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -49,6 +51,10 @@ public interface EntityRepository<E> {
 
     default boolean exists(Criteria criteria) {
         return count(criteria) > 0;
+    }
+
+    default boolean exists(String id) {
+        return exists(ImmutableMap.of("id", id));
     }
 
 }
