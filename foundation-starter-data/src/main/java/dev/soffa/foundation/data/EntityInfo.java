@@ -98,11 +98,11 @@ public class EntityInfo<T> {
     }
 
     private static String escapeColumnName(String value) {
-        return TextUtil.format("`%s`", TextUtil.snakeCase(value));
+        return TextUtil.format("\"%s\"", TextUtil.snakeCase(value));
     }
 
     private static String escapeTableName(String value) {
-        return TextUtil.format("%s", value);
+        return TextUtil.format("\"%s\"", value);
     }
 
     public void addProperty(String property, Class<?> type) {
