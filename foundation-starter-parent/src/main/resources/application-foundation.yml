@@ -69,6 +69,8 @@ management.endpoint.health.probes.enabled: true
 
 app.redoc.enabled: true
 
+spring.jackson:
+  default-property-inclusion: non_null
 
 spring.cloud.vault.enabled: false
 spring.cloud.vault.kv.enabled: false
@@ -101,10 +103,9 @@ spring.zipkin.base-url: ${app.ziking.url:${ZIPKIN_BASE_URL:localhost:9411}}
 
 spring.sleuth.web.client.enabled: ${ZIPKIN_ENABLED:true}
 
+spring.webflux.static-path-pattern: /assets/**
 
-spring.config.import:
-  - classpath:application-default.yml
-  - optional:classpath:application-openapi.yml
+
 
 ---
 spring.config.activate.on-profile: test

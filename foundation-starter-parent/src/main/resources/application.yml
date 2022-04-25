@@ -1,0 +1,4 @@
+spring.config.import:
+  - classpath:application-foundation.yml
+  - classpath:application-default.yml
+  - optional:classpath:application-openapi.yml
