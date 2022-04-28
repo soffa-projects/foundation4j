@@ -63,6 +63,7 @@ spring.cloud.consul.enabled: false
 spring.cloud.consul.config.enabled: false
 spring.cloud.consul.discovery.enabled: false
 
+
 spring.autoconfigure.exclude: org.springframework.boot.autoconfigure.amqp.RabbitAutoConfiguration
 management.endpoint.health.group.liveness.include: livenessstate,cacheCheck
 management.endpoint.health.probes.enabled: true
@@ -105,6 +106,7 @@ spring.sleuth.web.client.enabled: ${ZIPKIN_ENABLED:true}
 
 spring.webflux.static-path-pattern: /assets/**
 
+server.servlet.contextPath: ${app.context-path:${CONTEXT_PATH:}}
 
 
 ---

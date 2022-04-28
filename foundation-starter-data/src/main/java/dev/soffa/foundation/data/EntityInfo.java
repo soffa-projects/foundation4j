@@ -39,7 +39,7 @@ public class EntityInfo<T> {
         if (TextUtil.isNotEmpty(tablePrefix)) {
             tableName = tablePrefix + tableName;
         }
-        tableName = escapeTableName(tableName);
+        // tableName = escapeTableName(tableName);
     }
 
     public static <T> void register(Class<T> entityClass, String tablePrefix) {

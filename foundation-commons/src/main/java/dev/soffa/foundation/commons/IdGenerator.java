@@ -42,11 +42,30 @@ public final class IdGenerator {
         return TextUtil.prefix(NanoIdUtils.randomNanoId(), prefix);
     }
 
-    public static String shortUUID() {
-        return shortUUID("");
+    /**
+     * Not garuantee of uniqueness
+     @return Generated short id
+     */
+    public static String shortId() {
+        return shortId(false);
     }
 
-    public static String shortUUID(String... prefix) {
+    /**
+     * Not garuantee of uniqueness
+     * @param compact lowercase with no dashes or underscores
+     * @return Generated short id
+     */
+    public static String shortId(boolean compact) {
+        return shortId(compact, "");
+    }
+
+    /**
+     * Not garuantee of uniqueness
+     * @param compact Lowercase id with no dashes or underscores
+     * @param prefix Prefix to add to the id
+     * @return Generated short id
+     */
+    public static String shortId(boolean compact, String... prefix) {
         UUID uuid = UUID.randomUUID();
         ByteBuffer byteBuffer = ByteBuffer.allocate(16);
         byteBuffer.putLong(uuid.getMostSignificantBits());
@@ -55,6 +74,10 @@ public final class IdGenerator {
         String res = Base64.getEncoder().withoutPadding().encodeToString(byteBuffer.array())
             .replaceAll("/", "_")
             .replaceAll("\\+", "-");
+
+        if (compact) {
+            res = res.toLowerCase().replaceAll("-", "").replaceAll("_", "");
+        }
 
         return TextUtil.prefix(res, prefix);
     }

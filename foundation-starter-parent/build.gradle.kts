@@ -5,5 +5,7 @@ plugins {
 }
 
 dependencies {
+    implementation(platform("io.opentelemetry:opentelemetry-bom:1.13.0"))
+    implementation("io.opentelemetry:opentelemetry-api")
 }
 
