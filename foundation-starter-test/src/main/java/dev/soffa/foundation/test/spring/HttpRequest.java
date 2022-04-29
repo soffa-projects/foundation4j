@@ -50,11 +50,12 @@ public class HttpRequest {
         return header(Context.TENANT_ID, tenantId);
     }
 
+    /*
     public HttpRequest withTrace(String spanId, String traceId) {
         header(Context.SPAN_ID, spanId);
         header(Context.TRACE_ID, traceId);
         return this;
-    }
+    }*/
 
     public HttpRequest bearerAuth(String token) {
         header(HttpHeaders.AUTHORIZATION, "Bearer " + token);

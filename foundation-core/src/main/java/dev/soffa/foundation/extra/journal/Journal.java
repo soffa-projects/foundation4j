@@ -45,12 +45,13 @@ public class Journal implements EntityModel {
     }
 
     public void setContext(Context context) {
+        /*
         if (TextUtil.isEmpty(traceId)) {
             traceId = context.getTraceId();
         }
         if (TextUtil.isEmpty(spanId)) {
             spanId = context.getSpanId();
-        }
+        }*/
         if (TextUtil.isEmpty(username) && context.getAuthentication() != null) {
             username = DigestUtil.md5(context.getAuthentication().getUsername());
         }

@@ -99,7 +99,7 @@ junit.jupiter.execution.parallel.enabled: true
 
 spring.sleuth.web.skipPattern: (^cleanup.*|.+favicon.*)
 
-spring.zipkin.enabled: ${app.zikin.enabled:${ZIPKIN_ENABLED:true}}
+spring.zipkin.enabled: ${app.zikin.enabled:${ZIPKIN_ENABLED:false}}
 spring.zipkin.base-url: ${app.ziking.url:${ZIPKIN_BASE_URL:localhost:9411}}
 
 spring.sleuth.web.client.enabled: ${ZIPKIN_ENABLED:true}

@@ -6,6 +6,10 @@ All notable changes to this project will be documented in this file.
 Le format utilisé se base sur [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 et le versioning du projet respect les règles  [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.10.0] - 2022-04-29
+
+### OpenTelemetry integration
+
 ## [0.9.15] - 2022-04-25
 
 ### Added

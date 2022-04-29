@@ -68,8 +68,8 @@ class CustomRestExceptionHandler extends ResponseEntityExceptionHandler {
         body.put("prod", isProduction);
 
         ContextHolder.get().ifPresent(context -> {
-            body.put("traceId", context.getTraceId());
-            body.put("spanId", context.getSpanId());
+            // body.put("traceId", context.getTraceId());
+            // body.put("spanId", context.getSpanId());
             Optional.ofNullable(context.getApplicationName()).ifPresent(s -> body.put("application", s));
             context.getUsername().ifPresent(s -> body.put("user", s));
             if (context.hasTenant()) {

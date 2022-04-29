@@ -10,7 +10,6 @@ import lombok.SneakyThrows;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
-import java.util.UUID;
 
 @Getter
 @Setter
@@ -19,8 +18,8 @@ public class Context {
 
     public static final String TENANT_ID = "X-TenantId";
     public static final String APPLICATION = "X-Application";
-    public static final String TRACE_ID = "X-TraceId";
-    public static final String SPAN_ID = "X-SpanId";
+    // public static final String TRACE_ID = "X-TraceId";
+    // public static final String SPAN_ID = "X-SpanId";
     public static final String SERVICE_NAME = "X-ServiceName";
     public static final String AUTHORIZATION = "Authorization";
 
@@ -29,8 +28,8 @@ public class Context {
     private String tenantId;
     private String applicationName;
     private String sender;
-    private String traceId;
-    private String spanId;
+    // private String traceId;
+    // private String spanId;
 
     @JsonIgnore
     private transient SideEffects sideEffects = new SideEffects();
@@ -40,9 +39,10 @@ public class Context {
     private transient Authentication authentication;
 
     public Context() {
-        this.traceId = UUID.randomUUID().toString();
-        this.spanId = UUID.randomUUID().toString();
+        // this.traceId = UUID.randomUUID().toString();
+        // this.spanId = UUID.randomUUID().toString();
         this.sender = serviceName;
+
     }
 
     public void sideEffect(String event) {
@@ -77,11 +77,11 @@ public class Context {
                 context.setApplicationName(value);
             } else if (key.equalsIgnoreCase(Context.TENANT_ID)) {
                 context.setTenantId(value);
-            } else if (key.equalsIgnoreCase(Context.SPAN_ID)) {
+            }/* else if (key.equalsIgnoreCase(Context.SPAN_ID)) {
                 context.setTraceId(value);
             } else if (key.equalsIgnoreCase(Context.TRACE_ID)) {
                 context.setSpanId(value);
-            } else if (key.equalsIgnoreCase(Context.SERVICE_NAME)) {
+            } */ else if (key.equalsIgnoreCase(Context.SERVICE_NAME)) {
                 context.setSender(value);
             } else if (key.equalsIgnoreCase(Context.AUTHORIZATION)) {
                 context.setAuthorization(value);
@@ -170,12 +170,15 @@ public class Context {
         if (hasTenant()) {
             contextMap.put("tenant", getTenantId());
         }
+        /*
         if (isNotEmpty(getTraceId())) {
             contextMap.put("traceId", getTraceId());
         }
         if (isNotEmpty(getSpanId())) {
             contextMap.put("spanId", getSpanId());
         }
+
+         */
         if (isNotEmpty(getSender())) {
             contextMap.put("sender", getSender());
         }
@@ -196,12 +199,14 @@ public class Context {
         if (hasTenant()) {
             headers.put(Context.TENANT_ID, getTenantId());
         }
+        /*
         if (isNotEmpty(getTraceId())) {
             headers.put(Context.TRACE_ID, getTraceId());
         }
         if (isNotEmpty(getSpanId())) {
             headers.put(Context.SPAN_ID, getSpanId());
         }
+         */
         if (isNotEmpty(getSender())) {
             headers.put(Context.SERVICE_NAME, getSender());
         }
@@ -210,5 +215,6 @@ public class Context {
         }
         return headers;
     }
+
 
 }

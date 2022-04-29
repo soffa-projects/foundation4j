@@ -101,9 +101,10 @@ public class EntityInfo<T> {
         return TextUtil.format("%s", TextUtil.snakeCase(value));
     }
 
+    /*
     private static String escapeTableName(String value) {
         return TextUtil.format("%s", value);
-    }
+    }*/
 
     public void addProperty(String property, Class<?> type) {
         if (propertiesToColumnsMapping.containsKey(property)) {

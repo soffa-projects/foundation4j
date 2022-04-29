@@ -22,6 +22,9 @@ dependencies {
     api("org.hamcrest:hamcrest-core:2.2")
     compileOnly("com.google.code.gson:gson:2.9.0")
     compileOnly("com.intuit.karate:karate-junit5:1.2.0.RC6")
+    api(platform("io.opentelemetry:opentelemetry-bom:1.13.0"))
+    api("io.opentelemetry:opentelemetry-api")
+
 
 }
 repositories {

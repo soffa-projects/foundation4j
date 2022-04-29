@@ -1,7 +1,10 @@
 package dev.soffa.foundation.spring.config;
 
 import com.google.common.collect.ImmutableMap;
-import dev.soffa.foundation.commons.*;
+import dev.soffa.foundation.commons.DigestUtil;
+import dev.soffa.foundation.commons.Logger;
+import dev.soffa.foundation.commons.Mappers;
+import dev.soffa.foundation.commons.TextUtil;
 import dev.soffa.foundation.context.Context;
 import dev.soffa.foundation.context.ContextHolder;
 import dev.soffa.foundation.error.ErrorUtil;
@@ -52,13 +55,10 @@ public class RequestFilter extends OncePerRequestFilter {
             TenantHolder.set(value);
         });
         lookupHeader(request, "X-Application", "X-ApplicationName", "X-ApplicationId", "X-App").ifPresent(context::setApplicationName);
-        lookupHeader(request, "X-TraceId", "X-Trace-Id").ifPresent(context::setTraceId);
-        lookupHeader(request, "traceparent").ifPresent(context::setTraceId);
-        //lookupHeader(request, "X-SpanId", "X-Span-Id", "X-CorrelationId", "X-Correlation-Id").ifPresent(context::setSpanId);
 
         LOG.debug("Pre-setting context with tracing data");
 
-        processTracing(context);
+        // processTracing(context);
         ContextHolder.set(context);
 
         AtomicBoolean proceed = new AtomicBoolean(true);
@@ -113,22 +113,6 @@ public class RequestFilter extends OncePerRequestFilter {
             TenantHolder.clear();
         }
     }
-
-    private void processTracing(Context context) {
-        String prefix = "";
-        if (context.getTenantId() != null) {
-            prefix = context.getTenantId() + "_";
-            Logger.setTenantId(context.getTenantId());
-        }
-
-        if (TextUtil.isEmpty(context.getSpanId())) {
-            context.setSpanId(IdGenerator.generate(prefix));
-        }
-        if (TextUtil.isEmpty(context.getTraceId())) {
-            context.setTraceId(IdGenerator.generate(prefix));
-        }
-    }
-
 
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) {
