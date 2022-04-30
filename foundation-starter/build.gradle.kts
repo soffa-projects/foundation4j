@@ -7,9 +7,6 @@ plugins {
 dependencies {
     api(project(":foundation-starter-parent"))
 
-    api(project(":foundation-core"))
-    api(project(":foundation-starter-config"))
-
     implementation("org.springframework.boot:spring-boot-starter-web") {
         exclude(module = "spring-boot-starter-tomcat")
     }

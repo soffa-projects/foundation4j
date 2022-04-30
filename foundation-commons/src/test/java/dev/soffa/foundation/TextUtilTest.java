@@ -26,4 +26,13 @@ public class TextUtilTest {
         assertEquals("", TextUtil.trimToEmpty("  "));
         assertEquals("Hello", TextUtil.trimToEmpty("Hello  "));
     }
+
+    @Test
+    void testTakeLast() {
+        assertNull(TextUtil.takeLast(null, 4));
+        assertEquals("", TextUtil.takeLast("", 4));
+        assertEquals("2345", TextUtil.takeLast("ABCD12345", 4));
+        assertEquals("ABCD", TextUtil.takeLast("1ABCD", 4));
+        assertEquals("ABCD", TextUtil.takeLast("ABCD", 5));
+    }
 }

@@ -97,4 +97,13 @@ public final class TextUtil {
         return String.format(pattern, args);
     }
 
+    public static String takeLast(String token, int count) {
+        if (TextUtil.isEmpty(token)) {
+            return token;
+        }
+        if (token.length() >= count) {
+            return token.substring(token.length() - count);
+        }
+        return token;
+    }
 }

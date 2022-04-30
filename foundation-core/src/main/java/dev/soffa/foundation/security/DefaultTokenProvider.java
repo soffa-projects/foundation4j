@@ -161,6 +161,11 @@ public class DefaultTokenProvider implements TokenProvider, ClaimsExtractor {
 
     @Override
     public Authentication decode(String token, ClaimsExtractor extractor) {
+
+        if (!TokenUtil.isWellFormedJwt(token)) {
+            LOG.warn("Received token *******%s is not a well-formed JWT", TextUtil.takeLast(token, 4));
+        }
+
         if (jwtProcessor != null) {
             return decodejwtWithJwks(token, extractor);
         } else {

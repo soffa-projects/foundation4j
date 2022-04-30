@@ -24,8 +24,19 @@ import java.util.Map;
 public final class TokenUtil {
 
     private static final Logger LOG = Logger.get(TokenUtil.class);
+    private static final int JWT_PARTS_LENGTH = 3;
 
     private TokenUtil() {
+    }
+
+    public static boolean isWellFormedJwt(final String jwt) {
+        // Token should look like a well-formed JWT before proceeding
+        String[] jwtSplitted = jwt.split("\\.");
+        if (jwtSplitted.length != JWT_PARTS_LENGTH) {
+            LOG.warn("Received token *******%s is not a Well-formed JWT", TextUtil.takeLast(jwt, 5));
+            return false;
+        }
+        return true;
     }
 
     @SneakyThrows

@@ -5,10 +5,14 @@ plugins {
 }
 
 dependencies {
+    api(project(":foundation-core"))
+    implementation(project(":foundation-starter-tracing"))
+    implementation(project(":foundation-starter-config"))
+
     api("org.springframework.cloud:spring-cloud-starter-consul-discovery")
-    api("org.springframework.boot:spring-boot-starter-actuator")
-    api("net.logstash.logback:logstash-logback-encoder:7.1.1")
-    api("com.fasterxml.jackson.module:jackson-module-kotlin:2.13.2")
+    implementation("org.springframework.boot:spring-boot-starter-actuator")
+    implementation("net.logstash.logback:logstash-logback-encoder:7.1.1")
+    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.13.2")
 }
 repositories {
     mavenCentral()

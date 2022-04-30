@@ -47,6 +47,9 @@ public class LocalPlatformAuthManager implements PlatformAuthManager {
     }
 
     private Authentication authenticate(Context context, String token) {
+        if (TextUtil.isEmpty(token)) {
+            return null;
+        }
         Authentication auth = getAuthManager().authenticate(context, token);
         if (auth != null) {
             LOG.info("Authentication provided by local %s", getAuthManager().getClass().getName());
@@ -56,6 +59,7 @@ public class LocalPlatformAuthManager implements PlatformAuthManager {
             LOG.info("No tokensProvider available, retuning empty authentication");
             return null;
         }
+
         LOG.info("Decoding token with TokenProvider");
         return tokens.decode(token);
     }
