@@ -164,6 +164,7 @@ public class DefaultTokenProvider implements TokenProvider, ClaimsExtractor {
 
         if (!TokenUtil.isWellFormedJwt(token)) {
             LOG.warn("Received token *******%s is not a well-formed JWT", TextUtil.takeLast(token, 4));
+            throw new InvalidTokenException("Malformed JWT token");
         }
 
         if (jwtProcessor != null) {
@@ -199,30 +200,7 @@ public class DefaultTokenProvider implements TokenProvider, ClaimsExtractor {
                 if (entry.getValue().isNull()) {
                     continue;
                 }
-                Object value = entry.getValue().asString();
-                if (value == null) {
-                    value = entry.getValue().asBoolean();
-                    if (value == null) {
-                        value = entry.getValue().asDouble();
-                        if (value == null) {
-                            value = entry.getValue().asInt();
-                            if (value == null) {
-                                value = entry.getValue().asLong();
-                                if (value == null) {
-                                    value = entry.getValue().asDate();
-                                    if (value == null) {
-                                        value = entry.getValue().asMap();
-                                        if (value == null) {
-                                            LOG.warn("Unsupported claim type '%s', using string.", entry.getKey());
-                                            value = entry.toString();
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-                claims.put(entry.getKey(), value);
+                claims.put(entry.getKey(), getClaimValue(entry.getValue()));
             }
 
             return claimsExtractor.extractInfo(new Token(token, jwt.getSubject(), claims));
@@ -230,5 +208,30 @@ public class DefaultTokenProvider implements TokenProvider, ClaimsExtractor {
         } catch (Exception e) {
             throw new UnauthorizedException(e.getMessage(), e);
         }
+    }
+    
+    private Object getClaimValue(Claim claim) {
+        if (claim.isNull()) {
+            return null;
+        }
+        Object value = claim.asBoolean();
+        if (value != null) return value;
+        
+        value = claim.asDouble();
+        if (value != null) return value;
+        
+        value = claim.asInt();
+        if (value != null) return value;
+
+        value = claim.asLong();
+        if (value != null) return value;
+
+        value = claim.asDate();
+        if (value != null) return value;
+
+        value = claim.asMap();
+        if (value != null) return value;
+
+        return claim.toString();
     }
 }
