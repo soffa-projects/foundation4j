@@ -17,7 +17,6 @@
 package org.springframework.boot.autoconfigure;
 
 import org.springframework.beans.factory.support.BeanNameGenerator;
-import org.springframework.boot.SpringApplication;
 import org.springframework.boot.SpringBootConfiguration;
 import org.springframework.boot.context.TypeExcludeFilter;
 import org.springframework.context.annotation.*;

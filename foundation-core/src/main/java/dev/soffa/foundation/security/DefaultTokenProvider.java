@@ -211,7 +211,7 @@ public class DefaultTokenProvider implements TokenProvider, ClaimsExtractor {
         }
     }
     
-    private Object getClaimValue(Claim claim) {
+    private static Object getClaimValue(Claim claim) {
         if (claim.isNull()) {
             return null;
         }
