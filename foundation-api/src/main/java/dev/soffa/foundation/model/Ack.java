@@ -1,7 +1,6 @@
 package dev.soffa.foundation.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonValue;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -19,7 +18,6 @@ public class Ack {
     public static final Ack OK = new Ack(OK_VALUE);
     public static final Ack KO = new Ack(KO_VALUE);
 
-    @JsonValue
     private String status;
     private String message;
     private Map<String, Object> metadata;
