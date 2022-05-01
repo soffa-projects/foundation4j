@@ -21,7 +21,6 @@ import org.springframework.stereotype.Component;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
-import java.util.Map;
 
 @Component
 public class LocalPlatformAuthManager implements PlatformAuthManager {
@@ -112,20 +111,7 @@ public class LocalPlatformAuthManager implements PlatformAuthManager {
         }
 
         if (auth == null) {
-            LOG.debug("auth.username: guest");
             return;
-        }
-
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("auth.username: %s", auth.getUsername());
-            LOG.debug("auth.tenant: %s", auth.getTenantId());
-            LOG.debug("auth.app: %s", context.getApplicationName());
-            if (auth.getClaims() != null) {
-                LOG.debug("auth.claims: %d", auth.getClaims().size());
-                for (Map.Entry<String, Object> claim : auth.getClaims().entrySet()) {
-                    LOG.debug("auth.claims %s --> %s", claim.getKey(), claim.getValue());
-                }
-            }
         }
 
         context.setAuthentication(auth);

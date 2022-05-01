@@ -21,64 +21,17 @@ import org.springframework.http.HttpStatus;
 
 import java.lang.annotation.*;
 
-/**
- * Marks a method or exception class with the status {@link #code} and
- * {@link #reason} that should be returned.
- *
- * <p>The status code is applied to the HTTP response when the handler
- * method is invoked and overrides status information set by other means,
- * like {@code ResponseEntity} or {@code "redirect:"}.
- *
- * <p><strong>Warning</strong>: when using this annotation on an exception
- * class, or when setting the {@code reason} attribute of this annotation,
- * the {@code HttpServletResponse.sendError} method will be used.
- *
- * <p>With {@code HttpServletResponse.sendError}, the response is considered
- * complete and should not be written to any further. Furthermore, the Servlet
- * container will typically write an HTML error page therefore making the
- * use of a {@code reason} unsuitable for REST APIs. For such cases it is
- * preferable to use a {@link org.springframework.http.ResponseEntity} as
- * a return type and avoid the use of {@code @ResponseStatus} altogether.
- *
- * <p>Note that a controller class may also be annotated with
- * {@code @ResponseStatus} which is then inherited by all {@code @RequestMapping}
- * and {@code @ExceptionHandler} methods in that class and its subclasses unless
- * overridden by a local {@code @ResponseStatus} declaration on the method.
- *
- * @author Arjen Poutsma
- * @author Sam Brannen
- * @since 3.0
- * @see org.springframework.web.servlet.mvc.annotation.ResponseStatusExceptionResolver
- * @see jakarta.servlet.http.HttpServletResponse#sendError(int, String)
- */
 @Target({ElementType.TYPE, ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 public @interface ResponseStatus {
 
-	/**
-	 * Alias for {@link #code}.
-	 */
 	@AliasFor("code")
 	HttpStatus value() default HttpStatus.INTERNAL_SERVER_ERROR;
 
-	/**
-	 * The status <em>code</em> to use for the response.
-	 * <p>Default is {@link HttpStatus#INTERNAL_SERVER_ERROR}, which should
-	 * typically be changed to something more appropriate.
-	 * @since 4.2
-	 * @see jakarta.servlet.http.HttpServletResponse#setStatus(int)
-	 * @see jakarta.servlet.http.HttpServletResponse#sendError(int)
-	 */
 	@AliasFor("value")
 	HttpStatus code() default HttpStatus.INTERNAL_SERVER_ERROR;
 
-	/**
-	 * The <em>reason</em> to be used for the response.
-	 * <p>Defaults to an empty string which will be ignored. Set the reason to a
-	 * non-empty value to have it used for the response.
-	 * @see jakarta.servlet.http.HttpServletResponse#sendError(int, String)
-	 */
 	String reason() default "";
 
 }

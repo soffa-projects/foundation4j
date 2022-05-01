@@ -164,7 +164,7 @@ public class DefaultTokenProvider implements TokenProvider, ClaimsExtractor {
 
         if (!TokenUtil.isWellFormedJwt(token)) {
             LOG.warn("Received token *******%s is not a well-formed JWT", TextUtil.takeLast(token, 4));
-            throw new InvalidTokenException("Malformed JWT token");
+            return null;
         }
 
         if (jwtProcessor != null) {
@@ -197,10 +197,11 @@ public class DefaultTokenProvider implements TokenProvider, ClaimsExtractor {
 
             Map<String, Object> claims = new HashMap<>();
             for (Map.Entry<String, Claim> entry : baseClaims.entrySet()) {
-                if (entry.getValue().isNull()) {
-                    continue;
+                Object value = getClaimValue(entry.getValue());
+                if (value != null) {
+                    LOG.debug("Claim set %s = %s", entry.getKey(), value);
+                    claims.put(entry.getKey(), value);
                 }
-                claims.put(entry.getKey(), getClaimValue(entry.getValue()));
             }
 
             return claimsExtractor.extractInfo(new Token(token, jwt.getSubject(), claims));
@@ -214,7 +215,11 @@ public class DefaultTokenProvider implements TokenProvider, ClaimsExtractor {
         if (claim.isNull()) {
             return null;
         }
-        Object value = claim.asBoolean();
+
+        Object value = claim.asString();
+        if (value != null) return value;
+
+        value = claim.asBoolean();
         if (value != null) return value;
         
         value = claim.asDouble();
