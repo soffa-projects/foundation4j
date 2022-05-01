@@ -2,6 +2,7 @@ package dev.soffa.foundation.multitenancy;
 
 import dev.soffa.foundation.commons.Logger;
 import dev.soffa.foundation.commons.TextUtil;
+import dev.soffa.foundation.context.ContextHolder;
 import dev.soffa.foundation.model.TenantId;
 import lombok.SneakyThrows;
 
@@ -51,6 +52,7 @@ public final class TenantHolder {
 
     public static void set(String value) {
         Logger.setTenantId(value);
+        ContextHolder.setAttribute("tenant_id", value);
         if (TextUtil.isEmpty(value)) {
             LOG.trace("Active tenant is set to: default");
             CURRENT.remove();
