@@ -1,6 +1,7 @@
 package dev.soffa.foundation.commons.http;
 
 import dev.soffa.foundation.commons.Mappers;
+import dev.soffa.foundation.error.TechnicalException;
 import lombok.SneakyThrows;
 import okhttp3.*;
 
@@ -36,7 +37,14 @@ public class DefaultHttpClient implements HttpClient {
         RequestBody body = null;
 
         if (req.getBody() != null) {
-            body = RequestBody.create(Mappers.JSON.serialize(req.getBody()), MediaType.parse(req.getContentType()));
+            Object b = req.getBody();
+            if (b instanceof String) {
+                body = RequestBody.create((String) b, MediaType.parse(req.getContentType()));
+            } else if (req.getContentType() == null || req.getContentType().contains("json")) {
+                body = RequestBody.create(Mappers.JSON.serialize(req.getBody()), MediaType.parse(req.getContentType()));
+            } else {
+                throw new TechnicalException("Content type not supported: %s", req.getContentType());
+            }
         }
 
         Map<String, String> hds = Optional.ofNullable(req.getHeaders()).orElse(new HashMap<>());
