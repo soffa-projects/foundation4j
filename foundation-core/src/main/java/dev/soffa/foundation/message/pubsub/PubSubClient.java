@@ -1,6 +1,7 @@
 package dev.soffa.foundation.message.pubsub;
 
 
+import dev.soffa.foundation.error.TodoException;
 import dev.soffa.foundation.message.Message;
 import dev.soffa.foundation.message.MessageHandler;
 import lombok.SneakyThrows;
@@ -13,11 +14,21 @@ public interface PubSubClient {
 
 
     @SneakyThrows
-    void subscribe(@NonNull String subject, boolean broadcast, MessageHandler messageHandler);
+    default void subscribe(@NonNull String subject, boolean broadcast, MessageHandler messageHandler) {
+        throw new TodoException("Not implemented");
+    }
+
+    default void subscribe(MessageHandler messageHandler) {
+        throw new TodoException("Not implemented");
+    }
 
     <T> CompletableFuture<T> request(@NonNull String subject, @NotNull Message message, Class<T> expectedClass);
 
     void publish(@NonNull String subject, @NotNull Message message);
+
+    default void publish(@NotNull Message message) {
+        throw new TodoException("Not implemented");
+    }
 
     @SneakyThrows
     void broadcast(@NonNull String target, @NotNull Message message);

@@ -5,13 +5,13 @@ import dev.soffa.foundation.commons.Logger;
 import dev.soffa.foundation.commons.TextUtil;
 import dev.soffa.foundation.error.ConfigurationException;
 import dev.soffa.foundation.error.NotImplementedException;
-import dev.soffa.foundation.error.TodoException;
 import dev.soffa.foundation.message.MessageHandler;
 import dev.soffa.foundation.message.pubsub.PubSubClient;
 import dev.soffa.foundation.message.pubsub.PubSubClientConfig;
 import dev.soffa.foundation.message.pubsub.PubSubConfig;
 import dev.soffa.foundation.message.pubsub.PubSubMessenger;
 import dev.soffa.foundation.pubsub.nats.NatsClient;
+import dev.soffa.foundation.pubsub.rabbitmq.AmqpClient;
 import dev.soffa.foundation.pubsub.simple.SimplePubSubClient;
 
 import java.util.HashMap;
@@ -53,7 +53,7 @@ public final class PubSubMessengerFactory {
             client = new SimplePubSubClient();
         } else if (config.getAddresses().contains("amqp://")) {
             LOG.info("Creating AMQP client for @%s", config.getAddresses());
-            throw new TodoException();
+            client = new AmqpClient(applicationName, config, broadcasting);
         } else {
             throw new NotImplementedException("PubSubClient not supported " + config.getAddresses());
         }

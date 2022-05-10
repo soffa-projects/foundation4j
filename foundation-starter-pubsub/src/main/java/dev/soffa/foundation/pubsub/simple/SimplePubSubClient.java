@@ -29,7 +29,7 @@ public class SimplePubSubClient extends AbstractPubSubClient implements PubSubCl
     }
 
     @Override
-    public CompletableFuture<byte[]> internalRequest(@NonNull String subject, Message message) {
+    protected CompletableFuture<byte[]> sendAndReceive(@NonNull String subject, Message message) {
         checkSubject(subject);
         return CompletableFuture.supplyAsync(() -> {
             Object result = subscriptions.get(subject).handle(message).orElse(null);

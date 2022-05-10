@@ -44,6 +44,11 @@ public class PubSubMessengerImpl implements PubSubMessenger {
     }
 
     @Override
+    public void subscribe(MessageHandler messageHandler) {
+        getDefaultClient().subscribe(messageHandler);
+    }
+
+    @Override
     public <T> CompletableFuture<T> request(@NonNull String subject, @NotNull Message message, Class<T> expectedClass) {
         return getDefaultClient().request(subject, message, expectedClass);
     }
@@ -51,6 +56,11 @@ public class PubSubMessengerImpl implements PubSubMessenger {
     @Override
     public void publish(@NonNull String subject, @NotNull Message message) {
         getDefaultClient().publish(subject, message);
+    }
+
+    @Override
+    public void publish(@NotNull Message message) {
+        getDefaultClient().publish(message);
     }
 
     @Override

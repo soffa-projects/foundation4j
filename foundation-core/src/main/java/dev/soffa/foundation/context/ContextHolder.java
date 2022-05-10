@@ -44,8 +44,13 @@ public final class ContextHolder {
 
     public static void setAttribute(String key, String value) {
         Span span = Span.current();
-        if (TextUtil.isNotEmpty(value) && span != null) {
+        if (span == null) {
+            return;
+        }
+        if (TextUtil.isNotEmpty(value)) {
             span.setAttribute(key, value);
+        } else {
+            span.setAttribute(key, "");
         }
     }
 

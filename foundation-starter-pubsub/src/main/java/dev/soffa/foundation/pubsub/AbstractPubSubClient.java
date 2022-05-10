@@ -55,10 +55,10 @@ public abstract class AbstractPubSubClient implements PubSubClient {
     @SuppressWarnings("unchecked")
     @Override
     public final <T> CompletableFuture<T> request(@NonNull String subject, Message message, final Class<T> responseClass) {
-        return internalRequest(subject, message).thenApply(data -> unwrapResponse(data, responseClass));
+        return sendAndReceive(subject, message).thenApply(data -> unwrapResponse(data, responseClass));
     }
 
-    public abstract CompletableFuture<byte[]> internalRequest(@NonNull String subject, Message message);
+    protected abstract CompletableFuture<byte[]> sendAndReceive(@NonNull String subject, Message message);
 
     public <T> T unwrapResponse(byte[] data, final Class<T> responseClass) {
         if (data == null) {

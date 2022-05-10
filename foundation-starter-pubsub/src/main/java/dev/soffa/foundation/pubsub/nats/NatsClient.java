@@ -91,7 +91,7 @@ public class NatsClient extends AbstractPubSubClient implements PubSubClient {
     }
 
     @Override
-    public CompletableFuture<byte[]> internalRequest(@NonNull String subject, Message message) {
+    protected CompletableFuture<byte[]> sendAndReceive(@NonNull String subject, Message message) {
         return connection.request(NatsUtil.createNatsMessage(subject, message)).thenApply(io.nats.client.Message::getData);
     }
 
