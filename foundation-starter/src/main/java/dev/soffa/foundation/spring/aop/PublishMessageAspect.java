@@ -2,9 +2,11 @@ package dev.soffa.foundation.spring.aop;
 
 import dev.soffa.foundation.annotation.Publish;
 import dev.soffa.foundation.commons.Logger;
+import dev.soffa.foundation.config.AppConfig;
 import dev.soffa.foundation.message.Message;
 import dev.soffa.foundation.message.MessageFactory;
 import dev.soffa.foundation.message.pubsub.PubSubClient;
+import dev.soffa.foundation.message.pubsub.PubSubClientConfig;
 import dev.soffa.foundation.model.ResponseEntity;
 import lombok.SneakyThrows;
 import org.aspectj.lang.ProceedingJoinPoint;
@@ -19,9 +21,12 @@ public class PublishMessageAspect {
 
     private static final Logger LOG = Logger.get(PublishMessageAspect.class);
     private final PubSubClient pubSub;
-
-    public PublishMessageAspect(@Autowired(required = false) PubSubClient pubSub) {
+    private final AppConfig config;
+    public PublishMessageAspect(AppConfig config,
+                                @Autowired(required = false) PubSubClient pubSub
+                                ) {
         this.pubSub = pubSub;
+        this.config = config;
     }
 
     @SneakyThrows
@@ -42,7 +47,9 @@ public class PublishMessageAspect {
                 if (msg.getContext() != null) {
                     msg.getContext().setAuthorization(null);
                 }
-                if ("*".equalsIgnoreCase(subject)) {
+                if ("@".equalsIgnoreCase(subject) || ":self".equalsIgnoreCase(subject)) {
+                    pubSub.publish(config.getName(), msg);
+                }else if ("*".equalsIgnoreCase(subject)) {
                     pubSub.broadcast(subject, msg);
                 } else {
                     pubSub.publish(subject, msg);

@@ -20,8 +20,8 @@ import java.util.concurrent.atomic.AtomicLong;
     "app.pubsub.enabled=true",
     "app.pubsub.clients.default.broadcasting=foundation",
     "app.pubsub.clients.default.options.mode=test",
-    "PUBSUB_ADDRESSES=amqp://embedded",
-    //"PUBSUB_ADDRESSES=amqp://guest:guest@localhost:5672",
+    //"PUBSUB_ADDRESSES=amqp://embedded",
+    "PUBSUB_ADDRESSES=amqp://guest:guest@localhost:5672",
 })
 @ActiveProfiles({"test", "foundation-pubsub"})
 @AutoConfigureMockMvc

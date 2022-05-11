@@ -10,6 +10,6 @@ public @interface Publish {
 
     String event();
 
-    String target() default "*";
+    String target() default "@";
 
 }

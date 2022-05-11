@@ -26,7 +26,7 @@ public class FoundationPubSubAutoConfiguration {
 
     @Bean
     @ConfigurationProperties(prefix = "app.pubsub")
-    public PubSubConfig createNatsConfig() {
+    public PubSubConfig createPubSubConfig() {
         return new PubSubConfig();
     }
 

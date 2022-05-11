@@ -46,32 +46,41 @@ public class AmqpClient extends AbstractPubSubClient implements PubSubClient {
         });
     }
 
-
     @Override
-    public void subscribe(MessageHandler handler) {
+    public void subscribe(@NonNull String subject, boolean broadcast, MessageHandler messageHandler) {
         SimpleMessageListenerContainer container = AmqpUtil.createListener(
-            rabbitAdmin.getRabbitTemplate(), applicationName, handler, config.getOption("mode")
+            rabbitAdmin.getRabbitTemplate(), subject, messageHandler, config.getOption("mode")
         );
         container.setMessageListener(message -> {
             //EL
-            handler.handle(Mappers.JSON.deserialize(message.getBody(), Message.class));
+            messageHandler.handle(Mappers.JSON.deserialize(message.getBody(), Message.class));
             LOG.info("Message processed: %s", message.getMessageProperties().getDeliveryTag());
         });
         listeners.add(container);
         container.start();
+    }
 
+    @Override
+    public void subscribe(MessageHandler handler) {
+        subscribe(applicationName, false, handler);
     }
 
     @Override
     public void publish(@NonNull String subject, Message message) {
+        String target = subject;
+        if (applicationName.equals(target)) {
+            // Message should go to TOPIC exchange
+            target = target + TOPIC;
+        }
+        LOG.info("[amqp] Publishing message to %s", target);
         this.rabbitAdmin.getRabbitTemplate().convertAndSend(
-            subject,
+            target,
             "", Mappers.JSON.serialize(message));
     }
 
     @Override
     public void publish(Message message) {
-        publish(applicationName + TOPIC, message);
+        publish(applicationName, message);
     }
 
     @Override

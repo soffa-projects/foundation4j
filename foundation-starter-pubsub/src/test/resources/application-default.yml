@@ -1,4 +1,4 @@
-app.name: sample-pubsub
+app.name: sample
 
 app.pubsub.enabled: true
 app.package: dev.soffa.foundation.pubsub
