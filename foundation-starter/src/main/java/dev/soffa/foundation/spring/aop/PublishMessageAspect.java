@@ -6,7 +6,6 @@ import dev.soffa.foundation.config.AppConfig;
 import dev.soffa.foundation.message.Message;
 import dev.soffa.foundation.message.MessageFactory;
 import dev.soffa.foundation.message.pubsub.PubSubClient;
-import dev.soffa.foundation.message.pubsub.PubSubClientConfig;
 import dev.soffa.foundation.model.ResponseEntity;
 import lombok.SneakyThrows;
 import org.aspectj.lang.ProceedingJoinPoint;
@@ -18,6 +17,7 @@ import org.springframework.stereotype.Component;
 @Aspect
 @Component
 public class PublishMessageAspect {
+
 
     private static final Logger LOG = Logger.get(PublishMessageAspect.class);
     private final PubSubClient pubSub;
@@ -47,9 +47,9 @@ public class PublishMessageAspect {
                 if (msg.getContext() != null) {
                     msg.getContext().setAuthorization(null);
                 }
-                if ("@".equalsIgnoreCase(subject) || ":self".equalsIgnoreCase(subject)) {
+                if (Publish.SELF_TARGET_1.equalsIgnoreCase(subject) || Publish.SELF_TARGET_2.equalsIgnoreCase(subject)) {
                     pubSub.publish(config.getName(), msg);
-                }else if ("*".equalsIgnoreCase(subject)) {
+                }else if (Publish.BROADCAST_TARGET.equalsIgnoreCase(subject)) {
                     pubSub.broadcast(subject, msg);
                 } else {
                     pubSub.publish(subject, msg);

@@ -61,7 +61,7 @@ public class PendingJobRepositoryImpl extends SimpleEntityRepository<PendingJob>
                 if (job.getErrorsCount() > RETRIES_TRESHOLD) {
                     LOG.warn("Job %s has failed %d times !", job.getId(), job.getErrorsCount());
                 }
-                insert(job);
+                update(job);
             }
         }
     }

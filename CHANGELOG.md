@@ -6,6 +6,18 @@ All notable changes to this project will be documented in this file.
 Le format utilisé se base sur [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 et le versioning du projet respect les règles  [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.10.8] - 2022-05-13
+
+### Fixed
+
+- PendingJob reinserted on error instead of being updated
+
+## [0.10.7] - 2022-05-11
+
+### Fixed
+
+- RabbitMQ messages publishing
+
 ## [0.10.6] - 2022-05-10
 
 ### Added
