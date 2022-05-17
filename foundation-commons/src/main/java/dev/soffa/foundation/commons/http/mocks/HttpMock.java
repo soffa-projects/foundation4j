@@ -9,7 +9,6 @@ import dev.soffa.foundation.commons.http.HttpResponseProvider;
 import dev.soffa.foundation.error.TechnicalException;
 import dev.soffa.foundation.model.ResponseStatus;
 import lombok.Data;
-import org.springframework.http.HttpStatus;
 
 import java.net.URL;
 import java.util.List;
@@ -26,7 +25,7 @@ public class HttpMock implements HttpResponseProvider {
     private List<HttpMockResponse> response;
 
     @JsonProperty("network-error")
-    private double networkError = 0.0;
+    private double networkError;
 
     @Override
     public HttpResponse apply(URL url, HttpHeaders headers) {
@@ -38,7 +37,7 @@ public class HttpMock implements HttpResponseProvider {
         @JsonProperty("content-type")
         private String contentType;
         private String body;
-        private double weight = 0.0;
+        private double weight;
         private int status = ResponseStatus.OK;
 
         public int getStatus() {
@@ -68,10 +67,8 @@ public class HttpMock implements HttpResponseProvider {
     }
 
     public HttpResponse getResponse() {
-        if (networkError > 0) {
-            if (Math.random() <= networkError) {
-                return HttpResponse.builder().status(599).body("Network error").build();
-            }
+        if (networkError > 0 && Math.random() <= networkError) {
+            return HttpResponse.builder().status(599).body("Network error").build();
         }
         if (response == null || response.isEmpty()) {
             throw new TechnicalException("No response found for mock: %s", host);
