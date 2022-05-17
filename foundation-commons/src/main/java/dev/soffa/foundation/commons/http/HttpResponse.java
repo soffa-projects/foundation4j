@@ -13,6 +13,7 @@ public class HttpResponse {
     private int status;
     private String message;
     private String contentType;
+
     private String body;
 
     public static HttpResponse ok(String contentType, String body) {

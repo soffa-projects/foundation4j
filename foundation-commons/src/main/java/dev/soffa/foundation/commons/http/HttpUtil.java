@@ -143,6 +143,13 @@ public final class HttpUtil {
         });
     }
 
+    public static void mockResponse(HttpResponseProvider handler) {
+        addInterceptor(chain -> {
+            Request request = chain.request();
+            return handleRequest(request, handler);
+        });
+    }
+
 
     private static Response handleRequest(Request request, HttpResponseProvider handler) {
         HttpResponse res = handler.apply(request.url().url(), HttpHeaders.of(request.headers()));
