@@ -24,7 +24,6 @@ import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodType;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Proxy;
-import java.util.HashSet;
 import java.util.Set;
 
 import static org.reflections.scanners.Scanners.SubTypes;
@@ -37,9 +36,7 @@ public class DynamicResourceConfig implements ApplicationContextAware {
     private final AppConfig appConfig;
     private final OperationsMapping operationsMapping;
 
-    private static final Set<String> LOADED = new HashSet<>();
 
-    @SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
     public DynamicResourceConfig(AppConfig appConfig, @Autowired(required = false) OperationsMapping operationsMapping) {
         this.appConfig = appConfig;
         this.operationsMapping = operationsMapping;
@@ -74,8 +71,14 @@ public class DynamicResourceConfig implements ApplicationContextAware {
 
         for (Class<?> clazz : resources) {
             String className = clazz.getName() + "Controller";
-            if (!LOADED.contains(className)) {
-                LOADED.add(className);
+
+            LOG.debug("Generating implement for %s", className);
+
+            if (beanFactory.getSingleton(className) != null) {
+
+                LOG.debug("%s is already loaded", className);
+
+            }else {
                 MethodHandles.Lookup tmpInstance = null;
 
                 if (JavaUtil.isJava8()) {
@@ -89,8 +92,10 @@ public class DynamicResourceConfig implements ApplicationContextAware {
 
                 final MethodHandles.Lookup instance = tmpInstance;
 
+                LOG.debug("Creating proxy for %s", className);
+
                 Object controller = Proxy.newProxyInstance(
-                    Thread.currentThread().getContextClassLoader(), // here is the trick
+                    Thread.currentThread().getContextClassLoader(),
                     new Class[]{clazz}, (proxy, method, args) -> {
                         if (method.isDefault()) {
 
@@ -115,9 +120,8 @@ public class DynamicResourceConfig implements ApplicationContextAware {
                         }
                     });
 
-                LOG.info("Dynamic resource registered: %s", className);
-
                 beanFactory.registerSingleton(className, controller);
+                LOG.info("Dynamic resource registered: %s", className);
             }
         }
     }

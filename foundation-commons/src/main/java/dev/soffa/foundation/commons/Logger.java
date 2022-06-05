@@ -133,6 +133,12 @@ public final class Logger {
         }
     }
 
+    public void info(Map<String,String> context, String message, Object... args) {
+        if (log.isInfoEnabled()) {
+            Logger.withContext(context, () -> info(message, args));
+        }
+    }
+
     private String formatMessage(String message, Object... args) {
         if (TextUtil.isEmpty(tag)) {
             return TextUtil.format(message, args);
@@ -163,6 +169,12 @@ public final class Logger {
 
     public void error(String message, Object... args) {
         log.error(formatMessage(message, args));
+    }
+
+    public void error(Map<String,String> context, String message, Object... args) {
+        if (log.isErrorEnabled()) {
+            Logger.withContext(context, () -> error(message, args));
+        }
     }
 
 }
