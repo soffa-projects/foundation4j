@@ -13,7 +13,6 @@ import dev.soffa.foundation.data.SimpleEntityRepository;
 import lombok.AllArgsConstructor;
 import lombok.SneakyThrows;
 import org.apache.commons.beanutils.MethodUtils;
-import org.reflections.Reflections;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -25,9 +24,6 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Proxy;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicReference;
-
-import static org.reflections.scanners.Scanners.SubTypes;
-import static org.reflections.scanners.Scanners.TypesAnnotated;
 
 @AllArgsConstructor
 class DynamicRepositoryBuilder {
@@ -45,11 +41,9 @@ class DynamicRepositoryBuilder {
             LOG.warn("No database specified, skipping repository registration");
             return;
         }
-        Reflections reflections = new Reflections(basePackage);
 
-        //EL
-        Set<Class<?>> resources = reflections.get(
-            SubTypes.of(TypesAnnotated.with(Repository.class)).asClass().filter(EntityRepository.class::isAssignableFrom)
+        Set<Class<?>> resources = ClassUtil.findInterfacesAnnotatedWith(
+            basePackage, Repository.class, EntityRepository.class
         );
 
         if (CollectionUtil.isEmpty(resources)) {
@@ -63,7 +57,7 @@ class DynamicRepositoryBuilder {
         SimpleDataStore sds = new SimpleDataStore(db);
         for (Class<?> resourceClass : resources) {
 
-            LOG.debug("Registering repository: %s",  resourceClass.getName());
+            LOG.debug("Registering repository: %s", resourceClass.getName());
 
             Repository res = resourceClass.getAnnotation(Repository.class);
             String collection = res.collection();

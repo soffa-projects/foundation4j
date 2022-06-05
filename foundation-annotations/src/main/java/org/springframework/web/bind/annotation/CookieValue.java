@@ -20,25 +20,6 @@ import org.springframework.core.annotation.AliasFor;
 
 import java.lang.annotation.*;
 
-/**
- * Annotation to indicate that a method parameter is bound to an HTTP cookie.
- *
- * <p>The method parameter may be declared as type {@link jakarta.servlet.http.Cookie}
- * or as cookie value type (String, int, etc.).
- *
- * <p>Note that with spring-webmvc 5.3.x and earlier, the cookie value is URL
- * decoded. This will be changed in 6.0 but in the meantime, applications can
- * also declare parameters of type {@link jakarta.servlet.http.Cookie} to access
- * the raw value.
- *
- * @author Juergen Hoeller
- * @author Sam Brannen
- * @since 3.0
- * @see RequestMapping
- * @see RequestParam
- * @see RequestHeader
- * @see org.springframework.web.bind.annotation.RequestMapping
- */
 @Target(ElementType.PARAMETER)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented

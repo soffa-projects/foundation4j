@@ -31,7 +31,6 @@ dependencies {
     implementation("org.springdoc:springdoc-openapi-security:1.6.8") {
         exclude(group = "io.github.classgraph")
     }
-    implementation("org.reflections:reflections:0.10.2")
     implementation("io.github.classgraph:classgraph:4.8.146")
     implementation("com.h2database:h2:2.1.212")
     // implementation("net.bytebuddy:byte-buddy:1.12.8")

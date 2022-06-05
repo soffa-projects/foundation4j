@@ -27,7 +27,6 @@ import java.lang.annotation.*;
 @Component
 public @interface Configuration {
 
-
     @AliasFor(annotation = Component.class)
     String value() default "";
 

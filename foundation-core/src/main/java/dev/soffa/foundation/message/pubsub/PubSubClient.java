@@ -14,6 +14,11 @@ public interface PubSubClient {
 
 
     @SneakyThrows
+    default void subscribe(@NonNull String subject, MessageHandler messageHandler) {
+        subscribe(subject, false, messageHandler);
+    }
+
+    @SneakyThrows
     default void subscribe(@NonNull String subject, boolean broadcast, MessageHandler messageHandler) {
         throw new TodoException("Not implemented");
     }

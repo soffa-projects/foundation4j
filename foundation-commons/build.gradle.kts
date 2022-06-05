@@ -23,6 +23,7 @@ dependencies {
     api("com.konghq:unirest-java:3.13.8")
     api("com.google.guava:guava:31.1-jre")
     @Suppress("GradlePackageUpdate")
+    implementation("io.github.classgraph:classgraph:4.8.147")
     implementation("commons-codec:commons-codec:1.15")
     implementation("io.pebbletemplates:pebble:3.1.5")
     implementation("com.auth0:java-jwt:3.19.2")

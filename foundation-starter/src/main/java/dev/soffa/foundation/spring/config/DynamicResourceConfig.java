@@ -1,5 +1,6 @@
 package dev.soffa.foundation.spring.config;
 
+import dev.soffa.foundation.commons.ClassUtil;
 import dev.soffa.foundation.commons.CollectionUtil;
 import dev.soffa.foundation.commons.JavaUtil;
 import dev.soffa.foundation.commons.Logger;
@@ -11,7 +12,6 @@ import dev.soffa.foundation.spring.service.OperationDispatcher;
 import lombok.SneakyThrows;
 import org.apache.commons.lang3.reflect.MethodUtils;
 import org.jetbrains.annotations.NotNull;
-import org.reflections.Reflections;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.context.ApplicationContext;
@@ -26,8 +26,6 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Proxy;
 import java.util.Set;
 
-import static org.reflections.scanners.Scanners.SubTypes;
-
 @Configuration
 public class DynamicResourceConfig implements ApplicationContextAware {
 
@@ -35,7 +33,6 @@ public class DynamicResourceConfig implements ApplicationContextAware {
 
     private final AppConfig appConfig;
     private final OperationsMapping operationsMapping;
-
 
     public DynamicResourceConfig(AppConfig appConfig, @Autowired(required = false) OperationsMapping operationsMapping) {
         this.appConfig = appConfig;
@@ -56,9 +53,9 @@ public class DynamicResourceConfig implements ApplicationContextAware {
 
     @SneakyThrows
     private void configure(DefaultListableBeanFactory beanFactory) {
-        Reflections reflections = new Reflections(appConfig.getPkg());
-        Set<Class<?>> resources =
-            reflections.get(SubTypes.of(Resource.class).asClass().filter(c -> c.isAnnotationPresent(RestController.class) && c.isInterface()));
+        Set<Class<?>> resources = ClassUtil.findInterfacesAnnotatedWith(
+            appConfig.getPkg(), RestController.class, Resource.class
+        );
 
         if (CollectionUtil.isEmpty(resources)) {
             LOG.warn("No resources found in projet", resources.size());
@@ -78,7 +75,7 @@ public class DynamicResourceConfig implements ApplicationContextAware {
 
                 LOG.debug("%s is already loaded", className);
 
-            }else {
+            } else {
                 MethodHandles.Lookup tmpInstance = null;
 
                 if (JavaUtil.isJava8()) {

@@ -18,6 +18,7 @@ public final class EmailSenderFactory {
     public static EmailSender create(String url, String defaultSender) {
         UrlInfo uri = UrlInfo.parse(url);
         String lDefaultSender = defaultSender;
+
         if (TextUtil.isEmpty(lDefaultSender)) {
             lDefaultSender = uri.param("from").orElse(null);
         }

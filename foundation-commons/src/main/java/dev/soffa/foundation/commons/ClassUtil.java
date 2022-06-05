@@ -3,10 +3,14 @@ package dev.soffa.foundation.commons;
 
 import com.google.gson.internal.Primitives;
 import dev.soffa.foundation.error.TechnicalException;
+import io.github.classgraph.ClassGraph;
+import io.github.classgraph.ClassInfo;
+import io.github.classgraph.ScanResult;
 import lombok.SneakyThrows;
 import org.apache.commons.lang3.reflect.TypeUtils;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
@@ -21,6 +25,32 @@ public class ClassUtil {
             // EL
             return !Modifier.isTransient(field.getModifiers());
         }).collect(Collectors.toList());
+    }
+
+
+    public static Set<Class<?>> findInterfacesAnnotatedWith(String basePackage, Class<? extends Annotation> annotationClass) {
+        return findInterfacesAnnotatedWith(basePackage, annotationClass, null);
+    }
+
+    public static Set<Class<?>> findInterfacesAnnotatedWith(String basePackage, Class<? extends Annotation> annotationClass,
+                                                             Class<?> parentInterface) {
+        Set<Class<?>> resources = new HashSet<>();
+        try (ScanResult scanResult =
+                 new ClassGraph()
+                     .enableClassInfo()
+                     .enableAnnotationInfo()
+                     .acceptPackages(basePackage)
+                     .scan()) {
+            for (ClassInfo ci : scanResult.getClassesWithAnnotation(annotationClass)) {
+                if (ci.isInterface()) {
+                    Class<?> clazz = ci.loadClass();
+                    if (parentInterface == null || parentInterface.isAssignableFrom(clazz)) {
+                        resources.add(clazz);
+                    }
+                }
+            }
+        }
+        return resources;
     }
 
     @NonNull
@@ -53,7 +83,7 @@ public class ClassUtil {
 
         for (Type parent : parents) {
             Class<?>[] match = lookupGeneric((Class<?>) parent, genericClass);
-            if (match.length > 0) {
+            if (match != null && match.length > 0) {
                 return match;
             }
         }
