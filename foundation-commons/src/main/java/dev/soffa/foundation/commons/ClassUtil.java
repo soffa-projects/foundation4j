@@ -57,7 +57,7 @@ public class ClassUtil {
     public static Class<?>[] lookupGeneric(@NonNull Class<?> type, @NonNull Class<?> genericClass) {
         List<Type> parents = new ArrayList<>();
         if (type.getSuperclass() != null) {
-            parents.addAll(Collections.singletonList(type.getSuperclass()));
+            parents.add(type.getSuperclass());
         }
         parents.addAll(Arrays.asList(type.getInterfaces()));
 
@@ -66,9 +66,6 @@ public class ClassUtil {
         }
 
         for (Type candidate : parents) {
-            if (candidate == null) {
-                continue;
-            }
             if (candidate == genericClass) {
                 for (Type gi : type.getGenericInterfaces()) {
                     if (TypeUtils.isAssignable(gi, genericClass)) {
