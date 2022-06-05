@@ -53,6 +53,10 @@ public class Context {
         return new Context().withTenant(tenantId);
     }
 
+    public static Context create() {
+        return new Context();
+    }
+
     @SneakyThrows
     public static void setServiceName(String value) {
         if (isEmpty(value)) {

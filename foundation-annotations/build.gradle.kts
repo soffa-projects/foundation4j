@@ -4,7 +4,7 @@ plugins {
 }
 
 dependencies {
-    compileOnly("org.springframework:spring-web:5.3.18")
+    compileOnly("org.springframework:spring-web:5.3.20")
 }
 repositories {
     mavenCentral()

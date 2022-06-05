@@ -34,6 +34,16 @@ public class OperationsMapping {
     }
 
     @SuppressWarnings("unchecked")
+    public <I, O, T extends Operation<I, O>> T invoke(String name) {
+        return (T) require(name).handle(Context.create());
+    }
+
+    @SuppressWarnings("unchecked")
+    public void send(String name) {
+        require(name).handle(Context.create());
+    }
+
+    @SuppressWarnings("unchecked")
     public <I, O, T extends Operation<I, O>> T require(String name) {
         return (T) lookup(name).orElseThrow(() -> new TechnicalException("Operation not found: " + name));
     }

@@ -1,4 +1,4 @@
-package dev.soffa.foundation.starter.test.app.operation;
+package dev.soffa.foundation.starter.test.app.handlers;
 
 import dev.soffa.foundation.annotation.Handle;
 import dev.soffa.foundation.context.Context;

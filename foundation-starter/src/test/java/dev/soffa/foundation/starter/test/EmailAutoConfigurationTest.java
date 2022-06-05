@@ -2,8 +2,10 @@ package dev.soffa.foundation.starter.test;
 
 import dev.soffa.foundation.mail.Mailer;
 import dev.soffa.foundation.mail.adapter.FakeEmailSender;
-import dev.soffa.foundation.mail.adapter.SendgridEmailSender;
-import dev.soffa.foundation.mail.adapter.SmtpEmailSender;
+import dev.soffa.foundation.starter.test.app.ApplicationListener;
+import dev.soffa.foundation.support.mail.SendgridEmailSender;
+import dev.soffa.foundation.support.mail.SmtpEmailSender;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -22,6 +24,12 @@ public class EmailAutoConfigurationTest {
 
     @Autowired
     private Mailer mailer;
+
+
+    @Test
+    public void testListener() {
+        Assertions.assertTrue(ApplicationListener.onApplicationReadyCalled.get());
+    }
 
     @Test
     public void testMailerConfig() {

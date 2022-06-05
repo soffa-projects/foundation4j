@@ -1,5 +1,7 @@
 package ext.springboot;
 
+import dev.soffa.foundation.commons.EventBus;
+import dev.soffa.foundation.events.ApplicationStartedEvent;
 import dev.soffa.foundation.events.OnServiceStarted;
 import dev.soffa.foundation.message.Message;
 import dev.soffa.foundation.message.MessageFactory;
@@ -55,6 +57,7 @@ public class FoundationPubSubAutoConfiguration {
         public void onApplicationEvent(@NonNull ContextRefreshedEvent event) {
             Message msg = MessageFactory.create(OnServiceStarted.class.getSimpleName(), new ServiceId(serviceId));
             messenger.broadcast("*", msg);
+            EventBus.post(new ApplicationStartedEvent());
         }
     }
 

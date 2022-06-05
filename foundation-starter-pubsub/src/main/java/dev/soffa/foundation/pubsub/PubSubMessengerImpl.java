@@ -1,6 +1,5 @@
 package dev.soffa.foundation.pubsub;
 
-import dev.soffa.foundation.commons.EventBus;
 import dev.soffa.foundation.message.Message;
 import dev.soffa.foundation.message.MessageHandler;
 import dev.soffa.foundation.message.pubsub.PubSubClient;
@@ -24,7 +23,6 @@ public class PubSubMessengerImpl implements PubSubMessenger {
         } else {
             defaultClient = clients.values().iterator().next();
         }
-        EventBus.register(this);
     }
 
 
@@ -73,34 +71,6 @@ public class PubSubMessengerImpl implements PubSubMessenger {
         getDefaultClient().setDefaultBroadcast(value);
     }
 
-    /*
-    @Subscribe
-    public void onDatabaseReady(DatabaseReadyEvent ignore) {
-        EventBus.unregister(this);
-        for (Map.Entry<String, PubSubClientConfig> e : config.getClients().entrySet()) {
-            String subjects = e.getValue().getSubjects();
-            configureListeners(clients.get(e.getKey()), subjects);
-        }
-        PubSubReadiness.setReady();
-    }
 
-    private void configureListeners(PubSubClient client, String subjects) {
-        if (TextUtil.isEmpty(subjects)) {
-            return;
-        }
-        String[] subs = subjects.split(",");
-        for (String sub : subs) {
-            if (TextUtil.isNotEmpty(sub)) {
-                boolean isBroadcast = sub.endsWith("*");
-                String rsub = sub.replaceAll("\\*", "");
-                if (isBroadcast) {
-                    client.setDefaultBroadcast(rsub);
-                }
-                client.subscribe(rsub, isBroadcast, messageHandler);
-            }
-        }
-    }
-
-     */
 
 }

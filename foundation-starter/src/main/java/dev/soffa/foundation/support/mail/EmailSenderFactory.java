@@ -1,10 +1,11 @@
-package dev.soffa.foundation.mail.adapter;
+package dev.soffa.foundation.support.mail;
 
 import dev.soffa.foundation.commons.TextUtil;
 import dev.soffa.foundation.commons.UrlInfo;
 import dev.soffa.foundation.error.ConfigurationException;
 import dev.soffa.foundation.error.NotImplementedException;
 import dev.soffa.foundation.mail.EmailSender;
+import dev.soffa.foundation.mail.adapter.FakeEmailSender;
 import dev.soffa.foundation.mail.models.MailerConfig;
 
 import java.util.Objects;

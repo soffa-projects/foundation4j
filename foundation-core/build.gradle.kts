@@ -10,8 +10,8 @@ dependencies {
     api(project(":foundation-commons"))
     api("javax.inject:javax.inject:1")
     api("javax.transaction:javax.transaction-api:1.3")
-    implementation("com.auth0:java-jwt:3.19.1")
-    implementation("com.nimbusds:nimbus-jose-jwt:9.21")
+    implementation("com.auth0:java-jwt:3.19.2")
+    implementation("com.nimbusds:nimbus-jose-jwt:9.22")
     implementation("commons-validator:commons-validator:1.7")
 
     @Suppress("GradlePackageUpdate")

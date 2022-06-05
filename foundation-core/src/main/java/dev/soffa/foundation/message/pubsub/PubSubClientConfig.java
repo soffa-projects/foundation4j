@@ -11,10 +11,14 @@ public class PubSubClientConfig {
     private String addresses;
     private String username;
     private String password;
-    private String subjects;
+    private String subscribe;
     private String broadcasting;
 
     private Map<String, String> options;
+
+    public void setSubjects(String subjects) {
+        this.subscribe = subjects;
+    }
 
     public void afterPropertiesSet() {
         if (addresses == null) {

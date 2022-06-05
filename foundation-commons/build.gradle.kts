@@ -20,13 +20,13 @@ dependencies {
     api("org.glassfish:javax.el:3.0.0")
     api("commons-io:commons-io:2.11.0")
     api("com.squareup.okhttp3:okhttp:4.9.3")
-    api("com.konghq:unirest-java:3.13.7")
+    api("com.konghq:unirest-java:3.13.8")
     api("com.google.guava:guava:31.1-jre")
     @Suppress("GradlePackageUpdate")
     implementation("commons-codec:commons-codec:1.15")
     implementation("io.pebbletemplates:pebble:3.1.5")
-    implementation("com.auth0:java-jwt:3.19.1")
-    implementation("com.nimbusds:nimbus-jose-jwt:9.21")
+    implementation("com.auth0:java-jwt:3.19.2")
+    implementation("com.nimbusds:nimbus-jose-jwt:9.22")
     implementation("com.aventrix.jnanoid:jnanoid:2.0.0")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin:${property("jackson.version")}")
     implementation("com.github.michaelgantman:MgntUtils:1.6.0.3")
@@ -34,4 +34,7 @@ dependencies {
     api("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:${property("jackson.version")}")
     api("com.fasterxml.jackson.dataformat:jackson-dataformat-xml:${property("jackson.version")}")
 
+}
+repositories {
+    mavenCentral()
 }

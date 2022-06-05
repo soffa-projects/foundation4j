@@ -2,8 +2,13 @@ package dev.soffa.foundation.starter.test.app;
 
 import dev.soffa.foundation.annotation.Generated;
 import dev.soffa.foundation.resource.Resource;
+import dev.soffa.foundation.starter.test.app.handlers.Echo;
+import dev.soffa.foundation.starter.test.app.handlers.GetMessages;
+import dev.soffa.foundation.starter.test.app.handlers.UpdateContent;
+import dev.soffa.foundation.starter.test.app.handlers.UpdateContent2;
+import dev.soffa.foundation.starter.test.app.model.EchoInput;
 import dev.soffa.foundation.starter.test.app.model.Message;
-import dev.soffa.foundation.starter.test.app.operation.*;
+import dev.soffa.foundation.starter.test.app.model.UpdateContentInput;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import io.swagger.v3.oas.annotations.tags.Tags;

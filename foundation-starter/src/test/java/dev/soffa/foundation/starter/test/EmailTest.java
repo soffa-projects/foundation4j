@@ -3,12 +3,12 @@ package dev.soffa.foundation.starter.test;
 import dev.soffa.foundation.commons.TextUtil;
 import dev.soffa.foundation.commons.UrlInfo;
 import dev.soffa.foundation.mail.EmailSender;
-import dev.soffa.foundation.mail.adapter.EmailSenderFactory;
 import dev.soffa.foundation.mail.adapter.FakeEmailSender;
-import dev.soffa.foundation.mail.adapter.SendgridEmailSender;
-import dev.soffa.foundation.mail.adapter.SmtpEmailSender;
 import dev.soffa.foundation.mail.models.Email;
 import dev.soffa.foundation.model.EmailAddress;
+import dev.soffa.foundation.support.mail.EmailSenderFactory;
+import dev.soffa.foundation.support.mail.SendgridEmailSender;
+import dev.soffa.foundation.support.mail.SmtpEmailSender;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 

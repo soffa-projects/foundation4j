@@ -64,6 +64,7 @@ public class DynamicResourceConfig implements ApplicationContextAware {
             reflections.get(SubTypes.of(Resource.class).asClass().filter(c -> c.isAnnotationPresent(RestController.class) && c.isInterface()));
 
         if (CollectionUtil.isEmpty(resources)) {
+            LOG.warn("No resources found in projet", resources.size());
             return;
         }
 
@@ -76,8 +77,12 @@ public class DynamicResourceConfig implements ApplicationContextAware {
             if (!LOADED.contains(className)) {
                 LOADED.add(className);
                 MethodHandles.Lookup tmpInstance = null;
+
                 if (JavaUtil.isJava8()) {
-                    Constructor<MethodHandles.Lookup> constructor = MethodHandles.Lookup.class.getDeclaredConstructor(Class.class, int.class);
+                    @SuppressWarnings("JavaReflectionMemberAccess")
+                    Constructor<MethodHandles.Lookup> constructor = MethodHandles.Lookup.class.getDeclaredConstructor(
+                        Class.class, int.class
+                    );
                     constructor.setAccessible(true);
                     tmpInstance = constructor.newInstance(clazz, MethodHandles.Lookup.PRIVATE);
                 }
@@ -109,6 +114,8 @@ public class DynamicResourceConfig implements ApplicationContextAware {
                             throw new UnsupportedOperationException("Method " + method.getName() + " is not supported");
                         }
                     });
+
+                LOG.info("Dynamic resource registered: %s", className);
 
                 beanFactory.registerSingleton(className, controller);
             }

@@ -1,4 +1,4 @@
-package dev.soffa.foundation.starter.test.app.operation;
+package dev.soffa.foundation.starter.test.app.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

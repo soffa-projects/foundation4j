@@ -17,20 +17,21 @@ dependencies {
             strictly("2.9.3")
         }
     }
-    implementation("org.postgresql:postgresql:42.3.3")
+    implementation("org.postgresql:postgresql:42.3.6")
     @Suppress("GradlePackageUpdate")
+    // HikariCP 5+ is not compatible with Java8
     implementation("com.zaxxer:HikariCP:4.0.3") {
         exclude(group = "com.github.ben-manes.caffeine")
     }
     implementation("io.pebbletemplates:pebble:3.1.5")
     implementation("org.reflections:reflections:0.10.2")
-    implementation("net.javacrumbs.shedlock:shedlock-provider-jdbc-template:4.33.0")
-    implementation("net.javacrumbs.shedlock:shedlock-spring:4.33.0")
+    implementation("net.javacrumbs.shedlock:shedlock-provider-jdbc-template:4.34.0")
+    implementation("net.javacrumbs.shedlock:shedlock-spring:4.34.0")
     api("org.hibernate.javax.persistence:hibernate-jpa-2.1-api:1.0.2.Final")
     implementation("org.jdbi:jdbi3-core:3.28.0") {
         exclude(group = "com.github.ben-manes.caffeine")
     }
-    implementation("org.liquibase:liquibase-core:4.9.1")
+    implementation("org.liquibase:liquibase-core:4.10.0")
     implementation("org.jdbi:jdbi3-postgres:3.28.0")
     implementation("org.jdbi:jdbi3-sqlobject:3.28.0")
 
@@ -40,13 +41,4 @@ dependencies {
 repositories {
     mavenCentral()
 }
-
-
-/*
-api("org.jobrunr:jobrunr:4.0.7") {
-    exclude(group = "com.zaxxer")
-    exclude(group = "com.h2database")
-}
-
- */
 

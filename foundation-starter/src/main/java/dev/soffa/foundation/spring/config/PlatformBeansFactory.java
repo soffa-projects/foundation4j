@@ -70,7 +70,6 @@ public class PlatformBeansFactory {
                 throw new ConfigurationException("app.package definition is missing, should point to your main package");
             }
         }
-
         return conf;
     }
 
@@ -88,7 +87,6 @@ public class PlatformBeansFactory {
     @Bean
     public OpenAPI createOpenAPI(AppConfig appConfig) {
         SpringDocUtils.getConfig().addRequestWrapperToIgnore(Context.class);
-
         OpenApiBuilder builder = new OpenApiBuilder(appConfig.getOpenapi());
         return builder.build();
     }

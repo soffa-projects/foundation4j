@@ -20,13 +20,15 @@ dependencies {
     implementation("org.springframework:spring-tx")
     implementation("net.logstash.logback:logstash-logback-encoder:7.1.1")
     implementation("org.springframework.cloud:spring-cloud-starter-consul-discovery")
-
+    implementation("org.jobrunr:jobrunr:5.1.3") {
+        exclude(group = "com.zaxxer")
+    }
     implementation("io.micrometer:micrometer-registry-prometheus")
-    implementation("org.springdoc:springdoc-openapi-ui:1.6.7") {
+    implementation("org.springdoc:springdoc-openapi-ui:1.6.8") {
         exclude(group = "io.github.classgraph")
     }
-    implementation("org.springdoc:springdoc-openapi-kotlin:1.6.7")
-    implementation("org.springdoc:springdoc-openapi-security:1.6.7") {
+    implementation("org.springdoc:springdoc-openapi-kotlin:1.6.8")
+    implementation("org.springdoc:springdoc-openapi-security:1.6.8") {
         exclude(group = "io.github.classgraph")
     }
     implementation("org.reflections:reflections:0.10.2")

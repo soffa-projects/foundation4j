@@ -1,12 +1,14 @@
 package dev.soffa.foundation.starter.test;
 
 import dev.soffa.foundation.commons.Mappers;
+import dev.soffa.foundation.starter.test.app.ApplicationListener;
 import dev.soffa.foundation.starter.test.app.EchoResource;
-import dev.soffa.foundation.starter.test.app.operation.Echo;
-import dev.soffa.foundation.starter.test.app.operation.EchoInput;
+import dev.soffa.foundation.starter.test.app.handlers.Echo;
+import dev.soffa.foundation.starter.test.app.model.EchoInput;
 import dev.soffa.foundation.test.spring.HttpExpect;
 import lombok.SneakyThrows;
 import org.checkerframework.com.google.common.collect.ImmutableMap;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -25,12 +27,17 @@ public class EchoResourceTest {
     @Autowired
     private MockMvc mockMvc;
 
-    @SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
     @Autowired
     private EchoResource resource;
 
     @Autowired
     private Echo echoUseCase;
+
+
+    @Test
+    public void testListener() {
+        Assertions.assertTrue(ApplicationListener.onApplicationReadyCalled.get());
+    }
 
     @SneakyThrows
     @Test

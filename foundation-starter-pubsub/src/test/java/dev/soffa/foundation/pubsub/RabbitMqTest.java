@@ -3,6 +3,7 @@ package dev.soffa.foundation.pubsub;
 import dev.soffa.foundation.error.TechnicalException;
 import dev.soffa.foundation.message.MessageFactory;
 import dev.soffa.foundation.message.pubsub.PubSubMessenger;
+import dev.soffa.foundation.pubsub.app.ApplicationListener;
 import org.awaitility.Awaitility;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -29,6 +30,11 @@ public class RabbitMqTest {
 
     @Autowired
     private PubSubMessenger messenger;
+
+    @Test
+    public void testListener() {
+        Assertions.assertTrue(ApplicationListener.onApplicationReadyCalled.get());
+    }
 
     @Test
     public void testClient() {

@@ -1,4 +1,4 @@
-package dev.soffa.foundation.mail.adapter;
+package dev.soffa.foundation.support.mail;
 
 import com.sendgrid.Method;
 import com.sendgrid.Request;

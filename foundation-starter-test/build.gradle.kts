@@ -8,7 +8,7 @@ dependencies {
     compileOnly(project(":foundation-core"))
     api(project(":foundation-commons"))
 
-    api("com.intuit.karate:karate-junit5:1.2.0.RC6")
+    api("com.intuit.karate:karate-junit5:1.2.0")
     api("org.springframework.boot:spring-boot-starter-test") {
         exclude(group = "com.vaadin.external.google")
     }
@@ -25,7 +25,7 @@ dependencies {
         exclude(module="snakeyaml")
     }
 
-    testImplementation("org.springframework.boot:spring-boot-starter-web:2.6.4")
+    testImplementation("org.springframework.boot:spring-boot-starter-web:2.7.0")
 }
 repositories {
     mavenCentral()

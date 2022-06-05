@@ -31,7 +31,7 @@ public final class PubSubMessengerFactory {
         Map<String, PubSubClient> clients = new HashMap<>();
         for (Map.Entry<String, PubSubClientConfig> e : config.getClients().entrySet()) {
             PubSubClient client = createClient(applicationName, e.getValue(), config.getBroadcasting());
-            String subjects = e.getValue().getSubjects();
+            String subjects = e.getValue().getSubscribe();
             if (TextUtil.isNotEmpty(subjects)) {
                 if (handler == null) {
                     throw new ConfigurationException("A MessageHandler is required when  pubsub.subjects is set");
