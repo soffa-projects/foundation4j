@@ -40,6 +40,7 @@ public class ClassUtil {
                      .enableClassInfo()
                      .enableAnnotationInfo()
                      .acceptPackages(basePackage)
+                     .addClassLoader(Thread.currentThread().getContextClassLoader())
                      .scan()) {
             for (ClassInfo ci : scanResult.getClassesWithAnnotation(annotationClass)) {
                 if (ci.isInterface()) {

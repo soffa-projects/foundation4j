@@ -74,7 +74,7 @@ class DynamicRepositoryBuilder {
             }
 
             Object repositoryImpl = Proxy.newProxyInstance(
-                ClassLoader.getSystemClassLoader(),
+                Thread.currentThread().getContextClassLoader(),
                 new Class[]{resourceClass}, (proxy, method, args) -> {
                     if (method.isDefault()) {
                         if (instance.get() == null) {
