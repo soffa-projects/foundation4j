@@ -21,8 +21,6 @@ import java.util.Optional;
 @Component
 public class SecurityAspect {
 
-    public static final int ORDER = -100;
-
     private static final Logger LOG = Logger.get(SecurityAspect.class);
     private static final Throwable ERR_AUTH_REQUIRED = new UnauthorizedException("Authentication is required to access this resource.");
     private static final Throwable ERR_APP_REQUIRED = new ValidationException("An ApplicationName is required to access this resource.");
@@ -31,8 +29,9 @@ public class SecurityAspect {
     @SneakyThrows
     @Before("@within(dev.soffa.foundation.annotation.Authenticated) || @annotation(dev.soffa.foundation.annotation.Authenticated)")
     public void checkAuthenticated(JoinPoint point) {
+        LOG.debug("[aspect] Checking authentication...");
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        if (!auth.isAuthenticated() || auth instanceof AnonymousAuthenticationToken) {
+        if (auth==null || !auth.isAuthenticated() || auth instanceof AnonymousAuthenticationToken) {
             LOG.warn("Access denied to [%s.%s], current context does not contain an authentication", point.getSignature().getDeclaringTypeName(), point.getSignature().getName());
             throw ERR_AUTH_REQUIRED;
         }
@@ -41,6 +40,7 @@ public class SecurityAspect {
     @SneakyThrows
     @Before("@within(dev.soffa.foundation.annotation.ApplicationRequired) || @annotation(dev.soffa.foundation.annotation.ApplicationRequired)")
     public void checkApplication(JoinPoint point) {
+        LOG.debug("[aspect] Checking application...");
         Context context = getRequestContext().orElseThrow(() -> ERR_APP_REQUIRED);
         if (TextUtil.isEmpty(context.getApplicationName())) {
             LOG.warn("Access denied to [%s.%s], current context does not contain a valid applicationName", point.getSignature().getDeclaringTypeName(), point.getSignature().getName());
