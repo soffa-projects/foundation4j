@@ -4,7 +4,7 @@ spring.main.banner-mode: off
 
 logging.level.ROOT: WARN
 logging.level.io.leangen: ERROR
-logging.level.ext.springboot: INFO
+logging.level.ext.springboot: WARN
 logging.level.org.springframework: ${SPRING_LOG_LEVEL:WARN}
 logging.level.liquibase: ERROR
 logging.level.dev.soffa: ${PLATFORM_LOG_LEVEL:INFO}
