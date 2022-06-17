@@ -28,10 +28,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.time.Duration;
 import java.time.Instant;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -83,6 +80,7 @@ public final class DBImpl extends AbstractDataSource implements ApplicationListe
 
     @Override
     public void withTenants(Consumer<String> consumer) {
+        Optional<String> currentTenant = TenantHolder.get();
         Set<String> tenants = getTenantList();
         tenants.forEach((id) -> {
             boolean skip = id.equals(TENANT_PLACEHOLDER) || id.equals(TenantId.DEFAULT_VALUE);
@@ -90,6 +88,11 @@ public final class DBImpl extends AbstractDataSource implements ApplicationListe
                 TenantHolder.use(id, () -> consumer.accept(id));
             }
         });
+        if (currentTenant.isPresent()) {
+            TenantHolder.set(currentTenant.get());
+        }else {
+            TenantHolder.clear();
+        }
     }
 
     @Override

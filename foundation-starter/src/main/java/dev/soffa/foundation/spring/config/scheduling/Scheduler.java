@@ -4,6 +4,7 @@ import dev.soffa.foundation.annotation.Cron;
 import dev.soffa.foundation.commons.Logger;
 import dev.soffa.foundation.commons.TextUtil;
 import dev.soffa.foundation.context.ApplicationLifecycle;
+import dev.soffa.foundation.multitenancy.TenantHolder;
 import dev.soffa.foundation.scheduling.ServiceWorker;
 import lombok.SneakyThrows;
 import org.apache.commons.beanutils.MethodUtils;
@@ -72,8 +73,10 @@ public class Scheduler implements ApplicationLifecycle {
                     final String methodName = method.getName();
                     Cron annotation = method.getAnnotation(Cron.class);
                     String workerName = worker.getClass().getName();
-                    jobScheduler.scheduleRecurrently(cronId, annotation.value(), () -> this.triggerJob(workerName, methodName));
-
+                    TenantHolder.useDefault(() -> {
+                        jobScheduler.scheduleRecurrently(cronId, annotation.value(), () -> this.triggerJob(workerName, methodName));
+                        return null;
+                    });
                 }
             }
         }
