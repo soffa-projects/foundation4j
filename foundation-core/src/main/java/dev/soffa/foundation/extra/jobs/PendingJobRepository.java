@@ -1,5 +1,6 @@
 package dev.soffa.foundation.extra.jobs;
 
+import dev.soffa.foundation.commons.IdGenerator;
 import dev.soffa.foundation.data.EntityRepository;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
@@ -9,7 +10,7 @@ public interface PendingJobRepository extends EntityRepository<PendingJob> {
 
 
     default void create(@NonNull String operation, @NonNull String subject) {
-        insert(PendingJob.builder().operation(operation).subject(subject).build());
+        insert(PendingJob.builder().operation(operation).subject(subject).id(IdGenerator.uuid("job")).build());
     }
 
     boolean isPending(String operation, String subject);

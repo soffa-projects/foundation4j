@@ -2,11 +2,9 @@ package dev.soffa.foundation.data.spring;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
-import dev.soffa.foundation.commons.IdGenerator;
-import dev.soffa.foundation.commons.Logger;
-import dev.soffa.foundation.commons.Properties;
-import dev.soffa.foundation.commons.TextUtil;
+import dev.soffa.foundation.commons.*;
 import dev.soffa.foundation.data.DataSourceConfig;
+import dev.soffa.foundation.data.common.HikariDS;
 import dev.soffa.foundation.data.config.DataSourceProperties;
 import dev.soffa.foundation.error.DatabaseException;
 import dev.soffa.foundation.error.TechnicalException;
@@ -24,17 +22,29 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import javax.sql.DataSource;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.TimeZone;
+import java.util.concurrent.ConcurrentHashMap;
 
 public final class DBHelper {
 
     private static final Logger LOG = Logger.get(DBHelper.class);
     private static final ResourceLoader RL = new DefaultResourceLoader();
 
+    private static final Map<String, HikariDataSource> CACHE = new ConcurrentHashMap<>();
+
+
     private DBHelper() {
     }
 
     @SneakyThrows
-    public static HikariDataSource createDataSource(DataSourceProperties config, DataSourceConfig link) {
+    public static DataSource createDataSource(String name, DataSourceProperties config) {
+
+        String baseJdbcUrl = config.getUrl().split("\\?")[0];
+        String cacheId = DigestUtil.md5(baseJdbcUrl);
+
+        if (CACHE.containsKey(cacheId)) {
+            return new HikariDS(CACHE.get(cacheId), config.getSchema());
+        }
 
         HikariConfig hc = new HikariConfig();
 
@@ -42,7 +52,7 @@ public final class DBHelper {
         hc.setUsername(config.getUsername());
         hc.setPassword(config.getPassword());
         hc.setJdbcUrl(config.getUrl());
-        hc.setPoolName(IdGenerator.generate(config.getName() + "_"));
+        hc.setPoolName(name);
         hc.setConnectionTestQuery("select 1");
 
         Properties props = new Properties(config.getProperties());
@@ -60,10 +70,11 @@ public final class DBHelper {
         }
 
         if (config.hasSchema()) {
-            hc.setSchema(config.getSchema());
+            hc.setSchema("public");
         }
-        link.setName(config.getName());
-        return new HikariDataSource(hc);
+
+        CACHE.put(cacheId, new HikariDataSource(hc));
+        return new HikariDS(CACHE.get(cacheId), config.getSchema());
     }
 
 
@@ -105,8 +116,13 @@ public final class DBHelper {
 
     private static void doApplyMigration(DatasourceInfo dsInfo, SpringLiquibase lqb, Map<String, String> changeLogParams) {
         @SuppressWarnings("PMD.CloseResource")
-        HikariDataSource ds = (HikariDataSource) dsInfo.getDataSource();
-        String schema = ds.getSchema();
+        DataSource ds = dsInfo.getDataSource();
+        String schema = null;
+        if (ds instanceof HikariDataSource) {
+            schema = ((HikariDataSource) ds).getSchema();
+        }else if (ds instanceof HikariDS) {
+            schema = ((HikariDS) ds).getSchema();
+        }
         if (TenantId.DEFAULT_VALUE.equals(dsInfo.getName())) {
             lqb.setContexts(TenantId.DEFAULT_VALUE);
         } else {
@@ -159,7 +175,7 @@ public final class DBHelper {
         LockProvider lockProvider = new JdbcTemplateLockProvider(JdbcTemplateLockProvider.Configuration.builder()
             .withJdbcTemplate(new JdbcTemplate(ds))
             .withTableName(tablePrefix + "f_shedlock")
-            .usingDbTime()
+            .withTimeZone(TimeZone.getTimeZone("UTC"))
             .build());
         try {
             Jdbi.create(ds).useTransaction(handle -> {

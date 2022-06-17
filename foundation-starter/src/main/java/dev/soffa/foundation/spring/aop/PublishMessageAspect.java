@@ -6,7 +6,6 @@ import dev.soffa.foundation.config.AppConfig;
 import dev.soffa.foundation.message.Message;
 import dev.soffa.foundation.message.MessageFactory;
 import dev.soffa.foundation.message.pubsub.PubSubClient;
-import dev.soffa.foundation.metrics.InternalMetrics;
 import dev.soffa.foundation.model.ResponseEntity;
 import lombok.SneakyThrows;
 import org.aspectj.lang.ProceedingJoinPoint;

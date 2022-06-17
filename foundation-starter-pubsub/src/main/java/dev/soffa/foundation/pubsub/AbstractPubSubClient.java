@@ -1,6 +1,5 @@
 package dev.soffa.foundation.pubsub;
 
-import dev.soffa.foundation.commons.Logger;
 import dev.soffa.foundation.commons.Mappers;
 import dev.soffa.foundation.commons.TextUtil;
 import dev.soffa.foundation.error.ForbiddenException;
@@ -15,13 +14,11 @@ import dev.soffa.foundation.model.ResponseStatus;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
 import java.util.HashSet;
-import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 
 public abstract class AbstractPubSubClient implements PubSubClient {
 
-    private static final Logger LOG = Logger.get(PubSubClient.class);
     protected Set<String> broadcasting = new HashSet<>();
     protected String applicationName;
 

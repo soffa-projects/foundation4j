@@ -7,7 +7,10 @@ import dev.soffa.foundation.commons.TextUtil;
 import dev.soffa.foundation.config.AppConfig;
 import dev.soffa.foundation.data.*;
 import dev.soffa.foundation.data.config.DataSourceProperties;
-import dev.soffa.foundation.error.*;
+import dev.soffa.foundation.error.ConfigurationException;
+import dev.soffa.foundation.error.InvalidTenantException;
+import dev.soffa.foundation.error.NotImplementedException;
+import dev.soffa.foundation.error.TechnicalException;
 import dev.soffa.foundation.events.DatabaseReadyEvent;
 import dev.soffa.foundation.model.TenantId;
 import dev.soffa.foundation.multitenancy.TenantHolder;
@@ -48,6 +51,7 @@ public final class DBImpl extends AbstractDataSource implements ApplicationListe
     private String tablesPrefix;
     private String tenanstListQuery;
     private LockProvider lockProvider;
+
 
     @SneakyThrows
     public DBImpl(final ApplicationContext context,
@@ -90,7 +94,7 @@ public final class DBImpl extends AbstractDataSource implements ApplicationListe
         });
         if (currentTenant.isPresent()) {
             TenantHolder.set(currentTenant.get());
-        }else {
+        } else {
             TenantHolder.clear();
         }
     }
@@ -141,21 +145,9 @@ public final class DBImpl extends AbstractDataSource implements ApplicationListe
         if (TENANT_PLACEHOLDER.equalsIgnoreCase(sourceId)) {
             registry.put(id.toLowerCase(), new DatasourceInfo(id, config));
         } else {
-            DataSource ds = DBHelper.createDataSource(DataSourceProperties.create(appConfig.getName(), id, url), config);
+            DataSource ds = DBHelper.createDataSource(config.getName(), DataSourceProperties.create(appConfig.getName(), id, url));
+            // config.setName(appConfig.getName());
             DatasourceInfo di = new DatasourceInfo(id, config, ds);
-            // di.configureTx(entityManagerFactoryBuilder, appConfig.getPkg());
-
-            // Ping the database to check if it is alive
-            Jdbi jdbi = Jdbi.create(ds);
-            try {
-                jdbi.withHandle(handle -> {
-                    // EL
-                    return handle.createQuery("SELECT 1").mapTo(Integer.class).findFirst();
-                });
-            }catch (Exception e) {
-                throw new DatabaseException("Error while connecting to database: " + di.getName(), e);
-            }
-
             registry.put(sourceId, di);
             if (migrate) {
                 applyMigrations(id);
@@ -308,7 +300,7 @@ public final class DBImpl extends AbstractDataSource implements ApplicationListe
             try {
                 TenantsLoader tenantsLoader = context.getBean(TenantsLoader.class);
                 Set<String> tenantList = tenantsLoader.getTenantList();
-                if (tenantList!=null) {
+                if (tenantList != null) {
                     tenants.addAll(tenantsLoader.getTenantList());
                 }
             } catch (NoSuchBeanDefinitionException e) {

@@ -1,7 +1,6 @@
 package dev.soffa.foundation.pubsub.nats;
 
 import dev.soffa.foundation.commons.Logger;
-import dev.soffa.foundation.commons.TextUtil;
 import dev.soffa.foundation.error.TechnicalException;
 import dev.soffa.foundation.message.Message;
 import dev.soffa.foundation.message.MessageHandler;

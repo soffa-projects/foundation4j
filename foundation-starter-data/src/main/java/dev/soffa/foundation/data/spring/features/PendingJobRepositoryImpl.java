@@ -49,11 +49,21 @@ public class PendingJobRepositoryImpl extends SimpleEntityRepository<PendingJob>
     public void consume(String operation, String subject, Runnable handler) {
         PendingJob job = get(ImmutableMap.of(OPERATION, operation, SUBJECT, subject)).orElse(null);
         if (job == null) {
-            LOG.info("No pending job found for operation: %s and subject: %s", operation, subject);
+            LOG.warn("No pending job found for operation: %s/%s", operation, subject);
+            return;
         }
-        handler.run();
-        delete(job);
-        LOG.info("Pending job consumed for operation: %s and subject: %s", operation, subject);
+        try {
+            handler.run();
+            delete(job);
+            LOG.info("Pending job consumed for operation: %s/%s", operation, subject);
+        } catch (Exception e) {
+            LOG.error("Error while handling pending job for operation: %s/ %s", operation, subject);
+            LOG.error(e.getMessage());
+            job.failed(e.getMessage());
+            update(job);
+            throw e;
+        }
+
     }
 
     @Override

@@ -1,7 +1,7 @@
 package dev.soffa.foundation.starter.test;
 
 import dev.soffa.foundation.spring.config.scheduling.Scheduler;
-import dev.soffa.foundation.starter.test.app.handlers.SimpleJobHandler;
+import dev.soffa.foundation.starter.test.app.worker.SimpleJobHandler;
 import org.awaitility.Awaitility;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,7 +22,7 @@ public class SchedulingTest {
     @Test
     public void testScheduler() {
         assertNotNull(scheduler);
-        Awaitility.await().atMost(15, TimeUnit.SECONDS).until(() -> SimpleJobHandler.getCount() > 0);
+        Awaitility.await().atMost(12, TimeUnit.SECONDS).until(() -> SimpleJobHandler.getCount() > 0);
     }
 
 }

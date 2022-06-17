@@ -4,7 +4,6 @@ import com.github.fridujo.rabbitmq.mock.MockConnectionFactory;
 import com.google.common.collect.ImmutableMap;
 import dev.soffa.foundation.commons.TextUtil;
 import dev.soffa.foundation.commons.UrlInfo;
-import dev.soffa.foundation.message.MessageHandler;
 import dev.soffa.foundation.message.pubsub.PubSubClientConfig;
 import org.aopalliance.intercept.MethodInterceptor;
 import org.springframework.amqp.core.*;

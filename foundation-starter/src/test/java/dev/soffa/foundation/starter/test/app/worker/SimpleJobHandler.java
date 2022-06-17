@@ -1,4 +1,4 @@
-package dev.soffa.foundation.starter.test.app.handlers;
+package dev.soffa.foundation.starter.test.app.worker;
 
 import dev.soffa.foundation.annotation.Cron;
 import dev.soffa.foundation.scheduling.ServiceWorker;
@@ -8,11 +8,12 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 
 @Component
+@Cron(Cron.EVERY_5_SECONDS)
 public class SimpleJobHandler implements ServiceWorker {
 
     private static final AtomicInteger COUNTER = new AtomicInteger(0);
 
-    @Cron(Cron.EVERY_5_SECONDS)
+    @Override
     public void tick() {
         COUNTER.incrementAndGet();
     }
