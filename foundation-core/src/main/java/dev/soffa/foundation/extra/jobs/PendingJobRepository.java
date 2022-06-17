@@ -14,9 +14,11 @@ public interface PendingJobRepository extends EntityRepository<PendingJob> {
 
     boolean isPending(String operation, String subject);
 
-    void delete(String operation, String subbjet);
+    void delete(String operation, String subjet);
 
-    boolean consume(String operation, String subbjet);
+    // boolean consume(String operation, String subjet);
+
+    void consume(String operation, String subject, Runnable handler);
 
     void consume(String operation, Function<PendingJob, Boolean> consumer);
 

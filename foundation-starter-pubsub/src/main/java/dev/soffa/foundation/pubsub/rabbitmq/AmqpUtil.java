@@ -48,8 +48,6 @@ public final class AmqpUtil {
         cf.setAddresses(addressList);
         return cf;
     }
-
-
     public static RabbitAdmin configure(String applicationName, PubSubClientConfig config) {
         String[] addresses = config.getAddresses().split(",");
         CachingConnectionFactory cf = createConnectionFactory(addresses);
@@ -93,6 +91,18 @@ public final class AmqpUtil {
         return createBindings(config.getBroadcasting(), applicationName, new RabbitTemplate(cf));
     }
 
+    public static void declareQueue(RabbitAdmin admin, String name) {
+        QueueInformation info = admin.getQueueInfo(name);
+        if (info==null) {
+            admin.declareQueue(new Queue(name));
+        }
+    }
+
+    public static void createFanoutExchange(RabbitAdmin adm, String exchange, String queue) {
+        FanoutExchange ex = new FanoutExchange(exchange);
+        declareBinding(adm, queue, ex, "", null, false);
+    }
+
     public static RabbitAdmin createBindings(String group, String appName, RabbitTemplate rabbitTemplate) {
         RabbitAdmin adm = new RabbitAdmin(rabbitTemplate);
 
@@ -125,7 +135,7 @@ public final class AmqpUtil {
 
     }
 
-    public static SimpleMessageListenerContainer createListener(RabbitTemplate template, String queueName, MessageHandler handler, String mode) {
+    public static SimpleMessageListenerContainer createListener(RabbitTemplate template, String queueName, String mode) {
         SimpleMessageListenerContainer container = new SimpleMessageListenerContainer(template.getConnectionFactory());
         container.addQueueNames(queueName);
 

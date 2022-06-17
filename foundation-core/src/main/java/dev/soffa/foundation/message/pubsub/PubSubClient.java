@@ -38,10 +38,12 @@ public interface PubSubClient {
     @SneakyThrows
     void broadcast(@NonNull String target, @NotNull Message message);
 
+    void broadcast(@NotNull Message message);
+
 
     // <I, O, T extends Query<I, O>> T proxy(@NonNull String subjet, @NotNull Class<T> operationClass);
 
-    void setDefaultBroadcast(String value);
+    void addBroadcastChannel(String value);
 
     /*
     @SuppressWarnings("unchecked")

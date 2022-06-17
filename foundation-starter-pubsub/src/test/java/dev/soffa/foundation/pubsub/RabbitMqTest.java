@@ -6,6 +6,7 @@ import dev.soffa.foundation.message.pubsub.PubSubMessenger;
 import dev.soffa.foundation.pubsub.app.ApplicationListener;
 import org.awaitility.Awaitility;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -14,6 +15,7 @@ import org.springframework.test.context.ActiveProfiles;
 
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
 
 
@@ -21,6 +23,7 @@ import java.util.concurrent.atomic.AtomicLong;
     "app.pubsub.enabled=true",
     "app.pubsub.clients.default.broadcasting=foundation",
     "app.pubsub.clients.default.options.mode=test",
+    "app.pubsub.clients.default.subscribe=foo,global*",
     "PUBSUB_ADDRESSES=amqp://embedded"
     //"PUBSUB_ADDRESSES=amqp://guest:guest@localhost:5672",
 })
@@ -42,7 +45,7 @@ public class RabbitMqTest {
 
         AtomicLong counter = new AtomicLong(0);
         AtomicLong failures = new AtomicLong(0);
-        final double errorRate = 0.65;
+        final double errorRate = 0.15;
         messenger.subscribe(message -> {
             if (Math.random() > errorRate) {
                 // Induce random failure
@@ -60,8 +63,19 @@ public class RabbitMqTest {
         Awaitility.await().atMost(5, TimeUnit.SECONDS).until(() -> counter.get() > 0);
         Assertions.assertTrue(failures.get() >= 0);
     }
+    @Test
+    public void testBroadcast() {
+        AtomicBoolean consumed = new AtomicBoolean(false);
+        messenger.subscribe(message -> {
+            consumed.set(true);
+            return Optional.empty();
+        });
+        messenger.publish("*", MessageFactory.create("broadcast-operation-test"));
+        Awaitility.await().atMost(2, TimeUnit.SECONDS).until(consumed::get);
+    }
 
     @Test
+    @Disabled
     public void testDLQ() {
         Assertions.assertNotNull(messenger);
 

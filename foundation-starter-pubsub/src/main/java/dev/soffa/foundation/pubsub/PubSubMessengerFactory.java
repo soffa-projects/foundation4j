@@ -72,10 +72,11 @@ public final class PubSubMessengerFactory {
                 boolean isBroadcast = sub.endsWith("*");
                 String rsub = sub.replaceAll("\\*", "");
                 if (isBroadcast) {
-                    client.setDefaultBroadcast(rsub);
+                    client.addBroadcastChannel(rsub);
                 }
                 client.subscribe(rsub, isBroadcast, handler);
             }
+            LOG.info("All listeners registered");
         }
     }
 

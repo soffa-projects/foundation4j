@@ -1,5 +1,6 @@
 package dev.soffa.foundation.pubsub;
 
+import dev.soffa.foundation.annotation.Publish;
 import dev.soffa.foundation.message.Message;
 import dev.soffa.foundation.message.MessageHandler;
 import dev.soffa.foundation.message.pubsub.PubSubClient;
@@ -53,7 +54,11 @@ public class PubSubMessengerImpl implements PubSubMessenger {
 
     @Override
     public void publish(@NonNull String subject, @NotNull Message message) {
-        getDefaultClient().publish(subject, message);
+        if (Publish.BROADCAST_TARGET.equalsIgnoreCase(subject)) {
+            getDefaultClient().broadcast(message);
+        } else {
+            getDefaultClient().publish(subject, message);
+        }
     }
 
     @Override
@@ -67,8 +72,13 @@ public class PubSubMessengerImpl implements PubSubMessenger {
     }
 
     @Override
-    public void setDefaultBroadcast(String value) {
-        getDefaultClient().setDefaultBroadcast(value);
+    public void broadcast(Message message) {
+        getDefaultClient().broadcast(message);
+    }
+
+    @Override
+    public void addBroadcastChannel(String value) {
+        getDefaultClient().addBroadcastChannel(value);
     }
 
 

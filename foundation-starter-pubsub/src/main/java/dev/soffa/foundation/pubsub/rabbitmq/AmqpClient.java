@@ -25,11 +25,13 @@ public class AmqpClient extends AbstractPubSubClient implements PubSubClient {
 
     private final RabbitAdmin rabbitAdmin;
     private final List<SimpleMessageListenerContainer> listeners = new ArrayList<>();
+    private final boolean embedded;
 
     public AmqpClient(String applicationName, PubSubClientConfig config, String broadcasting) {
         super(applicationName, config, broadcasting);
         this.config = config;
         this.rabbitAdmin = configure();
+        this.embedded = config.getAddresses().contains("://embedded");
     }
 
     @Override
@@ -48,8 +50,15 @@ public class AmqpClient extends AbstractPubSubClient implements PubSubClient {
 
     @Override
     public void subscribe(@NonNull String subject, boolean broadcast, MessageHandler messageHandler) {
+
+        if (broadcast && embedded) {
+            AmqpUtil.createFanoutExchange(rabbitAdmin, subject, applicationName);
+            return;
+        } else if (embedded) {
+            AmqpUtil.declareQueue(rabbitAdmin, subject);
+        }
         SimpleMessageListenerContainer container = AmqpUtil.createListener(
-            rabbitAdmin.getRabbitTemplate(), subject, messageHandler, config.getOption("mode")
+            rabbitAdmin.getRabbitTemplate(), subject, config.getOption("mode")
         );
         container.setMessageListener(message -> {
             //EL

@@ -58,7 +58,7 @@ public class SimplePubSubClient extends AbstractPubSubClient implements PubSubCl
     }
 
     @Override
-    public void setDefaultBroadcast(String value) {
+    public void addBroadcastChannel(String value) {
         // no-op
     }
 

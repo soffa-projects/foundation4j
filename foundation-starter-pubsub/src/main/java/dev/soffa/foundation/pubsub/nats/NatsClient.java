@@ -103,12 +103,7 @@ public class NatsClient extends AbstractPubSubClient implements PubSubClient {
     @SneakyThrows
     @Override
     public void broadcast(@NonNull String target, @NonNull Message message) {
-        String sub = resolveBroadcast(target);
-        if (TextUtil.isEmpty(sub)) {
-            LOG.warn("Broadcasting ignored: %s, target is empy.", message.getOperation());
-            return;
-        }
-        PublishAck ack = stream.publish(NatsUtil.createNatsMessage(sub, message));
+        PublishAck ack = stream.publish(NatsUtil.createNatsMessage(target, message));
         if (ack.hasError()) {
             throw new TechnicalException(ack.getError());
         }

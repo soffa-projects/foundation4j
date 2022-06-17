@@ -56,7 +56,7 @@ public class FoundationPubSubAutoConfiguration {
         @Override
         public void onApplicationEvent(@NonNull ContextRefreshedEvent event) {
             Message msg = MessageFactory.create(OnServiceStarted.class.getSimpleName(), new ServiceId(serviceId));
-            messenger.broadcast("*", msg);
+            messenger.broadcast(msg);
             EventBus.post(new ApplicationStartedEvent());
         }
     }

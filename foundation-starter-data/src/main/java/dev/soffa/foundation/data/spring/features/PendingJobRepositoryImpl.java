@@ -35,6 +35,7 @@ public class PendingJobRepositoryImpl extends SimpleEntityRepository<PendingJob>
         delete(ImmutableMap.of(OPERATION, operation, SUBJECT, subject));
     }
 
+    /*
     @Override
     public boolean consume(String operation, String subject) {
         PendingJob job = get(ImmutableMap.of(OPERATION, operation, SUBJECT, subject)).orElse(null);
@@ -42,6 +43,17 @@ public class PendingJobRepositoryImpl extends SimpleEntityRepository<PendingJob>
             return false;
         }
         return delete(job) > 0;
+    }*/
+
+    @Override
+    public void consume(String operation, String subject, Runnable handler) {
+        PendingJob job = get(ImmutableMap.of(OPERATION, operation, SUBJECT, subject)).orElse(null);
+        if (job == null) {
+            LOG.info("No pending job found for operation: %s and subject: %s", operation, subject);
+        }
+        handler.run();
+        delete(job);
+        LOG.info("Pending job consumed for operation: %s and subject: %s", operation, subject);
     }
 
     @Override
