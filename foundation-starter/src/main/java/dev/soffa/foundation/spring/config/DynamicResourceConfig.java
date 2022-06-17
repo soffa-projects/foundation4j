@@ -69,12 +69,10 @@ public class DynamicResourceConfig implements ApplicationContextAware {
         for (Class<?> clazz : resources) {
             String className = clazz.getName() + "Controller";
 
+            // RolesAllowed classRolesAllowed = AnnotationUtils.findAnnotation(clazz, RolesAllowed.class);
             LOG.debug("Generating implement for %s", className);
-
             if (beanFactory.getSingleton(className) != null) {
-
                 LOG.debug("%s is already loaded", className);
-
             } else {
                 MethodHandles.Lookup tmpInstance = null;
 
@@ -90,6 +88,8 @@ public class DynamicResourceConfig implements ApplicationContextAware {
                 final MethodHandles.Lookup instance = tmpInstance;
 
                 LOG.debug("Creating proxy for %s", className);
+
+                //TODO: Cache RolesALlowed on this interface
 
                 Object controller = Proxy.newProxyInstance(
                     Thread.currentThread().getContextClassLoader(),
@@ -111,6 +111,7 @@ public class DynamicResourceConfig implements ApplicationContextAware {
                                 bindTo(proxy).
                                 invokeWithArguments(args);
                         } else if ("invoke".equals(method.getName())) {
+                            // checkRoleAllowed(classRolesAllowed);
                             return MethodUtils.invokeMethod(dispatcher, "dispatch", args, method.getParameterTypes());
                         } else {
                             throw new UnsupportedOperationException("Method " + method.getName() + " is not supported");
