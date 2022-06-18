@@ -1,6 +1,8 @@
 package dev.soffa.foundation.commons;
 
 
+import org.apache.commons.lang3.StringUtils;
+
 import java.text.MessageFormat;
 import java.util.Arrays;
 import java.util.stream.Collectors;
@@ -71,6 +73,21 @@ public final class TextUtil {
             }
         }
         return true;
+    }
+
+    public static String join(String glue, String... values) {
+        if (values == null || values.length == 0) {
+            return "";
+        }
+        StringBuilder res = new StringBuilder(StringUtils.removeEnd(values[0], glue));
+        for (int i = 1; i < values.length; i++) {
+            String value = values[i];
+            if (!value.startsWith(glue)) {
+                res.append(glue);
+            }
+            res.append(StringUtils.removeEnd(value, glue));
+        }
+        return res.toString();
     }
 
     public static String trimToEmpty(String input) {
