@@ -52,7 +52,7 @@ public class DataSourceProperties {
                 schema = schema.toLowerCase();
             }
         }
-        JdbcInfo jdbcInfo = createJdbcUrl(applicationName, provider, urlInfo, schema, databaseUrl);
+        JdbcInfo jdbcInfo = createJdbcUrl(applicationName, provider, urlInfo, schema);
 
         return DataSourceProperties.builder()
             .name(applicationName + "_" + name)
@@ -66,7 +66,7 @@ public class DataSourceProperties {
     }
 
     @SneakyThrows
-    private static JdbcInfo createJdbcUrl(String applicationName, String provider, UrlInfo url, String schema, String initialUrl) {
+    private static JdbcInfo createJdbcUrl(String applicationName, String provider, UrlInfo url, String schema) {
         StringBuilder jdbcUrl = new StringBuilder();
         String jdbcDriver;
         StringBuilder hostname = new StringBuilder(url.getHostname());

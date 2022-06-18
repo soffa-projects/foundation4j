@@ -37,6 +37,3 @@ dependencies {
     api("com.fasterxml.jackson.dataformat:jackson-dataformat-xml:${property("jackson.version")}")
 
 }
-repositories {
-    mavenCentral()
-}
