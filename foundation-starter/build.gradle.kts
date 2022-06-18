@@ -10,7 +10,7 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-web") {
         exclude(module = "spring-boot-starter-tomcat")
     }
-    runtimeOnly("org.springframework.boot:spring-boot-starter-undertow")
+    implementation("org.springframework.boot:spring-boot-starter-undertow")
     implementation("org.apache.commons:commons-email:1.5")
     implementation("com.sendgrid:sendgrid-java:4.9.2")
     implementation("org.springframework.boot:spring-boot-starter-actuator")
