@@ -101,6 +101,5 @@ public interface EntityRepository<E> {
         return exists(ImmutableMap.of("id", id));
     }
 
-     void withLock();
 
 }
