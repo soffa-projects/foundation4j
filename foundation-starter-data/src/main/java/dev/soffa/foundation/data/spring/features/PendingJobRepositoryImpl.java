@@ -26,7 +26,7 @@ public class PendingJobRepositoryImpl extends SimpleEntityRepository<PendingJob>
     }
 
     @Override
-    public boolean isPending(String operation, String subject) {
+    public boolean exists(String operation, String subject) {
         return count(ImmutableMap.of(OPERATION, operation, SUBJECT, subject)) > 0;
     }
 

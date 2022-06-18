@@ -1,6 +1,7 @@
 package dev.soffa.foundation.commons;
 
 import com.aventrix.jnanoid.jnanoid.NanoIdUtils;
+import com.github.f4b6a3.uuid.UuidCreator;
 
 import java.nio.ByteBuffer;
 import java.security.SecureRandom;
@@ -16,22 +17,21 @@ public final class IdGenerator {
     private IdGenerator() {
     }
 
-    public static String generate() {
-        return generate("");
+    public static String secret() {
+        return secret("");
     }
-
-    public static String generate(String... prefix) {
+    public static String secret(String... prefix) {
         byte[] buffer = new byte[20];
         RANDOM.nextBytes(buffer);
         return TextUtil.prefix(ENCODER.encodeToString(buffer), prefix);
     }
 
-    public static String uuid() {
-        return generate("");
+    public static String uuidSnakeCase(String... prefix) {
+        return uuid(prefix).replaceAll("-", "_");
     }
 
     public static String uuid(String... prefix) {
-        return TextUtil.prefix(UUID.randomUUID().toString(), prefix);
+        return TextUtil.prefix(UuidCreator.getRandomBased().toString(), prefix);
     }
 
     public static String nanoId() {

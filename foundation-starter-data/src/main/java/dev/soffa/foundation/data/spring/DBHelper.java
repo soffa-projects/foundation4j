@@ -61,7 +61,7 @@ public final class DBHelper {
         Properties props = new Properties(config.getProperties());
 
         hc.setMinimumIdle(props.getInt("minimumIdle", 10_000));
-        hc.setConnectionTimeout(props.getInt("connectionTimeout", 30_000));
+        hc.setConnectionTimeout(props.getInt("connectionTimeout", 10_000));
         // hc.setIdleTimeout(props.getInt("idleTimeout", 35_000));
         hc.setMaxLifetime(props.getInt("maxLifetime", 45_000));
         hc.setMaximumPoolSize(props.getInt("maxPoolSize", 10));

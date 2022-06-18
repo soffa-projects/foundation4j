@@ -10,10 +10,12 @@ public interface PendingJobRepository extends EntityRepository<PendingJob> {
 
 
     default void create(@NonNull String operation, @NonNull String subject) {
-        insert(PendingJob.builder().operation(operation).subject(subject).id(IdGenerator.uuid("job")).build());
+        if (!exists(operation, subject)) {
+            insert(PendingJob.builder().operation(operation).subject(subject).id(IdGenerator.uuidSnakeCase("job")).build());
+        }
     }
 
-    boolean isPending(String operation, String subject);
+    boolean exists(String operation, String subject);
 
     void delete(String operation, String subjet);
 

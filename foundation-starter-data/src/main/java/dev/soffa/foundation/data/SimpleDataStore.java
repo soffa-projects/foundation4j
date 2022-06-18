@@ -22,7 +22,9 @@ import javax.sql.DataSource;
 import java.time.Instant;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 
@@ -37,6 +39,8 @@ public class SimpleDataStore implements DataStore {
     private static final String COLUMNS = "columns";
     private static final String VALUES = "values";
     private final DB db;
+
+    private static final Map<String,Jdbi> LINKS_CACHE = new ConcurrentHashMap<>();
 
     public SimpleDataStore(DB db) {
         this.db = db;
@@ -55,7 +59,7 @@ public class SimpleDataStore implements DataStore {
                 em.setCreated(Date.from(Instant.now()));
             }
             if (TextUtil.isEmpty(em.getId())) {
-                em.setId(IdGenerator.generate());
+                em.setId(IdGenerator.uuidSnakeCase());
             }
         }
 
@@ -216,6 +220,9 @@ public class SimpleDataStore implements DataStore {
     }
 
     private Jdbi getLink(TenantId tenant) {
+        if (LINKS_CACHE.containsKey(tenant.getValue())) {
+            return LINKS_CACHE.get(tenant.getValue());
+        }
         DataSource dataSource = db.determineTargetDataSource(tenant);
         Jdbi jdbi = Jdbi.create(new TransactionAwareDataSourceProxy(dataSource))
             .installPlugin(new SqlObjectPlugin());
@@ -228,7 +235,10 @@ public class SimpleDataStore implements DataStore {
         jdbi.registerArgument(new SerializableArgumentFactory());
         jdbi.registerArgument(new MapArgumentFactory());
         jdbi.registerArgument(new ObjectArgumentFactory());
+        LINKS_CACHE.put(tenant.getValue(), jdbi);
         return jdbi;
     }
+
+
 
 }
