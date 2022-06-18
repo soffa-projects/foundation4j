@@ -135,6 +135,7 @@ public final class DBHelper {
         doApplyMigration(dsInfo, lqb, changeLogParams);
     }
 
+    @SuppressWarnings("resource")
     private static void doApplyMigration(DatasourceInfo dsInfo, SpringLiquibase lqb, Map<String, String> changeLogParams) {
         @SuppressWarnings("PMD.CloseResource")
         DataSource ds = dsInfo.getDataSource();
@@ -162,7 +163,7 @@ public final class DBHelper {
         } catch (Exception e) {
             String msg = e.getMessage().toLowerCase();
             if (msg.contains("changelog") && msg.contains("already exists")) {
-                boolean isTestDb = ((HikariDataSource) lqb.getDataSource()).getJdbcUrl().startsWith("jdbc:h2:mem");
+                boolean isTestDb = unwrapDataSource(lqb.getDataSource()).getJdbcUrl().startsWith("jdbc:h2:mem");
                 if (!isTestDb) {
                     LOG.warn("Looks like migrations are being ran twice for %s.%s, ignore this error", dsInfo.getName(), schema);
                 }
@@ -170,6 +171,15 @@ public final class DBHelper {
                 throw new DatabaseException(e, "Migration failed for %s", schema);
             }
         }
+    }
+
+    private static HikariDataSource unwrapDataSource(DataSource source) {
+        if (source instanceof HikariDataSource) {
+            return (HikariDataSource) source;
+        }else if (source instanceof HikariDS) {
+            return ((HikariDS) source).unwrap();
+        }
+        throw new IllegalArgumentException("DataSource is not a HikariDataSource");
     }
 
     public static String findChangeLogPath(String applicationName, String migrationName) {

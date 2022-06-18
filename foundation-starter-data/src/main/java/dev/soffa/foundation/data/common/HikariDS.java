@@ -18,6 +18,10 @@ public class HikariDS extends AbstractDataSource {
         return schema;
     }
 
+    public HikariDataSource unwrap() {
+        return internal;
+    }
+
     @Override
     public Connection getConnection() throws SQLException {
         Connection cnx = internal.getConnection();
