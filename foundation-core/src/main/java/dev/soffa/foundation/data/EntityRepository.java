@@ -1,6 +1,7 @@
 package dev.soffa.foundation.data;
 
 import com.google.common.collect.ImmutableMap;
+import dev.soffa.foundation.model.TenantId;
 
 import java.util.List;
 import java.util.Map;
@@ -27,17 +28,30 @@ public interface EntityRepository<E> {
 
     Optional<E> get(Criteria criteria);
 
+    Optional<E> get(TenantId tenant, Criteria criteria);
+
     default Optional<E> get(Map<String, Object> filter) {
         return get(Criteria.of(filter));
     }
 
+    default Optional<E> get(TenantId tenant, Map<String, Object> filter) {
+        return get(tenant, Criteria.of(filter));
+    }
+
     Optional<E> findById(Object value);
 
+    Optional<E> findById(TenantId tenant, Object value);
+
     E insert(E entity);
+    E insert(TenantId tenant, E entity);
 
     E update(E entity);
 
+    E update(TenantId tenant, E entity);
+
     int delete(E entity);
+
+    int delete(TenantId tenant, E entity);
 
     default int delete(Map<String, Object> filter) {
         return delete(Criteria.of(filter));

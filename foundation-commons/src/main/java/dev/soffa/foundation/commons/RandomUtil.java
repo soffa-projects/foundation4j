@@ -12,6 +12,10 @@ public final class RandomUtil {
         return RandomStringUtils.random(32, true, true);
     }
 
+    public static String nextString(int count) {
+        return RandomStringUtils.random(count, true, true);
+    }
+
     public static int nextInt() {
         return RandomUtils.nextInt();
     }

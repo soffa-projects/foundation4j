@@ -2,7 +2,6 @@ package dev.soffa.foundation.data;
 
 import dev.soffa.foundation.commons.TextUtil;
 import dev.soffa.foundation.model.TenantId;
-
 import java.util.List;
 import java.util.Optional;
 
@@ -64,10 +63,20 @@ public class SimpleEntityRepository<E> implements EntityRepository<E> {
         return ds.get(getLockedTenant(), entityClass, criteria);
     }
 
+    @Override
+    public Optional<E> get(TenantId tenant, Criteria criteria) {
+        return ds.get(tenant, entityClass, criteria);
+    }
+
 
     @Override
     public Optional<E> findById(Object id) {
         return ds.findById(getLockedTenant(), entityClass, id);
+    }
+
+    @Override
+    public Optional<E> findById(TenantId tenant, Object value) {
+        return ds.findById(tenant, entityClass, value);
     }
 
     @Override
@@ -76,13 +85,28 @@ public class SimpleEntityRepository<E> implements EntityRepository<E> {
     }
 
     @Override
+    public E insert(TenantId tenant, E entity) {
+        return ds.insert(tenant, entity);
+    }
+
+    @Override
     public E update(E entity) {
         return ds.update(getLockedTenant(), entity);
     }
 
     @Override
+    public E update(TenantId tenant, E entity) {
+        return ds.update(tenant, entity);
+    }
+
+    @Override
     public int delete(E entity) {
         return ds.delete(getLockedTenant(), entity);
+    }
+
+    @Override
+    public int delete(TenantId tenant, E entity) {
+        return ds.delete(tenant, entity);
     }
 
     @Override
