@@ -1,6 +1,7 @@
 package dev.soffa.foundation.message.pubsub;
 
 
+import dev.soffa.foundation.core.Operation;
 import dev.soffa.foundation.error.TodoException;
 import dev.soffa.foundation.message.Message;
 import dev.soffa.foundation.message.MessageHandler;
@@ -44,6 +45,10 @@ public interface PubSubClient {
     // <I, O, T extends Query<I, O>> T proxy(@NonNull String subjet, @NotNull Class<T> operationClass);
 
     void addBroadcastChannel(String value);
+
+    default  <I, O, T extends Operation<I, O>> T createOperationCaller(@NotNull Class<T> operationClass, @NonNull String channel) {
+        return PubSubClientFactory.of(this, operationClass, channel);
+    }
 
     /*
     @SuppressWarnings("unchecked")

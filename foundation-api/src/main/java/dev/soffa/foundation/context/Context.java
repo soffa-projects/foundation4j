@@ -17,6 +17,7 @@ import java.util.Optional;
 public class Context {
 
     public static final String TENANT_ID = "X-TenantId";
+    public static final String APPLICATION_ID = "X-ApplicationId";
     public static final String APPLICATION = "X-Application";
     // public static final String TRACE_ID = "X-TraceId";
     // public static final String SPAN_ID = "X-SpanId";
@@ -26,6 +27,7 @@ public class Context {
     private static String serviceName = "app";
     private String authorization;
     private String tenantId;
+    private String applicationId;
     private String applicationName;
     private String sender;
     // private String traceId;
@@ -126,6 +128,10 @@ public class Context {
         return this;
     }
 
+    public Context withBearer(String token) {
+        return withAuthorization("Bearer " + token);
+    }
+
     public Context withAuthorization(String authorization) {
         this.setAuthorization(authorization);
         return this;
@@ -137,6 +143,10 @@ public class Context {
 
     public boolean hasTenant() {
         return isNotEmpty(tenantId);
+    }
+
+    public boolean hasApplicationId() {
+        return isNotEmpty(applicationId);
     }
 
     public boolean isAuthenticated() {
@@ -152,6 +162,7 @@ public class Context {
         if (auth.getApplication() != null && !auth.getApplication().isEmpty()) {
             applicationName = auth.getApplication();
         }
+        applicationId = auth.getApplicationId();
     }
 
     public Optional<String> getUsername() {
@@ -173,6 +184,9 @@ public class Context {
         }
         if (hasTenant()) {
             contextMap.put("tenant", getTenantId());
+        }
+        if (hasApplicationId()) {
+            contextMap.put("applicationId", getApplicationId());
         }
         /*
         if (isNotEmpty(getTraceId())) {
@@ -202,6 +216,9 @@ public class Context {
         }
         if (hasTenant()) {
             headers.put(Context.TENANT_ID, getTenantId());
+        }
+        if (hasApplicationId()) {
+            headers.put(Context.APPLICATION_ID, getApplicationId());
         }
         /*
         if (isNotEmpty(getTraceId())) {

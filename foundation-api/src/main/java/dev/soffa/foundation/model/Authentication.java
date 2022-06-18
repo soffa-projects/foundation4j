@@ -18,6 +18,7 @@ public class Authentication {
     // private String userId;
     private String username;
     private UserInfo profile;
+    private String applicationId;
     private String tenantId;
     private Set<String> roles;
     private Set<String> groups;

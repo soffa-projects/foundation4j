@@ -42,6 +42,7 @@ import java.util.stream.Collectors;
 @SuppressWarnings("PMD.GodClass")
 public final class DBImpl extends AbstractDataSource implements ApplicationListener<ContextRefreshedEvent>, DB {
 
+    public static final String AUTO_MIGRATE = "auto";
     private static final Logger LOG = Logger.get(DBImpl.class);
     private static final String TENANT_PLACEHOLDER = "__tenant__";
     private static final AtomicReference<String> LOCK = new AtomicReference<>("DB_LOCK");
@@ -51,6 +52,7 @@ public final class DBImpl extends AbstractDataSource implements ApplicationListe
     private String tablesPrefix;
     private String tenanstListQuery;
     private LockProvider lockProvider;
+    private MigrationDelegate migrationDelegate;
 
 
     @SneakyThrows
@@ -65,7 +67,7 @@ public final class DBImpl extends AbstractDataSource implements ApplicationListe
             this.tablesPrefix = appConfig.getDb().getTablesPrefix();
             createDatasources(appConfig.getDb().getDatasources());
             this.lockProvider = DBHelper.createLockTable(registry.get(TenantId.DEFAULT_VALUE).getDataSource(), this.tablesPrefix);
-            applyMirations();
+            applyMigrations();
         }
     }
 
@@ -216,7 +218,7 @@ public final class DBImpl extends AbstractDataSource implements ApplicationListe
         });
     }
 
-    public void applyMigrations(String... datasources) {
+    public void applyMigrations(Collection<String> datasources) {
         for (String datasource : datasources) {
             applyMigrations(datasource);
         }
@@ -235,12 +237,27 @@ public final class DBImpl extends AbstractDataSource implements ApplicationListe
         }
         synchronized (LOCK) {
             withLock("db-migration-" + linkId, 60, 30, () -> {
-                String changelogPath = DBHelper.findChangeLogPath(appConfig.getName(), info.getConfig());
+                if (migrationDelegate==null) {
+                    Map<String,MigrationDelegate> beans = context.getBeansOfType(MigrationDelegate.class);
+                    if (beans.size() > 0) {
+                        migrationDelegate = beans.values().iterator().next();
+                    }else {
+                        migrationDelegate = new NoMigrationDelegate();
+                    }
+                }
+                String lMigrationName = AUTO_MIGRATE;
+                if (migrationDelegate != null && !TenantId.DEFAULT_VALUE.equals(datasource)) {
+                    lMigrationName = migrationDelegate.getMigrationName(datasource);
+                }
+                if (AUTO_MIGRATE.equalsIgnoreCase(lMigrationName)) {
+                    lMigrationName = info.getConfig().getMigration();
+                }
+                String changelogPath = DBHelper.findChangeLogPath(appConfig.getName(), lMigrationName);
                 if (TextUtil.isNotEmpty(changelogPath)) {
                     DBHelper.applyMigrations(info, changelogPath, tablesPrefix, appConfig.getName());
                 }
                 info.setMigrated(true);
-                LOG.info("Migrations applied for %s", linkId);
+                LOG.info("Migrations [%s] applied for [%s]", lMigrationName, linkId);
             });
         }
     }
@@ -272,8 +289,8 @@ public final class DBImpl extends AbstractDataSource implements ApplicationListe
         return new SimpleEntityRepository<E>(this, entityClass);
     }
 
-    public void applyMirations() {
-        registry.keySet().forEach(this::applyMigrations);
+    public void applyMigrations() {
+        this.applyMigrations(registry.keySet());
     }
 
     @Override

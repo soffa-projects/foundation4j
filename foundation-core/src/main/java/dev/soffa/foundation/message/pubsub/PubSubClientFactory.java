@@ -19,7 +19,7 @@ public final class PubSubClientFactory {
     }
 
     @SuppressWarnings("unchecked")
-    public static <I, O, T extends Operation<I, O>> T of(@NotNull Class<T> operationClass, @NonNull String subjet, PubSubClient client) {
+    public static <I, O, T extends Operation<I, O>> T of(PubSubClient client, @NotNull Class<T> operationClass, @NonNull String channel) {
         Class<?> returnType = Objects.requireNonNull(ClassUtil.lookupGeneric(operationClass, Operation.class))[1];
         return (T) java.lang.reflect.Proxy.newProxyInstance(
             Thread.currentThread().getContextClassLoader(),
@@ -41,7 +41,7 @@ public final class PubSubClientFactory {
                     context = (Context) args[1];
                 }
                 Message msg = new Message(operationClass.getSimpleName(), input, context);
-                return client.request(subjet, msg, returnType).get(ASYNC_TIMEOUT_SECONDS.get(), TimeUnit.SECONDS);
+                return client.request(channel, msg, returnType).get(ASYNC_TIMEOUT_SECONDS.get(), TimeUnit.SECONDS);
             });
     }
 

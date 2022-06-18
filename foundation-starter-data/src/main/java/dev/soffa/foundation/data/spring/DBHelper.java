@@ -2,8 +2,10 @@ package dev.soffa.foundation.data.spring;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
-import dev.soffa.foundation.commons.*;
-import dev.soffa.foundation.data.DataSourceConfig;
+import dev.soffa.foundation.commons.DigestUtil;
+import dev.soffa.foundation.commons.Logger;
+import dev.soffa.foundation.commons.Properties;
+import dev.soffa.foundation.commons.TextUtil;
 import dev.soffa.foundation.data.common.HikariDS;
 import dev.soffa.foundation.data.config.DataSourceProperties;
 import dev.soffa.foundation.error.DatabaseException;
@@ -43,6 +45,7 @@ public final class DBHelper {
         String cacheId = DigestUtil.md5(baseJdbcUrl);
 
         if (CACHE.containsKey(cacheId)) {
+            createSchema(CACHE.get(cacheId), config.getSchema());
             return new HikariDS(CACHE.get(cacheId), config.getSchema());
         }
 
@@ -70,13 +73,21 @@ public final class DBHelper {
         }
 
         if (config.hasSchema()) {
-            hc.setSchema("public");
+            hc.setSchema("@@$$auto$$@@");
         }
 
         CACHE.put(cacheId, new HikariDataSource(hc));
+        createSchema(CACHE.get(cacheId), config.getSchema());
         return new HikariDS(CACHE.get(cacheId), config.getSchema());
     }
 
+    private static void createSchema(DataSource ds, String schema) {
+        if (TextUtil.isEmpty(schema)) {
+            return;
+        }
+        JdbcTemplate jdbcTemplate = new JdbcTemplate(ds);
+        jdbcTemplate.execute("create schema if not exists " + schema);
+    }
 
     public static void applyMigrations(DatasourceInfo dsInfo, String changeLogPath, String tablesPrefix, String appicationName) {
         SpringLiquibase lqb = new SpringLiquibase();
@@ -151,12 +162,12 @@ public final class DBHelper {
         }
     }
 
-    public static String findChangeLogPath(String applicationName, DataSourceConfig config) {
+    public static String findChangeLogPath(String applicationName, String migrationName) {
         String changelogPath = null;
-        boolean hasMigration = !("false".equals(config.getMigration()) || "no".equals(config.getMigration()));
+        boolean hasMigration = !("false".equals(migrationName) || "no".equals(migrationName));
         if (hasMigration) {
-            if (TextUtil.isNotEmpty(config.getMigration()) && !"true".equals(config.getMigration())) {
-                changelogPath = "/db/changelog/" + config.getMigration() + ".xml";
+            if (TextUtil.isNotEmpty(migrationName) && !"true".equals(migrationName)) {
+                changelogPath = "/db/changelog/" + migrationName + ".xml";
             } else {
                 changelogPath = "/db/changelog/" + applicationName + ".xml";
             }
@@ -172,6 +183,13 @@ public final class DBHelper {
 
     @SneakyThrows
     public static LockProvider createLockTable(DataSource ds, String tablePrefix) {
+
+        if (ds instanceof HikariDataSource) {
+            LOG.info("Creating lock table in datasource: %s", ((HikariDataSource) ds).getSchema());
+        }else if (ds instanceof HikariDS) {
+            LOG.info("Creating lock table in datasource: %s", ((HikariDS) ds).getSchema());
+        }
+
         LockProvider lockProvider = new JdbcTemplateLockProvider(JdbcTemplateLockProvider.Configuration.builder()
             .withJdbcTemplate(new JdbcTemplate(ds))
             .withTableName(tablePrefix + "f_shedlock")
@@ -186,7 +204,8 @@ public final class DBHelper {
             });
         } catch (Exception e) {
             // Will ignore because the table might have been created by another instance of the service
-            LOG.warn(e.getMessage(), e);
+            LOG.warn(e.getMessage());
+            throw new TechnicalException(e);
         }
         return lockProvider;
     }
