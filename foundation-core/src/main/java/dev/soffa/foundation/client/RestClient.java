@@ -31,7 +31,7 @@ public final class RestClient implements InvocationHandler {
 
     @SuppressWarnings("unchecked")
     public static <T> T newInstance(Class<T> clientInterface, String baseUrl) {
-        return newInstance(clientInterface, baseUrl, DefaultHttpClient.getInstance());
+        return newInstance(clientInterface, baseUrl, DefaultHttpClient.newInstance());
     }
 
     @SuppressWarnings("unchecked")

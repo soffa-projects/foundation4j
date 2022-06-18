@@ -2,6 +2,7 @@ package dev.soffa.foundation.data;
 
 import dev.soffa.foundation.commons.TextUtil;
 import dev.soffa.foundation.model.TenantId;
+
 import java.util.List;
 import java.util.Optional;
 

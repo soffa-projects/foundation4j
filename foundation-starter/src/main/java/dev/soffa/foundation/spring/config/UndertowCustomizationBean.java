@@ -18,4 +18,3 @@ public class UndertowCustomizationBean implements WebServerFactoryCustomizer<Und
         });
     }
 }
-}

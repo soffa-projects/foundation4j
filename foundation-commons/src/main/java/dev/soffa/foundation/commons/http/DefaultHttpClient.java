@@ -12,7 +12,6 @@ import java.util.Optional;
 public class DefaultHttpClient implements HttpClient {
 
 
-    private static DefaultHttpClient defaultInstance = new DefaultHttpClient();
     private final OkHttpClient client;
 
     public DefaultHttpClient() {
@@ -23,12 +22,8 @@ public class DefaultHttpClient implements HttpClient {
         this.client = client;
     }
 
-    public static DefaultHttpClient getInstance() {
-        return defaultInstance;
-    }
-
-    public void setDefaultInstance(DefaultHttpClient instance) {
-        defaultInstance = instance;
+    public static HttpClient newInstance() {
+        return new DefaultHttpClient();
     }
 
     @SneakyThrows
@@ -74,44 +69,5 @@ public class DefaultHttpClient implements HttpClient {
     }
 
 
-    /*
-    public HttpResponse get(String url) {
-        return this.request(HttpRequest.get(url));
-    }
-
-    public HttpResponse post(String url) {
-        return request(HttpRequest.post(url));
-    }
-
-    public HttpResponse post(String url, Object body) {
-        return request(HttpRequest.post(url, body));
-    }
-
-    public HttpResponse put(String url) {
-        return request(HttpRequest.put(url));
-    }
-
-    public HttpResponse put(String url, Object body) {
-        return request(HttpRequest.put(url, body));
-    }
-
-    public HttpResponse patch(String url) {
-        return request(HttpRequest.patch(url));
-    }
-
-    public HttpResponse patch(String url, Object body) {
-        return request(HttpRequest.patch(url, body));
-    }
-
-    public HttpResponse delete(String url) {
-        return request(HttpRequest.delete(url));
-    }
-
-    public HttpResponse delete(String url, Object body) {
-        return request(HttpRequest.delete(url, body));
-    }
-
-
-     */
 
 }

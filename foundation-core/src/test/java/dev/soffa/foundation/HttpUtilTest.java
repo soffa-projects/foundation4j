@@ -1,6 +1,7 @@
 package dev.soffa.foundation;
 
 import dev.soffa.foundation.commons.http.DefaultHttpClient;
+import dev.soffa.foundation.commons.http.HttpClient;
 import dev.soffa.foundation.commons.http.HttpResponse;
 import dev.soffa.foundation.commons.http.HttpUtil;
 import lombok.SneakyThrows;
@@ -17,7 +18,7 @@ public class HttpUtilTest {
 
         HttpUtil.loadMocks("/http-mocks.yml");
 
-        DefaultHttpClient client = DefaultHttpClient.getInstance();
+        HttpClient client = DefaultHttpClient.newInstance();
 
         HttpResponse res = client.get("https://devbox.local");
         assertEquals(200, res.getStatus());
