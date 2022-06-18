@@ -61,16 +61,26 @@ public final class DBHelper {
         Properties props = new Properties(config.getProperties());
 
         hc.setMinimumIdle(props.getInt("minimumIdle", 0));
-        hc.setConnectionTimeout(props.getInt("connectionTimeout", 10_000));
+        hc.setConnectionTimeout(props.getInt("connectionTimeout", 30_000));
         hc.setIdleTimeout(props.getInt("idleTimeout", 30_000));
         hc.setMaxLifetime(props.getInt("maxLifetime", 45_000));
-        hc.setMaximumPoolSize(props.getInt("maxPoolSize", 20));
+        hc.setMaximumPoolSize(props.getInt("maxPoolSize", 16));
+
+        hc.setLeakDetectionThreshold(10*1000);
 
         LOG.debug("Using jdbcUrl: %s", config.getUrl());
 
         if (config.getUrl().contains(":h2:")) {
             hc.addDataSourceProperty("ignore_startup_parameters", "search_path");
         }
+
+        hc.addDataSourceProperty("autoReconnect", true);
+        hc.addDataSourceProperty("cachePrepStmts", true);
+        hc.addDataSourceProperty("prepStmtCacheSize", 250);
+        hc.addDataSourceProperty("prepStmtCacheSqlLimit", 2048);
+        hc.addDataSourceProperty("useServerPrepStmts", true);
+        hc.addDataSourceProperty("cacheResultSetMetadata", true);
+
 
         if (config.hasSchema()) {
             hc.setSchema("@@$$auto$$@@");

@@ -67,11 +67,6 @@ public class DataSourceProperties {
 
     @SneakyThrows
     private static JdbcInfo createJdbcUrl(String applicationName, String provider, UrlInfo url, String schema, String initialUrl) {
-        if (TextUtil.isEmpty(url.getUsername())) {
-            LOG.warn("No username found in database url: %s", initialUrl);
-        } else if (TextUtil.isEmpty(url.getPassword())) {
-            LOG.warn("No password found in database url: %s", initialUrl);
-        }
         StringBuilder jdbcUrl = new StringBuilder();
         String jdbcDriver;
         StringBuilder hostname = new StringBuilder(url.getHostname());

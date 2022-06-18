@@ -2,7 +2,7 @@ spring.application.name: ${app.name}
 
 spring.main.banner-mode: off
 
-logging.level.ROOT: WARN
+logging.level.ROOT: ${ROOT_LOG_LEVEL:WARN}
 logging.level.io.leangen: ERROR
 logging.level.ext.springboot: WARN
 logging.level.org.springframework: ${SPRING_LOG_LEVEL:WARN}
