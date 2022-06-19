@@ -33,25 +33,6 @@ public class HttpRequest {
         this.headers = headers;
     }
 
-    public HttpRequest withBody(Object body) {
-        this.body = body;
-        return this;
-    }
-    public HttpRequest withContentType(String type) {
-        this.contentType = type;
-        return this;
-    }
-
-    public HttpRequest header(String name, String value) {
-        if (TextUtil.isNotEmpty(value)) {
-            if (headers == null) {
-                headers = new HashMap<>();
-            }
-            headers.put(name, value);
-        }
-        return this;
-    }
-
     public static HttpRequest get(String url) {
         return new HttpRequest(HttpMethod.GET, url);
     }
@@ -70,6 +51,26 @@ public class HttpRequest {
 
     public static HttpRequest delete(String url) {
         return new HttpRequest(HttpMethod.DELETE, url);
+    }
+
+    public HttpRequest withBody(Object body) {
+        this.body = body;
+        return this;
+    }
+
+    public HttpRequest withContentType(String type) {
+        this.contentType = type;
+        return this;
+    }
+
+    public HttpRequest header(String name, String value) {
+        if (TextUtil.isNotEmpty(value)) {
+            if (headers == null) {
+                headers = new HashMap<>();
+            }
+            headers.put(name, value);
+        }
+        return this;
     }
 
 

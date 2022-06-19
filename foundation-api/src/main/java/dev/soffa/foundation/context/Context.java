@@ -3,6 +3,7 @@ package dev.soffa.foundation.context;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import dev.soffa.foundation.model.Authentication;
 import dev.soffa.foundation.model.SideEffects;
+import dev.soffa.foundation.model.TenantId;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.SneakyThrows;
@@ -45,10 +46,6 @@ public class Context {
         // this.spanId = UUID.randomUUID().toString();
         this.sender = serviceName;
 
-    }
-
-    public void sideEffect(String event) {
-        sideEffects.of("service", serviceName).add(event);
     }
 
     public static Context create(String tenantId) {
@@ -111,6 +108,10 @@ public class Context {
         return value;
     }
 
+    public void sideEffect(String event) {
+        sideEffects.of("service", serviceName).add(event);
+    }
+
     public boolean hasAuthorization() {
         return isNotEmpty(authorization);
     }
@@ -121,6 +122,10 @@ public class Context {
 
     public String getServceName() {
         return sender;
+    }
+
+    public TenantId getTenant() {
+        return TenantId.of(getTenantId());
     }
 
     public Context withTenant(String tenantId) {

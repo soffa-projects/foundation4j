@@ -25,6 +25,6 @@ public abstract class BaseFeatureTest {
 
     public abstract String[] getFeatures();
 
-    public abstract Map<String,Object> getTestData();
+    public abstract Map<String, Object> getTestData();
 
 }

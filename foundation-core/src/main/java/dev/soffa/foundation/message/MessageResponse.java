@@ -12,15 +12,6 @@ public class MessageResponse {
     private String error;
     private byte[] data;
 
-    @JsonIgnore
-    public boolean hasError() {
-        return error != null;
-    }
-
-    public boolean isSuccess() {
-        return !hasError();
-    }
-
     public static MessageResponse error(Exception e) {
         return of(null, e);
     }
@@ -39,6 +30,15 @@ public class MessageResponse {
             response.setData(Mappers.JSON.serializeAsBytes(payload));
         }
         return response;
+    }
+
+    @JsonIgnore
+    public boolean hasError() {
+        return error != null;
+    }
+
+    public boolean isSuccess() {
+        return !hasError();
     }
 
 }

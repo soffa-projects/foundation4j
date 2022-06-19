@@ -46,8 +46,8 @@ import java.lang.annotation.*;
 @Inherited
 @SpringBootConfiguration
 @EnableAutoConfiguration
-@ComponentScan(excludeFilters = { @Filter(type = FilterType.CUSTOM, classes = TypeExcludeFilter.class),
-    @Filter(type = FilterType.CUSTOM, classes = AutoConfigurationExcludeFilter.class) })
+@ComponentScan(excludeFilters = {@Filter(type = FilterType.CUSTOM, classes = TypeExcludeFilter.class),
+    @Filter(type = FilterType.CUSTOM, classes = AutoConfigurationExcludeFilter.class)})
 public @interface SpringBootApplication {
 
     @AliasFor(annotation = EnableAutoConfiguration.class)

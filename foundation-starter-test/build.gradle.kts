@@ -22,7 +22,7 @@ dependencies {
     api("commons-io:commons-io:2.8.0")
     api("org.awaitility:awaitility:4.2.0")
     api("com.github.javafaker:javafaker:1.0.2") {
-        exclude(module="snakeyaml")
+        exclude(module = "snakeyaml")
     }
 
     testImplementation("org.springframework.boot:spring-boot-starter-web:2.7.0")

@@ -13,5 +13,5 @@ public class MigrationDef {
     private String apiVersion;
     private String id;
     @JsonProperty("change_sets")
-    private Map<String,ChangeSetDef> changeSets;
+    private Map<String, ChangeSetDef> changeSets;
 }

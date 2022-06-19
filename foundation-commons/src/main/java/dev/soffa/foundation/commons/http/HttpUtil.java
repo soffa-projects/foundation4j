@@ -119,7 +119,7 @@ public final class HttpUtil {
 
     @SneakyThrows
     public static void loadMocks(String path) {
-        try(InputStream input = HttpUtil.class.getResourceAsStream(path)) {
+        try (InputStream input = HttpUtil.class.getResourceAsStream(path)) {
             List<HttpMock> mocks = Mappers.YAML.deserializeList(input, HttpMock.class);
             addInterceptor(chain -> {
                 Request request = chain.request();

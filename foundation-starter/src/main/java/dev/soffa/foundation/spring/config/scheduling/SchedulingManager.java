@@ -26,9 +26,8 @@ import java.util.Optional;
 @ConditionalOnBean(ServiceWorker.class)
 class SchedulingManager implements ApplicationLifecycle, Scheduler {
 
-    private static final Logger LOG = Logger.get(SchedulingManager.class);
     public static final int RETRIES = 3;
-
+    private static final Logger LOG = Logger.get(SchedulingManager.class);
     private final Map<String, ServiceWorker> workers = new HashMap<>();
     private final JobScheduler jobScheduler;
 

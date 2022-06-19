@@ -20,7 +20,8 @@ public class DBConfiguration {
     @Bean
     @ConditionalOnMissingBean
     public TenantsLoader createDefaultTenantsLoader() {
-        return new TenantsLoader(){};
+        return new TenantsLoader() {
+        };
     }
 
     @Bean

@@ -11,7 +11,8 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 public class EntityRepositoryTest extends BaseTest {
 
     @Inject
-    private  UserRepository repository;;
+    private UserRepository repository;
+    ;
 
     @Test
     public void testRepository() {

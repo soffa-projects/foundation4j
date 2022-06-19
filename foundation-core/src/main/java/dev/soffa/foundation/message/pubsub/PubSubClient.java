@@ -46,7 +46,7 @@ public interface PubSubClient {
 
     void addBroadcastChannel(String value);
 
-    default  <I, O, T extends Operation<I, O>> T createOperationCaller(@NotNull Class<T> operationClass, @NonNull String channel) {
+    default <I, O, T extends Operation<I, O>> T createOperationCaller(@NotNull Class<T> operationClass, @NonNull String channel) {
         return PubSubClientFactory.of(this, operationClass, channel);
     }
 

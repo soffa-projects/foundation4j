@@ -26,7 +26,7 @@ import java.lang.annotation.*;
 @Component
 public @interface Repository {
 
-	@AliasFor(annotation = Component.class)
-	String value() default "";
+    @AliasFor(annotation = Component.class)
+    String value() default "";
 
 }

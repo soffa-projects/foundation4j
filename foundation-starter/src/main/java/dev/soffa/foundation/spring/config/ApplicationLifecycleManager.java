@@ -15,9 +15,9 @@ import java.util.Map;
 @Component
 public class ApplicationLifecycleManager implements ApplicationListener<ContextRefreshedEvent> {
 
-    public ApplicationContext context;
     private final DB db;
     private final PubSubMessenger pubsub;
+    public ApplicationContext context;
 
     public ApplicationLifecycleManager(ApplicationContext context,
                                        @Autowired(required = false) DB db,

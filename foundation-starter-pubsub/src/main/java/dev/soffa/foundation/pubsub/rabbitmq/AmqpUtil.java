@@ -22,8 +22,8 @@ import java.util.Set;
 
 public final class AmqpUtil {
 
-    private static final String DLQ = ".dlq";
     public static final String TOPIC = ".topic";
+    private static final String DLQ = ".dlq";
     private static final String VHOST = "vhost";
     private static final String EXCHANGE = "exchange";
     private static final String USER = "user";
@@ -47,6 +47,7 @@ public final class AmqpUtil {
         cf.setAddresses(addressList);
         return cf;
     }
+
     public static RabbitAdmin configure(String applicationName, PubSubClientConfig config) {
         String[] addresses = config.getAddresses().split(",");
         CachingConnectionFactory cf = createConnectionFactory(addresses);
@@ -92,7 +93,7 @@ public final class AmqpUtil {
 
     public static void declareQueue(RabbitAdmin admin, String name) {
         QueueInformation info = admin.getQueueInfo(name);
-        if (info==null) {
+        if (info == null) {
             admin.declareQueue(new Queue(name));
         }
     }
@@ -149,7 +150,7 @@ public final class AmqpUtil {
             MethodInterceptor retryAdvice = RetryInterceptorBuilder.stateless().backOffPolicy(backOffPolicy)
                 .maxAttempts(2).build();
             container.setAdviceChain(retryAdvice);
-        }else {
+        } else {
             ExponentialBackOffPolicy backOffPolicy = new ExponentialBackOffPolicy();
             backOffPolicy.setInitialInterval(1000);
             backOffPolicy.setMaxInterval(10_000);

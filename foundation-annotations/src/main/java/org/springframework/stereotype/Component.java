@@ -24,6 +24,6 @@ import java.lang.annotation.*;
 @Indexed
 public @interface Component {
 
-	String value() default "";
+    String value() default "";
 
 }

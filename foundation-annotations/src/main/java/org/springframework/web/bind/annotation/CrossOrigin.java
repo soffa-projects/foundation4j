@@ -50,86 +50,87 @@ import java.util.List;
 @Documented
 public @interface CrossOrigin {
 
-	/**
-	 * Alias for {@link #origins}.
-	 */
-	@AliasFor("origins")
-	String[] value() default {};
+    /**
+     * Alias for {@link #origins}.
+     */
+    @AliasFor("origins")
+    String[] value() default {};
 
-	/**
-	 * A list of origins for which cross-origin requests are allowed. Please,
-	 * see {@link CorsConfiguration#setAllowedOrigins(List)} for details.
-	 * <p>By default all origins are allowed unless {@link #originPatterns} is
-	 * also set in which case {@code originPatterns} is used instead.
-	 */
-	@AliasFor("value")
-	String[] origins() default {};
+    /**
+     * A list of origins for which cross-origin requests are allowed. Please,
+     * see {@link CorsConfiguration#setAllowedOrigins(List)} for details.
+     * <p>By default all origins are allowed unless {@link #originPatterns} is
+     * also set in which case {@code originPatterns} is used instead.
+     */
+    @AliasFor("value")
+    String[] origins() default {};
 
-	/**
-	 * Alternative to {@link #origins} that supports more flexible origin
-	 * patterns. Please, see {@link CorsConfiguration#setAllowedOriginPatterns(List)}
-	 * for details.
-	 * <p>By default this is not set.
-	 * @since 5.3
-	 */
-	String[] originPatterns() default {};
+    /**
+     * Alternative to {@link #origins} that supports more flexible origin
+     * patterns. Please, see {@link CorsConfiguration#setAllowedOriginPatterns(List)}
+     * for details.
+     * <p>By default this is not set.
+     *
+     * @since 5.3
+     */
+    String[] originPatterns() default {};
 
-	/**
-	 * The list of request headers that are permitted in actual requests,
-	 * possibly {@code "*"}  to allow all headers.
-	 * <p>Allowed headers are listed in the {@code Access-Control-Allow-Headers}
-	 * response header of preflight requests.
-	 * <p>A header name is not required to be listed if it is one of:
-	 * {@code Cache-Control}, {@code Content-Language}, {@code Expires},
-	 * {@code Last-Modified}, or {@code Pragma} as per the CORS spec.
-	 * <p>By default all requested headers are allowed.
-	 */
-	String[] allowedHeaders() default {};
+    /**
+     * The list of request headers that are permitted in actual requests,
+     * possibly {@code "*"}  to allow all headers.
+     * <p>Allowed headers are listed in the {@code Access-Control-Allow-Headers}
+     * response header of preflight requests.
+     * <p>A header name is not required to be listed if it is one of:
+     * {@code Cache-Control}, {@code Content-Language}, {@code Expires},
+     * {@code Last-Modified}, or {@code Pragma} as per the CORS spec.
+     * <p>By default all requested headers are allowed.
+     */
+    String[] allowedHeaders() default {};
 
-	/**
-	 * The List of response headers that the user-agent will allow the client
-	 * to access on an actual response, other than "simple" headers, i.e.
-	 * {@code Cache-Control}, {@code Content-Language}, {@code Content-Type},
-	 * {@code Expires}, {@code Last-Modified}, or {@code Pragma},
-	 * <p>Exposed headers are listed in the {@code Access-Control-Expose-Headers}
-	 * response header of actual CORS requests.
-	 * <p>The special value {@code "*"} allows all headers to be exposed for
-	 * non-credentialed requests.
-	 * <p>By default no headers are listed as exposed.
-	 */
-	String[] exposedHeaders() default {};
+    /**
+     * The List of response headers that the user-agent will allow the client
+     * to access on an actual response, other than "simple" headers, i.e.
+     * {@code Cache-Control}, {@code Content-Language}, {@code Content-Type},
+     * {@code Expires}, {@code Last-Modified}, or {@code Pragma},
+     * <p>Exposed headers are listed in the {@code Access-Control-Expose-Headers}
+     * response header of actual CORS requests.
+     * <p>The special value {@code "*"} allows all headers to be exposed for
+     * non-credentialed requests.
+     * <p>By default no headers are listed as exposed.
+     */
+    String[] exposedHeaders() default {};
 
-	/**
-	 * The list of supported HTTP request methods.
-	 * <p>By default the supported methods are the same as the ones to which a
-	 * controller method is mapped.
-	 */
-	RequestMethod[] methods() default {};
+    /**
+     * The list of supported HTTP request methods.
+     * <p>By default the supported methods are the same as the ones to which a
+     * controller method is mapped.
+     */
+    RequestMethod[] methods() default {};
 
-	/**
-	 * Whether the browser should send credentials, such as cookies along with
-	 * cross domain requests, to the annotated endpoint. The configured value is
-	 * set on the {@code Access-Control-Allow-Credentials} response header of
-	 * preflight requests.
-	 * <p><strong>NOTE:</strong> Be aware that this option establishes a high
-	 * level of trust with the configured domains and also increases the surface
-	 * attack of the web application by exposing sensitive user-specific
-	 * information such as cookies and CSRF tokens.
-	 * <p>By default this is not set in which case the
-	 * {@code Access-Control-Allow-Credentials} header is also not set and
-	 * credentials are therefore not allowed.
-	 */
-	String allowCredentials() default "";
+    /**
+     * Whether the browser should send credentials, such as cookies along with
+     * cross domain requests, to the annotated endpoint. The configured value is
+     * set on the {@code Access-Control-Allow-Credentials} response header of
+     * preflight requests.
+     * <p><strong>NOTE:</strong> Be aware that this option establishes a high
+     * level of trust with the configured domains and also increases the surface
+     * attack of the web application by exposing sensitive user-specific
+     * information such as cookies and CSRF tokens.
+     * <p>By default this is not set in which case the
+     * {@code Access-Control-Allow-Credentials} header is also not set and
+     * credentials are therefore not allowed.
+     */
+    String allowCredentials() default "";
 
-	/**
-	 * The maximum age (in seconds) of the cache duration for preflight responses.
-	 * <p>This property controls the value of the {@code Access-Control-Max-Age}
-	 * response header of preflight requests.
-	 * <p>Setting this to a reasonable value can reduce the number of preflight
-	 * request/response interactions required by the browser.
-	 * A negative value means <em>undefined</em>.
-	 * <p>By default this is set to {@code 1800} seconds (30 minutes).
-	 */
-	long maxAge() default -1;
+    /**
+     * The maximum age (in seconds) of the cache duration for preflight responses.
+     * <p>This property controls the value of the {@code Access-Control-Max-Age}
+     * response header of preflight requests.
+     * <p>Setting this to a reasonable value can reduce the number of preflight
+     * request/response interactions required by the browser.
+     * A negative value means <em>undefined</em>.
+     * <p>By default this is set to {@code 1800} seconds (30 minutes).
+     */
+    long maxAge() default -1;
 
 }

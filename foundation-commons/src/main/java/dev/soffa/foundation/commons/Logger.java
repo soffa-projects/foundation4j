@@ -14,13 +14,14 @@ import java.util.function.Supplier;
 @SuppressWarnings("PMD.MoreThanOneLogger")
 public final class Logger {
 
+    private static Logger appLogger = Logger.get("dev.soffa");
+
     static {
         Logger.setRelevantPackage("dev.soffa");
     }
 
     private final org.slf4j.Logger log;
     private String tag;
-    private static Logger appLogger = Logger.get("dev.soffa");
 
     private Logger(org.slf4j.Logger logger) {
         this.log = logger;
@@ -133,7 +134,7 @@ public final class Logger {
         }
     }
 
-    public void info(Map<String,String> context, String message, Object... args) {
+    public void info(Map<String, String> context, String message, Object... args) {
         if (log.isInfoEnabled()) {
             Logger.withContext(context, () -> info(message, args));
         }
@@ -171,7 +172,7 @@ public final class Logger {
         log.error(formatMessage(message, args));
     }
 
-    public void error(Map<String,String> context, String message, Object... args) {
+    public void error(Map<String, String> context, String message, Object... args) {
         if (log.isErrorEnabled()) {
             Logger.withContext(context, () -> error(message, args));
         }

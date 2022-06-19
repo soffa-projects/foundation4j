@@ -32,7 +32,7 @@ dependencies {
     implementation("com.aventrix.jnanoid:jnanoid:2.0.0")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin:${property("jackson.version")}")
     implementation("com.github.michaelgantman:MgntUtils:1.6.0.3")
-    api("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:${property("jackson.version")}") 
+    api("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:${property("jackson.version")}")
     api("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:${property("jackson.version")}")
     api("com.fasterxml.jackson.dataformat:jackson-dataformat-xml:${property("jackson.version")}")
 

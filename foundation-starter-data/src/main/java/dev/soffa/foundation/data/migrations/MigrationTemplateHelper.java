@@ -8,13 +8,14 @@ import java.util.Map;
 
 public final class MigrationTemplateHelper {
 
-    private MigrationTemplateHelper() {}
+    private MigrationTemplateHelper() {
+    }
 
     public static String transform(InputStream context) {
         return transform(Mappers.YAML.deserializeMap(context));
     }
 
-    public static String transform(Map<String,Object> context) {
+    public static String transform(Map<String, Object> context) {
 
         return TemplateHelper.render(
             MigrationTemplateHelper.class.getResourceAsStream("/templates/liquibase.xml.peb"),

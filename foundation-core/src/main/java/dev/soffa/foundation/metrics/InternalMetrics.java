@@ -12,6 +12,7 @@ public class InternalMetrics {
     public static long increment(String prefix, String counter) {
         return increment(prefix + "." + counter);
     }
+
     public static long increment(String counter) {
         return COUNTERS.computeIfAbsent(normalizeName(counter), s -> new AtomicLong()).incrementAndGet();
     }
@@ -19,6 +20,7 @@ public class InternalMetrics {
     public static long getCounter(String prefix, String counter) {
         return getCounter(prefix + "." + counter);
     }
+
     public static long getCounter(String counter) {
         return COUNTERS.computeIfAbsent(normalizeName(counter), s -> new AtomicLong()).get();
     }

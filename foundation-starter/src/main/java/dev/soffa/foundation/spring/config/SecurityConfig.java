@@ -47,7 +47,7 @@ public class SecurityConfig {
 
     @SneakyThrows
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http)  {
+    public SecurityFilterChain filterChain(HttpSecurity http) {
         http.cors().and().csrf().disable()
             .sessionManagement()
             .sessionCreationPolicy(SessionCreationPolicy.STATELESS)

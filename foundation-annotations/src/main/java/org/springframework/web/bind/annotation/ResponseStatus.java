@@ -26,12 +26,12 @@ import java.lang.annotation.*;
 @Documented
 public @interface ResponseStatus {
 
-	@AliasFor("code")
-	HttpStatus value() default HttpStatus.INTERNAL_SERVER_ERROR;
+    @AliasFor("code")
+    HttpStatus value() default HttpStatus.INTERNAL_SERVER_ERROR;
 
-	@AliasFor("value")
-	HttpStatus code() default HttpStatus.INTERNAL_SERVER_ERROR;
+    @AliasFor("value")
+    HttpStatus code() default HttpStatus.INTERNAL_SERVER_ERROR;
 
-	String reason() default "";
+    String reason() default "";
 
 }

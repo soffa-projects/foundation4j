@@ -19,6 +19,7 @@ public class TextUtilTest {
         assertNull(TextUtil.trimToNull(null));
         assertNotNull(TextUtil.trimToNull("Hello"));
     }
+
     @Test
     void testJoin() {
         assertEquals("pi_test", TextUtil.join("_", "pi", "test"));

@@ -26,14 +26,14 @@ import java.lang.annotation.*;
 @Documented
 public @interface RequestHeader {
 
-	@AliasFor("name")
-	String value() default "";
+    @AliasFor("name")
+    String value() default "";
 
-	@AliasFor("value")
-	String name() default "";
+    @AliasFor("value")
+    String name() default "";
 
-	boolean required() default true;
+    boolean required() default true;
 
-	String defaultValue() default ValueConstants.DEFAULT_NONE;
+    String defaultValue() default ValueConstants.DEFAULT_NONE;
 
 }

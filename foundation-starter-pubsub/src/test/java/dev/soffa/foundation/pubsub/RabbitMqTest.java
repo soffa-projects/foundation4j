@@ -63,6 +63,7 @@ public class RabbitMqTest {
         Awaitility.await().atMost(5, TimeUnit.SECONDS).until(() -> counter.get() > 0);
         Assertions.assertTrue(failures.get() >= 0);
     }
+
     @Test
     public void testBroadcast() {
         AtomicBoolean consumed = new AtomicBoolean(false);

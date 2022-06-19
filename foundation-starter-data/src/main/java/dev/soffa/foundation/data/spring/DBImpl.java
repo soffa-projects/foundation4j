@@ -168,12 +168,12 @@ public final class DBImpl extends AbstractDataSource implements ApplicationListe
     }
 
     @Override
-    public DataSource determineTargetDataSource(TenantId tenant) {
+    public DataSource determineTargetDataSource(String tenant) {
         Object lookupKey;
-        if (tenant.equals(TenantId.CONTEXT)) {
+        if (tenant.equals(TenantId.CONTEXT_VALUE)) {
             lookupKey = determineCurrentLookupKey();
         } else {
-            lookupKey = tenant.getValue();
+            lookupKey = tenant;
         }
         if (lookupKey != null) {
             lookupKey = lookupKey.toString().toLowerCase();
@@ -237,11 +237,11 @@ public final class DBImpl extends AbstractDataSource implements ApplicationListe
         }
         synchronized (LOCK) {
             withLock("db-migration-" + linkId, 60, 30, () -> {
-                if (migrationDelegate==null) {
-                    Map<String,MigrationDelegate> beans = context.getBeansOfType(MigrationDelegate.class);
+                if (migrationDelegate == null) {
+                    Map<String, MigrationDelegate> beans = context.getBeansOfType(MigrationDelegate.class);
                     if (beans.size() > 0) {
                         migrationDelegate = beans.values().iterator().next();
-                    }else {
+                    } else {
                         migrationDelegate = new NoMigrationDelegate();
                     }
                 }
@@ -286,7 +286,7 @@ public final class DBImpl extends AbstractDataSource implements ApplicationListe
 
     @Override
     public <E> EntityRepository<E> newEntityRepository(Class<E> entityClass) {
-        return new SimpleEntityRepository<E>(this, entityClass);
+        return new SimpleEntityRepository<>(this, entityClass);
     }
 
     public void applyMigrations() {

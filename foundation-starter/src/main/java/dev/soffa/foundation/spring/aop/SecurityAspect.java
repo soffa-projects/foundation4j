@@ -31,7 +31,7 @@ public class SecurityAspect {
     public void checkAuthenticated(JoinPoint point) {
         LOG.debug("[aspect] Checking authentication...");
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        if (auth==null || !auth.isAuthenticated() || auth instanceof AnonymousAuthenticationToken) {
+        if (auth == null || !auth.isAuthenticated() || auth instanceof AnonymousAuthenticationToken) {
             LOG.warn("Access denied to [%s.%s], current context does not contain an authentication", point.getSignature().getDeclaringTypeName(), point.getSignature().getName());
             throw ERR_AUTH_REQUIRED;
         }

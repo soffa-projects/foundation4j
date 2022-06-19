@@ -50,6 +50,35 @@ public class DefaultTokenProvider implements TokenProvider, ClaimsExtractor {
         configureJwksProcessor();
     }
 
+    private static Object getClaimValue(Claim claim) {
+        if (claim.isNull()) {
+            return null;
+        }
+
+        Object value = claim.asString();
+        if (value != null) return value;
+
+        value = claim.asBoolean();
+        if (value != null) return value;
+
+        value = claim.asDouble();
+        if (value != null) return value;
+
+        value = claim.asInt();
+        if (value != null) return value;
+
+        value = claim.asLong();
+        if (value != null) return value;
+
+        value = claim.asDate();
+        if (value != null) return value;
+
+        value = claim.asMap();
+        if (value != null) return value;
+
+        return claim.toString();
+    }
+
     @Override
     public Token create(TokenType type, String subjet, Map<String, Object> claims) {
         return create(type, subjet, claims, config.getDefaultTtl());
@@ -83,7 +112,6 @@ public class DefaultTokenProvider implements TokenProvider, ClaimsExtractor {
         }
         return new Token(token, subjet, claims, ttlInMinutes);
     }
-
 
     @Override
     public Authentication extractInfo(Token token) {
@@ -210,34 +238,5 @@ public class DefaultTokenProvider implements TokenProvider, ClaimsExtractor {
         } catch (Exception e) {
             throw new UnauthorizedException(e.getMessage(), e);
         }
-    }
-    
-    private static Object getClaimValue(Claim claim) {
-        if (claim.isNull()) {
-            return null;
-        }
-
-        Object value = claim.asString();
-        if (value != null) return value;
-
-        value = claim.asBoolean();
-        if (value != null) return value;
-        
-        value = claim.asDouble();
-        if (value != null) return value;
-        
-        value = claim.asInt();
-        if (value != null) return value;
-
-        value = claim.asLong();
-        if (value != null) return value;
-
-        value = claim.asDate();
-        if (value != null) return value;
-
-        value = claim.asMap();
-        if (value != null) return value;
-
-        return claim.toString();
     }
 }

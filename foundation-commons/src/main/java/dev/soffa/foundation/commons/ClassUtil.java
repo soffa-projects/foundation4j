@@ -33,7 +33,7 @@ public class ClassUtil {
     }
 
     public static Set<Class<?>> findInterfacesAnnotatedWith(String basePackage, Class<? extends Annotation> annotationClass,
-                                                             Class<?> parentInterface) {
+                                                            Class<?> parentInterface) {
         Set<Class<?>> resources = new HashSet<>();
         try (ScanResult scanResult =
                  new ClassGraph()

@@ -8,7 +8,7 @@ public interface AuditService {
         // Nothing to see here
     }
 
-    default void log(String action, Object input, Object output, String error, Context context){
+    default void log(String action, Object input, Object output, String error, Context context) {
         // Nothing to see here
     }
 

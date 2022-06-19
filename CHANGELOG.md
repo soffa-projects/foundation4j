@@ -6,6 +6,12 @@ All notable changes to this project will be documented in this file.
 Le format utilisé se base sur [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 et le versioning du projet respect les règles  [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.12.0] - 2022-06-18
+
+### Fixed
+
+- Database pool performance
+
 ## [0.11.0] - 2022-06-04
 
 ### Added
@@ -16,7 +22,6 @@ et le versioning du projet respect les règles  [Semantic Versioning](https://se
 ### Changed
 
 - Dependencies update
-
 
 ## [0.10.8] - 2022-05-13
 
@@ -35,7 +40,7 @@ et le versioning du projet respect les règles  [Semantic Versioning](https://se
 ### Added
 
 - RabbitMQ client
- 
+
 ## [0.10.5] - 2022-04-30
 
 ### Fixed
@@ -75,13 +80,13 @@ et le versioning du projet respect les règles  [Semantic Versioning](https://se
 ### Changed
 
 - Dependencies update
- 
+
 ## [0.9.7] - 2022-04-21
 
 ### Changed
 
 - Use full version of UUID to avoid collisions when generating ids.
- 
+
 ## [0.9.6] - 2022-04-20
 
 ### Added

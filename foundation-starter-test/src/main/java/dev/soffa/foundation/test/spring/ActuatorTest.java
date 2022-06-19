@@ -22,5 +22,4 @@ public class ActuatorTest extends ApplicationContextTest {
     }
 
 
-
 }

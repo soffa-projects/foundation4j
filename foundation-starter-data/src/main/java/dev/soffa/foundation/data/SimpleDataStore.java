@@ -9,6 +9,7 @@ import dev.soffa.foundation.data.jdbi.ObjectArgumentFactory;
 import dev.soffa.foundation.data.jdbi.SerializableArgumentFactory;
 import dev.soffa.foundation.error.DatabaseException;
 import dev.soffa.foundation.model.TenantId;
+import dev.soffa.foundation.multitenancy.TenantHolder;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.jdbi.v3.core.Handle;
@@ -38,9 +39,8 @@ public class SimpleDataStore implements DataStore {
     private static final String BINDING = "binding";
     private static final String COLUMNS = "columns";
     private static final String VALUES = "values";
+    private static final Map<String, Jdbi> LINKS_CACHE = new ConcurrentHashMap<>();
     private final DB db;
-
-    private static final Map<String,Jdbi> LINKS_CACHE = new ConcurrentHashMap<>();
 
     public SimpleDataStore(DB db) {
         this.db = db;
@@ -220,10 +220,14 @@ public class SimpleDataStore implements DataStore {
     }
 
     private Jdbi getLink(TenantId tenant) {
-        if (LINKS_CACHE.containsKey(tenant.getValue())) {
-            return LINKS_CACHE.get(tenant.getValue());
+        String lTenant = tenant.getValue();
+        if (tenant.equals(TenantId.CONTEXT)) {
+            lTenant = TenantHolder.get().orElse(TenantId.DEFAULT_VALUE);
         }
-        DataSource dataSource = db.determineTargetDataSource(tenant);
+        if (LINKS_CACHE.containsKey(lTenant)) {
+            return LINKS_CACHE.get(lTenant);
+        }
+        DataSource dataSource = db.determineTargetDataSource(lTenant);
         Jdbi jdbi = Jdbi.create(new TransactionAwareDataSourceProxy(dataSource))
             .installPlugin(new SqlObjectPlugin());
         if (dataSource instanceof HikariDataSource) {
@@ -235,10 +239,9 @@ public class SimpleDataStore implements DataStore {
         jdbi.registerArgument(new SerializableArgumentFactory());
         jdbi.registerArgument(new MapArgumentFactory());
         jdbi.registerArgument(new ObjectArgumentFactory());
-        LINKS_CACHE.put(tenant.getValue(), jdbi);
+        LINKS_CACHE.put(lTenant, jdbi);
         return jdbi;
     }
-
 
 
 }

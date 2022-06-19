@@ -32,22 +32,6 @@ public class HttpMock implements HttpResponseProvider {
         return getResponse();
     }
 
-    @Data
-    public static class HttpMockResponse {
-        @JsonProperty("content-type")
-        private String contentType;
-        private String body;
-        private double weight;
-        private int status = ResponseStatus.OK;
-
-        public int getStatus() {
-            if (status <= 0) {
-                return ResponseStatus.OK;
-            }
-            return status;
-        }
-    }
-
     public boolean matches(URL url, HttpHeaders headers) {
         if (TextUtil.isNotEmpty(host) && !host.equalsIgnoreCase(url.getHost())) {
             return false;
@@ -80,5 +64,21 @@ public class HttpMock implements HttpResponseProvider {
             .status(response.getStatus())
             .contentType(response.getContentType())
             .body(response.getBody()).build();
+    }
+
+    @Data
+    public static class HttpMockResponse {
+        @JsonProperty("content-type")
+        private String contentType;
+        private String body;
+        private double weight;
+        private int status = ResponseStatus.OK;
+
+        public int getStatus() {
+            if (status <= 0) {
+                return ResponseStatus.OK;
+            }
+            return status;
+        }
     }
 }

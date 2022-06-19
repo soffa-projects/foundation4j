@@ -19,7 +19,11 @@ public interface DB {
         return determineTargetDataSource(TenantId.CONTEXT);
     }
 
-    DataSource determineTargetDataSource(TenantId tenant);
+    default DataSource determineTargetDataSource(TenantId tenant) {
+        return determineTargetDataSource(tenant.getValue());
+    }
+
+    DataSource determineTargetDataSource(String tenant);
 
     String getTablesPrefix();
 

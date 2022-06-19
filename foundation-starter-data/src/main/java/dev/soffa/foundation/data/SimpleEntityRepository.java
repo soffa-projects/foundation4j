@@ -118,6 +118,6 @@ public class SimpleEntityRepository<E> implements EntityRepository<E> {
     protected TenantId getLockedTenant() {
         return lockedTenant;
     }
-    
+
 
 }

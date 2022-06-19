@@ -13,12 +13,12 @@ public class SimpleJobHandler implements ServiceWorker {
 
     private static final AtomicInteger COUNTER = new AtomicInteger(0);
 
+    public static int getCount() {
+        return COUNTER.get();
+    }
+
     @Override
     public void tick() {
         COUNTER.incrementAndGet();
-    }
-
-    public static int getCount() {
-        return COUNTER.get();
     }
 }

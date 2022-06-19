@@ -3,7 +3,8 @@ package dev.soffa.foundation.commons;
 
 public final class JavaUtil {
 
-    private JavaUtil(){}
+    private JavaUtil() {
+    }
 
     public static boolean isJava8() {
         String versions = System.getProperty("java.version").toString();

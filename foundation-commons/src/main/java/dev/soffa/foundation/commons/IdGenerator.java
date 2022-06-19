@@ -20,6 +20,7 @@ public final class IdGenerator {
     public static String secret() {
         return secret("");
     }
+
     public static String secret(String... prefix) {
         byte[] buffer = new byte[20];
         RANDOM.nextBytes(buffer);
@@ -44,7 +45,8 @@ public final class IdGenerator {
 
     /**
      * Not garuantee of uniqueness
-     @return Generated short id
+     *
+     * @return Generated short id
      */
     public static String shortId() {
         return shortId(false);
@@ -52,6 +54,7 @@ public final class IdGenerator {
 
     /**
      * Not garuantee of uniqueness
+     *
      * @param compact lowercase with no dashes or underscores
      * @return Generated short id
      */
@@ -61,8 +64,9 @@ public final class IdGenerator {
 
     /**
      * Not garuantee of uniqueness
+     *
      * @param compact Lowercase id with no dashes or underscores
-     * @param prefix Prefix to add to the id
+     * @param prefix  Prefix to add to the id
      * @return Generated short id
      */
     public static String shortId(boolean compact, String... prefix) {

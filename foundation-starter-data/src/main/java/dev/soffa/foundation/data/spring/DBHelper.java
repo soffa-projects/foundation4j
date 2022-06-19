@@ -66,7 +66,7 @@ public final class DBHelper {
         hc.setMaxLifetime(props.getInt("maxLifetime", 45_000));
         hc.setMaximumPoolSize(props.getInt("maxPoolSize", 16));
 
-        hc.setLeakDetectionThreshold(10*1000);
+        hc.setLeakDetectionThreshold(10 * 1000);
 
         LOG.debug("Using jdbcUrl: %s", config.getUrl());
 
@@ -142,7 +142,7 @@ public final class DBHelper {
         String schema = null;
         if (ds instanceof HikariDataSource) {
             schema = ((HikariDataSource) ds).getSchema();
-        }else if (ds instanceof HikariDS) {
+        } else if (ds instanceof HikariDS) {
             schema = ((HikariDS) ds).getSchema();
         }
         if (TenantId.DEFAULT_VALUE.equals(dsInfo.getName())) {
@@ -176,7 +176,7 @@ public final class DBHelper {
     private static HikariDataSource unwrapDataSource(DataSource source) {
         if (source instanceof HikariDataSource) {
             return (HikariDataSource) source;
-        }else if (source instanceof HikariDS) {
+        } else if (source instanceof HikariDS) {
             return ((HikariDS) source).unwrap();
         }
         throw new IllegalArgumentException("DataSource is not a HikariDataSource");
@@ -206,7 +206,7 @@ public final class DBHelper {
 
         if (ds instanceof HikariDataSource) {
             LOG.info("Creating lock table in datasource: %s", ((HikariDataSource) ds).getSchema());
-        }else if (ds instanceof HikariDS) {
+        } else if (ds instanceof HikariDS) {
             LOG.info("Creating lock table in datasource: %s", ((HikariDS) ds).getSchema());
         }
 

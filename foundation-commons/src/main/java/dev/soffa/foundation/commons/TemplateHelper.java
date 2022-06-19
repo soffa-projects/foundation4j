@@ -20,6 +20,7 @@ public final class TemplateHelper {
         String content = IOUtil.toString(template).orElseThrow(() -> new TechnicalException("Error while opening template"));
         return render(content, context);
     }
+
     public static String render(PebbleEngine engine, InputStream template, Map<String, Object> context) {
         String content = IOUtil.toString(template).orElseThrow(() -> new TechnicalException("Error while opening template"));
         return render(engine, content, context);

@@ -9,5 +9,6 @@ import java.lang.annotation.*;
 public @interface Repository {
 
     String collection();
+
     String fixedTenant() default "";
 }
