@@ -81,6 +81,7 @@ public class DefaultMessageHandler implements MessageHandler {
             "app_operation_" + message.getOperation(),
             ContextUtil.tagify(context),
             new Supplier<Optional<Object>>() {
+                @SuppressWarnings("unchecked")
                 @SneakyThrows
                 @Override
                 public Optional<Object> get() {
@@ -91,8 +92,7 @@ public class DefaultMessageHandler implements MessageHandler {
                     }
                     TenantHolder.set(context.getTenantId());
                     //noinspection unchecked
-                    @SuppressWarnings("unchecked")
-                    Object result = ((Operation<Object, Object>) operation).handle(payload.get(), context);
+                    Object result = ((Operation<Object, Object>) operation).apply(payload.get(), context);
                     if (result == null) {
                         return Optional.empty();
                     }

@@ -8,7 +8,7 @@ plugins {
 dependencies {
     api(project(":foundation-core"))
 
-    implementation("io.nats:jnats:2.15.2")
+    implementation("io.nats:jnats:2.15.3")
     implementation("com.github.fridujo:rabbitmq-mock:1.1.1")
     implementation("org.springframework.kafka:spring-kafka")
     implementation("org.springframework.amqp:spring-rabbit")
@@ -16,7 +16,7 @@ dependencies {
     compileOnly("org.springframework.boot:spring-boot-autoconfigure")
     testImplementation(project(":foundation-starter"))
     testImplementation(project(":foundation-starter-test"))
-    testImplementation("berlin.yuna:nats-server-embedded:2.2.98")
+    testImplementation("berlin.yuna:nats-server-embedded:2.2.99")
 
 }
 repositories {

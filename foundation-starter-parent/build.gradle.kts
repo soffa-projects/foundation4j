@@ -11,8 +11,8 @@ dependencies {
 
     api("org.springframework.cloud:spring-cloud-starter-consul-discovery")
     implementation("org.springframework.boot:spring-boot-starter-actuator")
-    implementation("net.logstash.logback:logstash-logback-encoder:7.1.1")
-    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.13.2")
+    implementation("net.logstash.logback:logstash-logback-encoder:7.2")
+    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.13.3")
 }
 repositories {
     mavenCentral()

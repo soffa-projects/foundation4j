@@ -7,7 +7,7 @@ plugins {
 
 dependencies {
     api(project(":foundation-commons"))
-    api("com.amazonaws:aws-java-sdk-s3:1.12.233") {
+    api("com.amazonaws:aws-java-sdk-s3:1.12.239") {
         exclude(group = "com.github.ben-manes.caffeine")
     }
 

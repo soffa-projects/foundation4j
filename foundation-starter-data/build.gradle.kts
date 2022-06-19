@@ -24,15 +24,15 @@ dependencies {
         exclude(group = "com.github.ben-manes.caffeine")
     }
     implementation("io.pebbletemplates:pebble:3.1.5")
-    implementation("net.javacrumbs.shedlock:shedlock-provider-jdbc-template:4.34.0")
-    implementation("net.javacrumbs.shedlock:shedlock-spring:4.34.0")
+    implementation("net.javacrumbs.shedlock:shedlock-provider-jdbc-template:4.36.0")
+    implementation("net.javacrumbs.shedlock:shedlock-spring:4.36.0")
     api("org.hibernate.javax.persistence:hibernate-jpa-2.1-api:1.0.2.Final")
-    implementation("org.jdbi:jdbi3-core:3.28.0") {
+    implementation("org.jdbi:jdbi3-core:3.30.0") {
         exclude(group = "com.github.ben-manes.caffeine")
     }
-    implementation("org.liquibase:liquibase-core:4.10.0")
-    implementation("org.jdbi:jdbi3-postgres:3.28.0")
-    implementation("org.jdbi:jdbi3-sqlobject:3.28.0")
+    implementation("org.liquibase:liquibase-core:4.11.0")
+    implementation("org.jdbi:jdbi3-postgres:3.30.0")
+    implementation("org.jdbi:jdbi3-sqlobject:3.30.0")
     testImplementation(project(":foundation-starter"))
     testImplementation(project(":foundation-starter-test"))
 }
