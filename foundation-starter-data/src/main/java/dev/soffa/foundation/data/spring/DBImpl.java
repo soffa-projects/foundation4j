@@ -55,11 +55,13 @@ public final class DBImpl extends AbstractDataSource implements ApplicationListe
     private MigrationDelegate migrationDelegate;
 
 
+
     @SneakyThrows
     public DBImpl(final ApplicationContext context,
                   final AppConfig appConfig) {
 
         super();
+
         this.context = context;
         this.appConfig = appConfig;
         if (appConfig.getDb() != null) {

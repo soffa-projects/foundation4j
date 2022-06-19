@@ -34,7 +34,8 @@ public class DynamicResourceConfig implements ApplicationContextAware {
     private final AppConfig appConfig;
     private final OperationsMapping operationsMapping;
 
-    public DynamicResourceConfig(AppConfig appConfig, @Autowired(required = false) OperationsMapping operationsMapping) {
+    public DynamicResourceConfig(AppConfig appConfig,
+                                 @Autowired(required = false) OperationsMapping operationsMapping) {
         this.appConfig = appConfig;
         this.operationsMapping = operationsMapping;
     }
@@ -48,6 +49,7 @@ public class DynamicResourceConfig implements ApplicationContextAware {
         } else {
             ConfigurableApplicationContext context = (ConfigurableApplicationContext) applicationContext;
             configure((DefaultListableBeanFactory) context.getBeanFactory());
+
         }
     }
 

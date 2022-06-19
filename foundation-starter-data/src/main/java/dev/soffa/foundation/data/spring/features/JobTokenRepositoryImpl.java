@@ -4,8 +4,8 @@ import com.google.common.collect.ImmutableMap;
 import dev.soffa.foundation.commons.Logger;
 import dev.soffa.foundation.data.DB;
 import dev.soffa.foundation.data.SimpleEntityRepository;
+import dev.soffa.foundation.extra.jobs.JobTokenRepository;
 import dev.soffa.foundation.extra.jobs.PendingJob;
-import dev.soffa.foundation.extra.jobs.PendingJobRepository;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -13,15 +13,15 @@ import java.util.function.Function;
 
 
 @Component
-public class PendingJobRepositoryImpl extends SimpleEntityRepository<PendingJob> implements PendingJobRepository {
+public class JobTokenRepositoryImpl extends SimpleEntityRepository<PendingJob> implements JobTokenRepository {
 
-    private static final Logger LOG = Logger.get(PendingJobRepository.class);
+    private static final Logger LOG = Logger.get(JobTokenRepository.class);
     private static final String OPERATION = "operation";
     private static final String SUBJECT = "subject";
     private static final int RETRIES_TRESHOLD = 10;
 
 
-    public PendingJobRepositoryImpl(DB db) {
+    public JobTokenRepositoryImpl(DB db) {
         super(db, PendingJob.class);
     }
 

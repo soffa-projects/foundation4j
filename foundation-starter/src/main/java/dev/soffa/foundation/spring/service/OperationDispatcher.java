@@ -16,7 +16,7 @@ public class OperationDispatcher implements Dispatcher {
 
     @Override
     public <I, O, T extends Operation<I, O>> O dispatch(Class<T> operationClass, I input, Context ctx) {
-        return operations.require(operationClass).apply(input, ctx);
+        return OperationHelper.invoke(operations.require(operationClass), input, ctx);
     }
 
     @Override

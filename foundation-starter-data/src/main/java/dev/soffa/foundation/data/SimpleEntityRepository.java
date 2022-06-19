@@ -1,6 +1,7 @@
 package dev.soffa.foundation.data;
 
 import dev.soffa.foundation.commons.TextUtil;
+import dev.soffa.foundation.error.ResourceNotFoundException;
 import dev.soffa.foundation.model.TenantId;
 
 import java.util.List;
@@ -71,13 +72,18 @@ public class SimpleEntityRepository<E> implements EntityRepository<E> {
 
 
     @Override
+    public E get(Object id) {
+        return ds.findById(getLockedTenant(), entityClass, id).orElseThrow(() -> new ResourceNotFoundException("No entity found for id: " + id));
+    }
+
+    @Override
     public Optional<E> findById(Object id) {
         return ds.findById(getLockedTenant(), entityClass, id);
     }
 
     @Override
-    public Optional<E> findById(TenantId tenant, Object value) {
-        return ds.findById(tenant, entityClass, value);
+    public Optional<E> findById(TenantId tenant, Object id) {
+        return ds.findById(tenant, entityClass, id);
     }
 
     @Override

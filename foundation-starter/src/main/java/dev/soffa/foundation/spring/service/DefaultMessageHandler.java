@@ -92,7 +92,7 @@ public class DefaultMessageHandler implements MessageHandler {
                     }
                     TenantHolder.set(context.getTenantId());
                     //noinspection unchecked
-                    Object result = ((Operation<Object, Object>) operation).apply(payload.get(), context);
+                    Object result = OperationHelper.invoke((Operation<Object, Object>) operation, payload.get(), context);
                     if (result == null) {
                         return Optional.empty();
                     }

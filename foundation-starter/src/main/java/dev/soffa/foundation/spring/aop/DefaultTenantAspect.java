@@ -9,8 +9,6 @@ import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.function.Supplier;
 
@@ -27,7 +25,6 @@ public class DefaultTenantAspect {
         return TenantHolder.useDefault(new Supplier<Object>() {
             @SneakyThrows
             @Override
-            @Transactional(propagation = Propagation.NESTED)
             public Object get() {
                 if (LOG.isDebugEnabled()) {
                     LOG.debug("Using default tenant for action: %s.%S", pjp.getSignature().getDeclaringTypeName(), pjp.getSignature().getName());

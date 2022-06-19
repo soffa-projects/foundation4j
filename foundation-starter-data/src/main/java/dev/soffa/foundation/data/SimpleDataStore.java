@@ -1,7 +1,7 @@
 package dev.soffa.foundation.data;
 
 import com.zaxxer.hikari.HikariDataSource;
-import dev.soffa.foundation.commons.IdGenerator;
+import dev.soffa.foundation.application.ID;
 import dev.soffa.foundation.commons.TextUtil;
 import dev.soffa.foundation.data.jdbi.BeanMapper;
 import dev.soffa.foundation.data.jdbi.MapArgumentFactory;
@@ -59,7 +59,7 @@ public class SimpleDataStore implements DataStore {
                 em.setCreated(Date.from(Instant.now()));
             }
             if (TextUtil.isEmpty(em.getId())) {
-                em.setId(IdGenerator.uuidSnakeCase());
+                em.setId(ID.generate());
             }
         }
 

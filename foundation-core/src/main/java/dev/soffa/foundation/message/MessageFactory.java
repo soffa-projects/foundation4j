@@ -1,6 +1,6 @@
 package dev.soffa.foundation.message;
 
-import dev.soffa.foundation.commons.IdGenerator;
+import dev.soffa.foundation.commons.DefaultIdGenerator;
 import dev.soffa.foundation.commons.Mappers;
 import dev.soffa.foundation.context.Context;
 import dev.soffa.foundation.context.ContextHolder;
@@ -41,7 +41,7 @@ public final class MessageFactory {
         Context context = ContextHolder.inheritOrCreate();
         context.sync();
         Map<String, String> headers = context.getHeaders();
-        return new Message(IdGenerator.uuid("msg"), operation, lPayload, payloadType, headers);
+        return new Message(DefaultIdGenerator.uuid("msg"), operation, lPayload, payloadType, headers);
     }
 
     public static Message create(String operation) {

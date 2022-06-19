@@ -1,6 +1,6 @@
 package dev.soffa.foundation;
 
-import dev.soffa.foundation.commons.IdGenerator;
+import dev.soffa.foundation.commons.DefaultIdGenerator;
 import dev.soffa.foundation.error.TechnicalException;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.Test;
@@ -11,7 +11,7 @@ import java.util.concurrent.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class IdGeneratorTest {
+public class DefaultIdGeneratorTest {
 
     public static final String CH = "ch";
     public static final String LIVE = "live";
@@ -30,7 +30,7 @@ public class IdGeneratorTest {
         for (int t = 0; t < threads; t++) {
             executor.execute(() -> {
                 for (int c = 0; c < count; c++) {
-                    String value = IdGenerator.uuidSnakeCase();
+                    String value = DefaultIdGenerator.uuidSnakeCase();
                     if (consumed.containsKey(value)) {
                         throw new TechnicalException("IdGenerator.uuid() returned a duplicate value");
                     }
@@ -45,13 +45,13 @@ public class IdGeneratorTest {
 
     @Test
     public void testIdGenerator() {
-        assertTrue(IdGenerator.secret(CH).startsWith(CH_));
-        assertTrue(IdGenerator.secret(CH_).startsWith(CH_));
+        assertTrue(DefaultIdGenerator.secret(CH).startsWith(CH_));
+        assertTrue(DefaultIdGenerator.secret(CH_).startsWith(CH_));
 
-        assertTrue(IdGenerator.secret(CH, LIVE).startsWith(CH_LIVE));
-        assertTrue(IdGenerator.secret(CH, LIVE_).startsWith(CH_LIVE));
-        assertTrue(IdGenerator.secret(CH_, LIVE_).startsWith(CH_LIVE));
-        assertTrue(IdGenerator.secret(CH_, LIVE).startsWith(CH_LIVE));
+        assertTrue(DefaultIdGenerator.secret(CH, LIVE).startsWith(CH_LIVE));
+        assertTrue(DefaultIdGenerator.secret(CH, LIVE_).startsWith(CH_LIVE));
+        assertTrue(DefaultIdGenerator.secret(CH_, LIVE_).startsWith(CH_LIVE));
+        assertTrue(DefaultIdGenerator.secret(CH_, LIVE).startsWith(CH_LIVE));
     }
 
 }

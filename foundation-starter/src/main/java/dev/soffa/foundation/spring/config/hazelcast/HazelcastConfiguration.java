@@ -5,7 +5,7 @@ import com.hazelcast.client.config.ClientConfig;
 import com.hazelcast.config.Config;
 import com.hazelcast.core.Hazelcast;
 import com.hazelcast.core.HazelcastInstance;
-import dev.soffa.foundation.commons.IdGenerator;
+import dev.soffa.foundation.commons.DefaultIdGenerator;
 import dev.soffa.foundation.commons.Logger;
 import dev.soffa.foundation.commons.TextUtil;
 import dev.soffa.foundation.config.AppConfig;
@@ -34,7 +34,7 @@ public class HazelcastConfiguration {
         } else {
             LOG.info("Configuration HazelCast instance");
             ClientConfig config = new ClientConfig();
-            config.setInstanceName(appConfig.getName() + "-" + IdGenerator.shortId());
+            config.setInstanceName(appConfig.getName() + "-" + DefaultIdGenerator.shortId());
             for (String server : props.getServers().split(",")) {
                 config.getNetworkConfig().addAddress(server.trim());
             }

@@ -67,9 +67,11 @@ public interface EntityRepository<E> {
         return get(tenant, Criteria.of(filter));
     }
 
-    Optional<E> findById(Object value);
+    E get(Object id);
 
-    Optional<E> findById(TenantId tenant, Object value);
+    Optional<E> findById(Object id);
+
+    Optional<E> findById(TenantId tenant, Object id);
 
     E insert(E entity);
 

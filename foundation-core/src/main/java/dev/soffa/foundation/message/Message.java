@@ -1,7 +1,7 @@
 package dev.soffa.foundation.message;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import dev.soffa.foundation.commons.IdGenerator;
+import dev.soffa.foundation.commons.DefaultIdGenerator;
 import dev.soffa.foundation.commons.Mappers;
 import dev.soffa.foundation.commons.TextUtil;
 import dev.soffa.foundation.context.Context;
@@ -38,7 +38,7 @@ public class Message implements Serializable {
     }
 
     public Message(String id, String operation, Object payload, String payloadType, Context context) {
-        this.id = TextUtil.isEmpty(id) ? IdGenerator.uuid("msg_") : id;
+        this.id = TextUtil.isEmpty(id) ? DefaultIdGenerator.uuid("msg_") : id;
         this.operation = operation;
         this.payloadType = payloadType;
         if (context != null) {

@@ -1,17 +1,17 @@
 package dev.soffa.foundation.extra.jobs;
 
-import dev.soffa.foundation.commons.IdGenerator;
+import dev.soffa.foundation.commons.DefaultIdGenerator;
 import dev.soffa.foundation.data.EntityRepository;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
 import java.util.function.Function;
 
-public interface PendingJobRepository extends EntityRepository<PendingJob> {
+public interface JobTokenRepository extends EntityRepository<PendingJob> {
 
 
     default void create(@NonNull String operation, @NonNull String subject) {
         if (!exists(operation, subject)) {
-            insert(PendingJob.builder().operation(operation).subject(subject).id(IdGenerator.uuidSnakeCase("job")).build());
+            insert(PendingJob.builder().operation(operation).subject(subject).id(DefaultIdGenerator.uuidSnakeCase("job")).build());
         }
     }
 
