@@ -12,6 +12,7 @@ dependencies {
     api("org.springframework.boot:spring-boot-starter-test") {
         exclude(group = "com.vaadin.external.google")
     }
+    implementation("com.hazelcast:hazelcast-all:4.2.5")
 
     compileOnly("org.springframework.boot:spring-boot-starter-web")
 

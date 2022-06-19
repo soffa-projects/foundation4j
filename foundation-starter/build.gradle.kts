@@ -20,6 +20,8 @@ dependencies {
     implementation("org.springframework:spring-tx")
     implementation("net.logstash.logback:logstash-logback-encoder:7.2")
     implementation("org.springframework.cloud:spring-cloud-starter-consul-discovery")
+    implementation("com.hazelcast:hazelcast-all:4.2.5")
+
     implementation("org.jobrunr:jobrunr:5.1.3") {
         exclude(group = "com.zaxxer")
     }
