@@ -3,6 +3,7 @@ package dev.soffa.foundation.commons;
 import com.mitchellbosecke.pebble.PebbleEngine;
 import com.mitchellbosecke.pebble.template.PebbleTemplate;
 import dev.soffa.foundation.error.TechnicalException;
+import dev.soffa.foundation.model.TemplateMessage;
 
 import java.io.*;
 import java.nio.file.Files;
@@ -16,6 +17,9 @@ public final class TemplateHelper {
     private TemplateHelper() {
     }
 
+    public static String render(TemplateMessage message) {
+        return render(message.getTemplate(), message.getValues());
+    }
     public static String render(InputStream template, Map<String, Object> context) {
         String content = IOUtil.toString(template).orElseThrow(() -> new TechnicalException("Error while opening template"));
         return render(content, context);

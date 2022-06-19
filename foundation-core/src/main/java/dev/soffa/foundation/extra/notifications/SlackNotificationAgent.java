@@ -4,18 +4,28 @@ import dev.soffa.foundation.commons.http.DefaultHttpClient;
 import dev.soffa.foundation.commons.http.HttpClient;
 import dev.soffa.foundation.commons.http.HttpResponse;
 import dev.soffa.foundation.error.TechnicalException;
+import lombok.NoArgsConstructor;
 import org.checkerframework.com.google.common.collect.ImmutableMap;
 
-public class SlackNotificationClient {
+@NoArgsConstructor
+public class SlackNotificationAgent implements NotificationAgent {
 
-    public static void send(String webhook, String message) {
-        HttpClient client = DefaultHttpClient.newInstance();
+    private String webhook;
+    private final HttpClient client = DefaultHttpClient.newInstance();
+
+    public SlackNotificationAgent(String webhook) {
+        this.webhook = webhook;
+    }
+
+    @Override
+    public void notify(String message) {
         HttpResponse response = client.post(webhook, ImmutableMap.of(
             "text", message
         ));
         if (!response.isOK()) {
             throw new TechnicalException("Slack notification failed: " + response.getBody());
+        }else {
+            COUNTER.incrementAndGet();
         }
     }
-
 }

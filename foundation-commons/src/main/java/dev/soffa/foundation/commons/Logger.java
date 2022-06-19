@@ -92,6 +92,10 @@ public final class Logger {
         }
     }
 
+    public static Logger getLogger(Class<?> type) {
+        return get(type);
+    }
+
     public static Logger get(Class<?> type) {
         return new Logger(LoggerFactory.getLogger(type));
     }
