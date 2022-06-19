@@ -66,7 +66,7 @@ public final class DBHelper {
         hc.setMaxLifetime(props.getInt("maxLifetime", 45_000));
         hc.setMaximumPoolSize(props.getInt("maxPoolSize", 16));
 
-        hc.setLeakDetectionThreshold(10 * 1000);
+        // hc.setLeakDetectionThreshold(10 * 1000);
 
         LOG.debug("Using jdbcUrl: %s", config.getUrl());
 
