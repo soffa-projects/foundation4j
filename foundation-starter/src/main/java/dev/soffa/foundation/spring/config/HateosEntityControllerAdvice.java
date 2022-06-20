@@ -3,7 +3,6 @@ package dev.soffa.foundation.spring.config;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import dev.soffa.foundation.annotation.Hateos;
 import dev.soffa.foundation.commons.JacksonMapper;
-import dev.soffa.foundation.commons.Mappers;
 import dev.soffa.foundation.model.HateosLink;
 import lombok.AllArgsConstructor;
 import org.checkerframework.com.google.common.collect.ImmutableMap;

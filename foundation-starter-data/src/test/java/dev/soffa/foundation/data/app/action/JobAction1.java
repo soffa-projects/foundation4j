@@ -1,4 +1,4 @@
-package dev.soffa.foundation.starter.test.app.action;
+package dev.soffa.foundation.data.app.action;
 
 import dev.soffa.foundation.core.Operation;
 

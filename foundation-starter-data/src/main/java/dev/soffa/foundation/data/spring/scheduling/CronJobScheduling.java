@@ -3,9 +3,9 @@ package dev.soffa.foundation.data.spring.scheduling;
 import dev.soffa.foundation.annotation.Cron;
 import dev.soffa.foundation.commons.Logger;
 import dev.soffa.foundation.context.ApplicationLifecycle;
+import dev.soffa.foundation.scheduling.Scheduler;
 import dev.soffa.foundation.scheduling.ServiceWorker;
 import lombok.AllArgsConstructor;
-import org.jobrunr.scheduling.JobScheduler;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
@@ -16,7 +16,7 @@ import java.util.Map;
 class CronJobScheduling implements ApplicationLifecycle {
 
     private static final Logger LOG = Logger.get(CronJobScheduling.class);
-    private final JobScheduler jobScheduler;
+    private final Scheduler scheduler;
     private final ApplicationContext context;
 
     @Override
@@ -40,7 +40,7 @@ class CronJobScheduling implements ApplicationLifecycle {
             String cronId = worker.getClass().getSimpleName();
             LOG.info("[Scheduling] Worker registered: %s", worker.getClass());
             count++;
-            jobScheduler.scheduleRecurrently(cronId, cron, worker::tick);
+            scheduler.scheduleRecurrently(cronId, cron, worker);
         }
         if (count == 0) {
             LOG.warn("No @Cron annotated method found in service workers");

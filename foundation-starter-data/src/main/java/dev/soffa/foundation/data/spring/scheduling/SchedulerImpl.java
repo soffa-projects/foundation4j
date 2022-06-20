@@ -5,6 +5,7 @@ import dev.soffa.foundation.core.Dispatcher;
 import dev.soffa.foundation.core.Operation;
 import dev.soffa.foundation.multitenancy.TenantHolder;
 import dev.soffa.foundation.scheduling.Scheduler;
+import dev.soffa.foundation.scheduling.ServiceWorker;
 import org.jobrunr.scheduling.JobScheduler;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
@@ -25,14 +26,8 @@ class SchedulerImpl implements Scheduler {
     }
 
     @Override
-    public <I, O, T extends Operation<I, O>> void enqueue(Class<T> operationClass, I input, Context ctx) {
-        if (dispatcher == null) {
-            dispatcher = context.getBeansOfType(Dispatcher.class).values().iterator().next();
-        }
-        TenantHolder.useDefault(() -> {
-            jobScheduler.enqueue(() -> dispatcher.dispatch(operationClass, input, ctx));
-            return Optional.empty();
-        });
+    public void scheduleRecurrently(String cronId, String cron, ServiceWorker worker) {
+        jobScheduler.scheduleRecurrently(cronId, cron, worker::tick);
     }
 
     @Override

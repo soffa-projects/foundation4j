@@ -2,6 +2,7 @@ package dev.soffa.foundation.scheduling;
 
 import dev.soffa.foundation.commons.DigestUtil;
 import dev.soffa.foundation.context.Context;
+import dev.soffa.foundation.context.ContextHolder;
 import dev.soffa.foundation.core.Operation;
 
 import java.util.UUID;
@@ -9,10 +10,8 @@ import java.util.UUID;
 public interface Scheduler {
 
     default <I, O, T extends Operation<I, O>> void enqueue(Class<T> operationClass, I input) {
-        enqueue(operationClass, input, Context.create());
+        enqueue(UUID.randomUUID(), operationClass, input, ContextHolder.inheritOrCreate());
     }
-
-    <I, O, T extends Operation<I, O>> void enqueue(Class<T> operationClass, I input, Context context);
 
     default <I, O, T extends Operation<I, O>> void enqueue(String uuid, Class<T> operationClass, I input, Context context) {
         enqueue(DigestUtil.makeUUID(uuid), operationClass, input, context);
@@ -20,4 +19,5 @@ public interface Scheduler {
 
     <I, O, T extends Operation<I, O>> void enqueue(UUID uuid, Class<T> operationClass, I input, Context context);
 
+    void scheduleRecurrently(String cronId, String cron, ServiceWorker worker);
 }

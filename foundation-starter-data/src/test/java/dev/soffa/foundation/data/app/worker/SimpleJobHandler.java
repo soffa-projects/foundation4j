@@ -1,4 +1,4 @@
-package dev.soffa.foundation.starter.test.app.worker;
+package dev.soffa.foundation.data.app.worker;
 
 import dev.soffa.foundation.annotation.Cron;
 import dev.soffa.foundation.scheduling.ServiceWorker;

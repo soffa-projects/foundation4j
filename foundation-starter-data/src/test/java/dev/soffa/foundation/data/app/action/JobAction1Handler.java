@@ -1,7 +1,6 @@
-package dev.soffa.foundation.starter.test.app.handlers;
+package dev.soffa.foundation.data.app.action;
 
 import dev.soffa.foundation.context.Context;
-import dev.soffa.foundation.starter.test.app.action.JobAction1;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.springframework.stereotype.Component;
 

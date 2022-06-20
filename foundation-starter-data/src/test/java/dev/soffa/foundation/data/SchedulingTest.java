@@ -1,9 +1,9 @@
-package dev.soffa.foundation.starter.test;
+package dev.soffa.foundation.data;
 
+import dev.soffa.foundation.data.app.action.JobAction1;
+import dev.soffa.foundation.data.app.action.JobAction1Handler;
+import dev.soffa.foundation.data.app.worker.SimpleJobHandler;
 import dev.soffa.foundation.scheduling.Scheduler;
-import dev.soffa.foundation.starter.test.app.action.JobAction1;
-import dev.soffa.foundation.starter.test.app.handlers.JobAction1Handler;
-import dev.soffa.foundation.starter.test.app.worker.SimpleJobHandler;
 import org.awaitility.Awaitility;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
