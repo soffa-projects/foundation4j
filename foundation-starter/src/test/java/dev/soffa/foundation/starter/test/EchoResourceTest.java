@@ -68,11 +68,14 @@ public class EchoResourceTest {
 
         client.post("/v1/echo")
             .withJson(input)
-            .expect().isOK().json("content", content);
+            .expect().isOK().json(jsonExpect -> {
+                jsonExpect.eq("content", content);
+                jsonExpect.exists("_links.self.href");
+            });
 
         client.patch("/v1/messages/123456")
             .withJson(ImmutableMap.of("content", content))
-            .expect().isCreated().json("content", "123456/" + content);
+            .expect().isCreated().json("$.content", "123456/" + content);
 
         client.patch("/v1.1/messages/123456")
             .expect().isOK().json("content", "123456");

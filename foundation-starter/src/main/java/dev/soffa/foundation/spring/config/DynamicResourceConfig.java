@@ -112,6 +112,7 @@ public class DynamicResourceConfig implements ApplicationContextAware {
                             return instance.unreflectSpecial(method, clazz).
                                 bindTo(proxy).
                                 invokeWithArguments(args);
+
                         } else if ("invoke".equals(method.getName())) {
                             // checkRoleAllowed(classRolesAllowed);
                             return MethodUtils.invokeMethod(dispatcher, "dispatch", args, method.getParameterTypes());

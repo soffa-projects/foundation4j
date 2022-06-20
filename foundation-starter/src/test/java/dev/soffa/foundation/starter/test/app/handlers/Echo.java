@@ -12,6 +12,7 @@ public class Echo implements Operation<EchoInput, Message> {
 
     @Override
     public Message handle(EchoInput input, @NonNull Context ctx) {
+
         return new Message(input.getMessage());
     }
 }

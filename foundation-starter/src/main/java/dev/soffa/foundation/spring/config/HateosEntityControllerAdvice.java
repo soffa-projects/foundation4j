@@ -1,11 +1,12 @@
 package dev.soffa.foundation.spring.config;
 
-import dev.soffa.foundation.error.TodoException;
-import dev.soffa.foundation.model.RepresentationModel;
-import dev.soffa.foundation.model.ResponseEntity;
+import dev.soffa.foundation.annotation.Hateos;
+import dev.soffa.foundation.commons.Mappers;
+import dev.soffa.foundation.model.HateosLink;
+import org.checkerframework.com.google.common.collect.ImmutableMap;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.core.MethodParameter;
-import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.server.ServerHttpRequest;
@@ -13,13 +14,15 @@ import org.springframework.http.server.ServerHttpResponse;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyAdvice;
 
+import java.util.Map;
+
 @ControllerAdvice
-public class ResponseEntityControllerAdvice implements ResponseBodyAdvice<Object> {
+public class HateosEntityControllerAdvice implements ResponseBodyAdvice<Object> {
 
     @Override
     public boolean supports(MethodParameter returnType,
                             @NotNull Class<? extends HttpMessageConverter<?>> converterType) {
-        return returnType.getParameterType() == ResponseEntity.class;
+        return returnType.getParameterType().isAnnotationPresent(Hateos.class);
     }
 
     @Override
@@ -30,10 +33,15 @@ public class ResponseEntityControllerAdvice implements ResponseBodyAdvice<Object
                                   @NotNull ServerHttpRequest request,
                                   @NotNull ServerHttpResponse response) {
 
-        ResponseEntity<?> e = (ResponseEntity<?>) body;
-        if (e.getStatus() > 0) {
-            response.setStatusCode(HttpStatus.valueOf(e.getStatus()));
+        if (body == null || request.getMethod() != HttpMethod.GET) {
+            return body;
         }
-        return e.getData();
+        // Hateos ano = body.getClass().getAnnotation(Hateos.class);
+        Map<String,HateosLink> links = ImmutableMap.of(
+            "self", new HateosLink(request.getURI().toString())
+        );
+        Map<String,Object> transformed = Mappers.JSON.toMap(body);
+        transformed.put("_links", links);
+        return transformed;
     }
 }
