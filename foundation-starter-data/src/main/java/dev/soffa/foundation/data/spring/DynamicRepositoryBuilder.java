@@ -12,7 +12,6 @@ import dev.soffa.foundation.data.SimpleDataStore;
 import dev.soffa.foundation.data.SimpleEntityRepository;
 import lombok.AllArgsConstructor;
 import lombok.SneakyThrows;
-import org.apache.commons.beanutils.MethodUtils;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -91,7 +90,7 @@ class DynamicRepositoryBuilder {
                             bindTo(proxy).
                             invokeWithArguments(args);
                     } else {
-                        return MethodUtils.invokeMethod(repo, method.getName(), args);
+                        return method.invoke(repo,  args);
                     }
                 });
             String beanName = resourceClass.getName() + "Impl";

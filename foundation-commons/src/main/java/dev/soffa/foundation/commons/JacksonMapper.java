@@ -183,6 +183,11 @@ public class JacksonMapper implements Mapper {
     @Override
     @SuppressWarnings("unchecked")
     public <E> Map<String, E> toMap(Object input, Class<E> valueClass) {
+        return toMap(mapper, input, valueClass);
+    }
+
+    @SuppressWarnings("unchecked")
+    public static <E> Map<String, E> toMap(ObjectMapper mapper, Object input, Class<E> valueClass) {
         if (input == null) {
             return new HashMap<>();
         }

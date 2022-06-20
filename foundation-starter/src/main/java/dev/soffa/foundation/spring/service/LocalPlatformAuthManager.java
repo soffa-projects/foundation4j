@@ -47,6 +47,7 @@ public class LocalPlatformAuthManager implements PlatformAuthManager {
 
     private Authentication authenticate(Context context, String token) {
         if (TextUtil.isEmpty(token)) {
+            LOG.warn("An empty authentication was received, check the client request");
             return null;
         }
         Authentication auth = getAuthManager().authenticate(context, token);

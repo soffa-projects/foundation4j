@@ -32,6 +32,11 @@ public interface EchoResource extends Resource {
         return invoke(Echo.class, input);
     }
 
+    @GetMapping("/v1/echo")
+    default Message echo() {
+        return invoke(Echo.class, new EchoInput("Echo"));
+    }
+
     @Operation(
         summary = "Echo the input message"
     )

@@ -22,7 +22,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-@SpringBootTest
+@SpringBootTest(properties = "jackson.property-naming-strategy=SNAKE_CASE")
 @ActiveProfiles("test")
 @AutoConfigureMockMvc
 public class EchoResourceTest {
@@ -68,8 +68,13 @@ public class EchoResourceTest {
 
         client.post("/v1/echo")
             .withJson(input)
+            .expect().isOK().json("content", content);
+
+        client.get("/v1/echo")
+            .withJson(input)
             .expect().isOK().json(jsonExpect -> {
-                jsonExpect.eq("content", content);
+                jsonExpect.eq("content", "Echo");
+                jsonExpect.exists("message_id");
                 jsonExpect.exists("_links.self.href");
             });
 

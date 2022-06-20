@@ -1,8 +1,11 @@
 package dev.soffa.foundation.spring.config;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import dev.soffa.foundation.annotation.Hateos;
+import dev.soffa.foundation.commons.JacksonMapper;
 import dev.soffa.foundation.commons.Mappers;
 import dev.soffa.foundation.model.HateosLink;
+import lombok.AllArgsConstructor;
 import org.checkerframework.com.google.common.collect.ImmutableMap;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.core.MethodParameter;
@@ -17,7 +20,10 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyAdvice;
 import java.util.Map;
 
 @ControllerAdvice
+@AllArgsConstructor
 public class HateosEntityControllerAdvice implements ResponseBodyAdvice<Object> {
+
+    private final ObjectMapper mapper;
 
     @Override
     public boolean supports(MethodParameter returnType,
@@ -40,7 +46,7 @@ public class HateosEntityControllerAdvice implements ResponseBodyAdvice<Object> 
         Map<String,HateosLink> links = ImmutableMap.of(
             "self", new HateosLink(request.getURI().toString())
         );
-        Map<String,Object> transformed = Mappers.JSON.toMap(body);
+        Map<String,Object> transformed = JacksonMapper.toMap(mapper, body, Object.class);
         transformed.put("_links", links);
         return transformed;
     }

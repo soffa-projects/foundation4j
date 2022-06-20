@@ -112,9 +112,7 @@ public class DynamicResourceConfig implements ApplicationContextAware {
                             return instance.unreflectSpecial(method, clazz).
                                 bindTo(proxy).
                                 invokeWithArguments(args);
-
                         } else if ("invoke".equals(method.getName())) {
-                            // checkRoleAllowed(classRolesAllowed);
                             return MethodUtils.invokeMethod(dispatcher, "dispatch", args, method.getParameterTypes());
                         } else {
                             throw new UnsupportedOperationException("Method " + method.getName() + " is not supported");
@@ -122,7 +120,7 @@ public class DynamicResourceConfig implements ApplicationContextAware {
                     });
 
                 beanFactory.registerSingleton(className, controller);
-                LOG.info("Dynamic resource registered: %s", className);
+                LOG.info("Dynamic resource implementation registered: %s", className);
             }
         }
     }

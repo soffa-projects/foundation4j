@@ -15,6 +15,6 @@ public class DoEchoSecured implements EchoSecured {
     @Override
     @Publish(event = "TENANT_CREATED", target = "*")
     public Message handle(EchoInput input, @NonNull Context ctx) {
-        return new Message(input.getMessage());
+        return new Message("echo.secure", input.getMessage());
     }
 }

@@ -1,7 +1,5 @@
 package dev.soffa.foundation.spring.config;
 
-import dev.soffa.foundation.error.TodoException;
-import dev.soffa.foundation.model.RepresentationModel;
 import dev.soffa.foundation.model.ResponseEntity;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.core.MethodParameter;

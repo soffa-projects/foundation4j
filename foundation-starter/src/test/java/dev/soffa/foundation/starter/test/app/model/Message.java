@@ -7,6 +7,7 @@ import lombok.Value;
 @Hateos
 public class Message {
 
+    String messageId;
     String content;
 
 }

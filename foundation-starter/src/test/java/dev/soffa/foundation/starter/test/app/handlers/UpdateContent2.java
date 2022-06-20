@@ -11,6 +11,6 @@ public class UpdateContent2 implements Operation<@NonNull String, Message> {
 
     @Override
     public Message handle(@NonNull String id, @NonNull Context ctx) {
-        return new Message(id);
+        return new Message("udate2", id);
     }
 }

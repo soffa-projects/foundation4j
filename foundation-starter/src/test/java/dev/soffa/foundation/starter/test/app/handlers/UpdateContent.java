@@ -12,6 +12,6 @@ public class UpdateContent implements Operation<UpdateContentInput, Message> {
 
     @Override
     public Message handle(UpdateContentInput input, @NonNull Context ctx) {
-        return new Message(input.getId() + "/" + input.getContent());
+        return new Message("echo.update", input.getId() + "/" + input.getContent());
     }
 }
