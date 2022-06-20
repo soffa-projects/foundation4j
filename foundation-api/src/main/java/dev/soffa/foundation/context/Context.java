@@ -2,7 +2,6 @@ package dev.soffa.foundation.context;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import dev.soffa.foundation.model.Authentication;
-import dev.soffa.foundation.model.SideEffects;
 import dev.soffa.foundation.model.TenantId;
 import lombok.Getter;
 import lombok.Setter;
@@ -18,6 +17,7 @@ import java.util.Optional;
 public class Context {
 
     public static final String TENANT_ID = "X-TenantId";
+    public static final String TENANT_NAME = "X-TenantName";
     public static final String APPLICATION_ID = "X-ApplicationId";
     public static final String APPLICATION = "X-Application";
     // public static final String TRACE_ID = "X-TraceId";
@@ -28,16 +28,12 @@ public class Context {
     private static String serviceName = "app";
     private String authorization;
     private String tenantId;
+    private String tenantName;
     private String applicationId;
     private String applicationName;
     private String sender;
     // private String traceId;
     // private String spanId;
-
-
-    @JsonIgnore
-    private transient SideEffects sideEffects = new SideEffects();
-
 
     @JsonIgnore
     private transient Authentication authentication;
@@ -81,6 +77,8 @@ public class Context {
                 context.setApplicationName(value);
             } else if (key.equalsIgnoreCase(Context.TENANT_ID)) {
                 context.setTenantId(value);
+            } else if (key.equalsIgnoreCase(Context.TENANT_NAME)) {
+                context.setTenantName(value);
             }/* else if (key.equalsIgnoreCase(Context.SPAN_ID)) {
                 context.setTraceId(value);
             } else if (key.equalsIgnoreCase(Context.TRACE_ID)) {
@@ -109,10 +107,6 @@ public class Context {
         return value;
     }
 
-    public void sideEffect(String event) {
-        sideEffects.of("service", serviceName).add(event);
-    }
-
     public boolean hasAuthorization() {
         return isNotEmpty(authorization);
     }
@@ -121,7 +115,7 @@ public class Context {
         return sender;
     }
 
-    public String getServceName() {
+    public String getServiceName() {
         return sender;
     }
 
@@ -169,6 +163,7 @@ public class Context {
             applicationName = auth.getApplication();
         }
         applicationId = auth.getApplicationId();
+        tenantName = auth.getTenantName();
     }
 
     public Optional<String> getUsername() {
@@ -242,7 +237,6 @@ public class Context {
         }
         return headers;
     }
-
 
 
 }

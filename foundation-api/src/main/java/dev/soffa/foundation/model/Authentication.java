@@ -20,6 +20,7 @@ public class Authentication {
     private UserInfo profile;
     private String applicationId;
     private String tenantId;
+    private String tenantName;
     private Set<String> roles;
     private Set<String> groups;
     private Set<String> permissions;

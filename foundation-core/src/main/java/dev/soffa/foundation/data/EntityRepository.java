@@ -41,6 +41,7 @@ public interface EntityRepository<E> {
 
     long count();
 
+
     default long count(Map<String, Object> filter) {
         return count(Criteria.of(filter));
     }

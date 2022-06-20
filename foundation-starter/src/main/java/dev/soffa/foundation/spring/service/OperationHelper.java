@@ -27,7 +27,7 @@ public final class OperationHelper {
         if (DEFAULTS.get(className)) {
             return TenantHolder.useDefault(() -> apply(operation, input, ctx));
         } else {
-            return apply(operation, input, ctx);
+            return TenantHolder.use(ctx.getTenant(), () -> apply(operation, input, ctx));
         }
     }
 
