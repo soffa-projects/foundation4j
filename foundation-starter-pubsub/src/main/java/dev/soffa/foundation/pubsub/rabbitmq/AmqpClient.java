@@ -9,10 +9,7 @@ import dev.soffa.foundation.message.pubsub.PubSubClientConfig;
 import dev.soffa.foundation.pubsub.AbstractPubSubClient;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.springframework.amqp.rabbit.core.RabbitAdmin;
-import org.springframework.amqp.rabbit.listener.ConditionalRejectingErrorHandler;
 import org.springframework.amqp.rabbit.listener.SimpleMessageListenerContainer;
-import org.springframework.util.ErrorHandler;
-
 import javax.annotation.PreDestroy;
 import java.util.ArrayList;
 import java.util.List;
