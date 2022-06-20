@@ -11,30 +11,34 @@ import org.springframework.context.ApplicationContext;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.UUID;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 
 @AllArgsConstructor
 public class DefaultTestScheduler implements Scheduler {
 
     private ApplicationContext context;
+    private final ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
+
 
     @Override
     public <I, O, T extends Operation<I, O>> void enqueue(UUID uuid, Class<T> operationClass, I input, Context ctx) {
-        Dispatcher dispatcher = context.getBean(Dispatcher.class);
-        dispatcher.dispatch(operationClass, input, ctx);
+        final Dispatcher dispatcher = context.getBean(Dispatcher.class);
+        executorService.schedule(() -> {
+            dispatcher.dispatch(operationClass, input, ctx);
+        },1, TimeUnit.SECONDS);
     }
 
     @Override
     public void scheduleRecurrently(String cronId, String cron, ServiceWorker worker) {
-        Timer timer = new Timer();
-        TimerTask task = new TimerTask() {
-
+        executorService.scheduleAtFixedRate(new TimerTask() {
             @Override
             public void run() {
                 worker.tick();
             }
-        };
-        timer.schedule(task, 200, 1000);
+        }, 1, 1, TimeUnit.SECONDS);
     }
 }
 

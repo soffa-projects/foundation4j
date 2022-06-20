@@ -14,7 +14,7 @@ import org.springframework.context.annotation.Primary;
 import org.springframework.test.web.servlet.MockMvc;
 
 @Configuration
-@ConditionalOnProperty(value = "app.test.scheduler.mocked", havingValue = "true")
+@ConditionalOnProperty(value = "app.test.scheduler", havingValue = "mocked")
 public class SchedulerTestConfig {
 
     @Bean
