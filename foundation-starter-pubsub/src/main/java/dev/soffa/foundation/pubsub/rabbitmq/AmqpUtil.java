@@ -13,7 +13,7 @@ import org.springframework.amqp.rabbit.core.RabbitAdmin;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.amqp.rabbit.listener.SimpleMessageListenerContainer;
 import org.springframework.retry.backoff.ExponentialBackOffPolicy;
-import org.springframework.retry.backoff.FixedBackOffPolicy;
+import org.springframework.util.ErrorHandler;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -135,30 +135,35 @@ public final class AmqpUtil {
 
     }
 
-    public static SimpleMessageListenerContainer createListener(RabbitTemplate template, String queueName, String mode) {
+    public static SimpleMessageListenerContainer createListener(RabbitTemplate template, String queueName, ErrorHandler errorHandler, String mode) {
+        //SimpleRabbitListenerContainerFactory factory = new SimpleRabbitListenerContainerFactory();
+        //factory.setConnectionFactory(template.getConnectionFactory());
         SimpleMessageListenerContainer container = new SimpleMessageListenerContainer(template.getConnectionFactory());
-        container.addQueueNames(queueName);
+
+        if (errorHandler != null) {
+            container.setErrorHandler(errorHandler);
+        }
+        container.setReceiveTimeout(1000L * 5);
 
         container.setPrefetchCount(1);
-        container.setReceiveTimeout(1000 * 5);
         container.setAcknowledgeMode(AcknowledgeMode.AUTO);
         container.setDefaultRequeueRejected(false);
 
+        ExponentialBackOffPolicy backOffPolicy = new ExponentialBackOffPolicy();
+        backOffPolicy.setMultiplier(1.5);
+        MethodInterceptor retryAdvice;
         if ("test".equalsIgnoreCase(mode)) {
-            FixedBackOffPolicy backOffPolicy = new FixedBackOffPolicy();
-            backOffPolicy.setBackOffPeriod(100);
-            MethodInterceptor retryAdvice = RetryInterceptorBuilder.stateless().backOffPolicy(backOffPolicy)
-                .maxAttempts(2).build();
-            container.setAdviceChain(retryAdvice);
+            backOffPolicy.setInitialInterval(100);
+            backOffPolicy.setMaxInterval(1000);
         } else {
-            ExponentialBackOffPolicy backOffPolicy = new ExponentialBackOffPolicy();
             backOffPolicy.setInitialInterval(1000);
             backOffPolicy.setMaxInterval(10_000);
-            backOffPolicy.setMultiplier(1.5);
-            MethodInterceptor retryAdvice = RetryInterceptorBuilder.stateless().backOffPolicy(backOffPolicy)
-                .maxAttempts(7).build();
-            container.setAdviceChain(retryAdvice);
         }
+        retryAdvice = RetryInterceptorBuilder.stateless().backOffPolicy(backOffPolicy).maxAttempts(7).build();
+        container.setAdviceChain(retryAdvice);
+        //SimpleMessageListenerContainer container = factory.createListenerContainer();
+        container.addQueueNames(queueName);
+        // container.setErrorHandler(errorHandler);
         return container;
     }
 }

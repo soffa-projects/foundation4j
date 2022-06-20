@@ -9,7 +9,9 @@ import dev.soffa.foundation.message.pubsub.PubSubClientConfig;
 import dev.soffa.foundation.pubsub.AbstractPubSubClient;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.springframework.amqp.rabbit.core.RabbitAdmin;
+import org.springframework.amqp.rabbit.listener.ConditionalRejectingErrorHandler;
 import org.springframework.amqp.rabbit.listener.SimpleMessageListenerContainer;
+import org.springframework.util.ErrorHandler;
 
 import javax.annotation.PreDestroy;
 import java.util.ArrayList;
@@ -58,7 +60,7 @@ public class AmqpClient extends AbstractPubSubClient implements PubSubClient {
             AmqpUtil.declareQueue(rabbitAdmin, subject);
         }
         SimpleMessageListenerContainer container = AmqpUtil.createListener(
-            rabbitAdmin.getRabbitTemplate(), subject, config.getOption("mode")
+            rabbitAdmin.getRabbitTemplate(), subject, null, config.getOption("mode")
         );
         container.setMessageListener(message -> {
             //EL

@@ -8,7 +8,6 @@ import dev.soffa.foundation.scheduling.ServiceWorker;
 import lombok.AllArgsConstructor;
 import org.springframework.context.ApplicationContext;
 
-import java.util.Timer;
 import java.util.TimerTask;
 import java.util.UUID;
 import java.util.concurrent.Executors;

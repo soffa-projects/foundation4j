@@ -1,5 +1,6 @@
 package dev.soffa.foundation.pubsub;
 
+import dev.soffa.foundation.error.ControlledRandomFailureError;
 import dev.soffa.foundation.error.TechnicalException;
 import dev.soffa.foundation.message.MessageFactory;
 import dev.soffa.foundation.message.pubsub.PubSubMessenger;
@@ -42,24 +43,20 @@ public class RabbitMqTest {
     @Test
     public void testClient() {
         Assertions.assertNotNull(messenger);
-
         AtomicLong counter = new AtomicLong(0);
         AtomicLong failures = new AtomicLong(0);
-        final double errorRate = 0.15;
+        final double errorRate = 10 / 100.0;
         messenger.subscribe(message -> {
-            if (Math.random() > errorRate) {
+            if (Math.random() < errorRate) {
                 // Induce random failure
                 failures.incrementAndGet();
-                throw new TechnicalException("RANDOM_FAILURE");
+                throw new ControlledRandomFailureError("TRIGGER_MQ_RETRY");
             }
             counter.incrementAndGet();
             return Optional.empty();
         });
 
-        int messagesCount = 20;
-        for (int i = 0; i < messagesCount; i++) {
-            messenger.publish(MessageFactory.create("operation-test"));
-        }
+        messenger.publish(MessageFactory.create("operation-test"));
         Awaitility.await().atMost(5, TimeUnit.SECONDS).until(() -> counter.get() > 0);
         Assertions.assertTrue(failures.get() >= 0);
     }
