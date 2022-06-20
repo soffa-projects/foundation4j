@@ -66,4 +66,5 @@ public interface DB {
         throw new TodoException("Implement me");
     }
 
+    DataSource getDefaultDataSource();
 }

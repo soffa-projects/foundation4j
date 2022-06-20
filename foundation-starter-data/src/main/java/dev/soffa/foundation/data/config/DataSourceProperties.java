@@ -4,6 +4,7 @@ import dev.soffa.foundation.commons.Logger;
 import dev.soffa.foundation.commons.TextUtil;
 import dev.soffa.foundation.commons.UrlInfo;
 import dev.soffa.foundation.error.TechnicalException;
+import dev.soffa.foundation.model.TenantId;
 import lombok.Builder;
 import lombok.Data;
 import lombok.SneakyThrows;
@@ -20,6 +21,7 @@ public class DataSourceProperties {
     public static final String H2 = "h2";
     public static final String PG = "postgresql";
     private static final Logger LOG = Logger.get(DataSourceProperties.class);
+    private boolean defaultSource;
     private String name;
     private String url;
     private String username;
@@ -59,6 +61,7 @@ public class DataSourceProperties {
             .username(jdbcInfo.getUsername())
             .password(jdbcInfo.getPassword())
             .schema(schema)
+            .defaultSource(TenantId.DEFAULT_VALUE.equalsIgnoreCase(name))
             .url(jdbcInfo.getUrl())
             .driverClassName(jdbcInfo.getDriver())
             .properties(urlInfo.getParams())

@@ -1,6 +1,7 @@
 package dev.soffa.foundation.spring.service;
 
 import dev.soffa.foundation.annotation.DefaultTenant;
+import dev.soffa.foundation.commons.Logger;
 import dev.soffa.foundation.context.Context;
 import dev.soffa.foundation.core.Operation;
 import dev.soffa.foundation.multitenancy.TenantHolder;
@@ -13,6 +14,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public final class OperationHelper {
 
     private static final Map<String,Boolean> DEFAULTS = new ConcurrentHashMap<>();
+    private static final Logger LOG = Logger.getLogger(OperationHelper.class);
 
     private OperationHelper() {
     }
@@ -20,6 +22,7 @@ public final class OperationHelper {
         if (operation == null) {
             return null;
         }
+
         String className = operation.getClass().getName();
         if (!DEFAULTS.containsKey(className)) {
             DEFAULTS.put(className, AnnotationUtils.findAnnotation(operation.getClass(), DefaultTenant.class) != null);
@@ -32,6 +35,7 @@ public final class OperationHelper {
     }
 
     private static <I, O, T extends Operation<I, O>> O apply(Operation<I, O> operation, I input, @NonNull Context ctx) {
+        LOG.info("Invoking operation %s with tenant %s", operation.getClass().getName(), ctx.getTenant());
         operation.validate(input, ctx);
         O res = operation.handle(input, ctx);
         operation.postHandle(res, ctx);

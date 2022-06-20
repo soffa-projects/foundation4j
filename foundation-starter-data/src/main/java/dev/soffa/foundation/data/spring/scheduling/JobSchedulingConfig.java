@@ -1,7 +1,8 @@
-package dev.soffa.foundation.spring.config.scheduling;
+package dev.soffa.foundation.data.spring.scheduling;
 
 import dev.soffa.foundation.commons.Logger;
 import dev.soffa.foundation.commons.TextUtil;
+import dev.soffa.foundation.data.DB;
 import lombok.SneakyThrows;
 import org.jobrunr.configuration.JobRunr;
 import org.jobrunr.configuration.JobRunrConfiguration;
@@ -27,11 +28,12 @@ public class JobSchedulingConfig {
     @Bean
     @SuppressWarnings("PMD.CloseResource")
     public JobScheduler createJobScheduling(ApplicationContext context,
+                                            DB db,
                                             @Value("${app.scheduler.dashbort.port:${SCHEDULER_DASHBOARD_PORT:}}") String dashboardPort,
                                             @Autowired(required = false) DataSource dataSource) {
         StorageProvider storage;
         if (dataSource != null) {
-            storage = SqlStorageProviderFactory.using(dataSource);
+            storage = SqlStorageProviderFactory.using(db.getDefaultDataSource());
         } else {
             storage = new InMemoryStorageProvider();
         }

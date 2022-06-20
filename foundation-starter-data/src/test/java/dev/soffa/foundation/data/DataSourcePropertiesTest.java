@@ -17,6 +17,13 @@ class DataSourcePropertiesTest {
         assertEquals("20", props.property("maxPoolSize"));
         assertEquals("jdbc:h2:mem:default;MODE=PostgreSQL;DB_CLOSE_ON_EXIT=FALSE;INIT=CREATE SCHEMA IF NOT EXISTS PUBLIC", props.getUrl());
 
+        props = DataSourceProperties.create("app", "default", "h2://file//tmp/default?schema=public&maxPoolSize=20");
+        assertNotNull(props);
+        assertNotNull(props.getProperties());
+        assertEquals("public", props.property("schema"));
+        assertEquals("20", props.property("maxPoolSize"));
+        assertEquals("jdbc:h2:file:/tmp/default;MODE=PostgreSQL;DB_CLOSE_ON_EXIT=FALSE;INIT=CREATE SCHEMA IF NOT EXISTS PUBLIC", props.getUrl());
+
 
         /*
         DataSourceProperties props2 = DataSourceProperties.create("app", "tenant", "pg://postgres:postgres@localhost/bantu_test?schema=public");

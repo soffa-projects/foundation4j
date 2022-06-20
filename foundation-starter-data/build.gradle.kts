@@ -17,6 +17,9 @@ dependencies {
             strictly("2.9.3")
         }
     }
+    implementation("org.jobrunr:jobrunr:5.1.3") {
+        exclude(group = "com.zaxxer")
+    }
     implementation("org.postgresql:postgresql:42.3.6")
     @Suppress("GradlePackageUpdate")
     // HikariCP 5+ is not compatible with Java8

@@ -68,7 +68,7 @@ public final class DBImpl extends AbstractDataSource implements ApplicationListe
             this.tenanstListQuery = appConfig.getDb().getTenantListQuery();
             this.tablesPrefix = appConfig.getDb().getTablesPrefix();
             createDatasources(appConfig.getDb().getDatasources());
-            this.lockProvider = DBHelper.createLockTable(registry.get(TenantId.DEFAULT_VALUE).getDataSource(), this.tablesPrefix);
+            this.lockProvider = DBHelper.createLockTable(getDefaultDataSource(), this.tablesPrefix);
             applyMigrations();
         }
     }
@@ -84,6 +84,11 @@ public final class DBImpl extends AbstractDataSource implements ApplicationListe
             // EL
             return !(id.equals(TENANT_PLACEHOLDER) || id.equals(TenantId.DEFAULT_VALUE));
         }).collect(Collectors.toSet());
+    }
+
+    @Override
+    public DataSource getDefaultDataSource() {
+        return registry.get(TenantId.DEFAULT_VALUE).getDataSource();
     }
 
     @Override
@@ -297,7 +302,7 @@ public final class DBImpl extends AbstractDataSource implements ApplicationListe
 
     @Override
     public void configureTenants() {
-        DataSource defaultDs = registry.get(TenantId.DEFAULT_VALUE).getDataSource();
+        DataSource defaultDs = getDefaultDataSource();
 
         if (!registry.containsKey(TENANT_PLACEHOLDER)) {
             LOG.debug("No TenantDS provided, skipping tenants migration.");

@@ -1,4 +1,4 @@
-package dev.soffa.foundation.spring.config.scheduling;
+package dev.soffa.foundation.data.spring.scheduling;
 
 import dev.soffa.foundation.annotation.Cron;
 import dev.soffa.foundation.commons.Logger;

@@ -22,9 +22,7 @@ dependencies {
     implementation("org.springframework.cloud:spring-cloud-starter-consul-discovery")
     implementation("com.hazelcast:hazelcast-all:4.2.5")
 
-    implementation("org.jobrunr:jobrunr:5.1.3") {
-        exclude(group = "com.zaxxer")
-    }
+
     implementation("io.micrometer:micrometer-registry-prometheus")
     implementation("org.springdoc:springdoc-openapi-ui:1.6.9") {
         exclude(group = "io.github.classgraph")
