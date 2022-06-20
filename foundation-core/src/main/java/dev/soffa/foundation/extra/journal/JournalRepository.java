@@ -10,11 +10,11 @@ import java.util.function.Supplier;
 
 public interface JournalRepository extends EntityRepository<Journal> {
 
-    default void log(Context context, @NonNull String kind, @NonNull String subject, @NonNull String event) {
+    default void log(Context context, @NonNull String kind, @NonNull Object subject, @NonNull String event) {
         insert(
             Journal.builder()
                 .event(event)
-                .subject(subject)
+                .subject(subject.toString())
                 .kind(kind)
                 .build()
                 .withContext(context)

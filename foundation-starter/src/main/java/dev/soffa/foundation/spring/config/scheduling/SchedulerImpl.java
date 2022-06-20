@@ -11,6 +11,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
 import java.util.Optional;
+import java.util.UUID;
 
 @Component
 class SchedulerImpl implements Scheduler {
@@ -31,6 +32,17 @@ class SchedulerImpl implements Scheduler {
         }
         TenantHolder.useDefault(() -> {
             jobScheduler.enqueue(() -> dispatcher.dispatch(operationClass, input, ctx));
+            return Optional.empty();
+        });
+    }
+
+    @Override
+    public <I, O, T extends Operation<I, O>> void enqueue(UUID uuid, Class<T> operationClass, I input, Context ctx) {
+        if (dispatcher == null) {
+            dispatcher = context.getBeansOfType(OperationDispatcher.class).values().iterator().next();
+        }
+        TenantHolder.useDefault(() -> {
+            jobScheduler.enqueue(uuid, () -> dispatcher.dispatch(operationClass, input, ctx));
             return Optional.empty();
         });
     }

@@ -85,7 +85,11 @@ public final class TextUtil {
             if (!value.startsWith(glue)) {
                 res.append(glue);
             }
-            res.append(StringUtils.removeEnd(value, glue));
+            if (i == values.length - 1) {
+                res.append(value);
+            }else {
+                res.append(StringUtils.removeEnd(value, glue));
+            }
         }
         return res.toString();
     }

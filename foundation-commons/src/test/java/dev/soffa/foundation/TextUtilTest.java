@@ -25,6 +25,7 @@ public class TextUtilTest {
         assertEquals("pi_test", TextUtil.join("_", "pi", "test"));
         assertEquals("pi_test", TextUtil.join("_", "pi_", "test"));
         assertEquals("pi_test", TextUtil.join("_", "pi_", "_test"));
+        assertEquals("pi_test_", TextUtil.join("_", "pi_", "_test_"));
     }
 
     @Test

@@ -9,8 +9,6 @@ public interface Operation<I, O> {
 
     Void NO_ARG = null;
 
-
-
     @Transactional
     O handle(I input, @NonNull Context ctx);
 

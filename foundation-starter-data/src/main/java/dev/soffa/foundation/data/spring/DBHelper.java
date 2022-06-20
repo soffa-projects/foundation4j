@@ -69,8 +69,9 @@ public final class DBHelper {
         // hc.setLeakDetectionThreshold(10 * 1000);
 
         LOG.debug("Using jdbcUrl: %s", config.getUrl());
+        boolean isH2 = config.getUrl().contains(":h2:");
 
-        if (config.getUrl().contains(":h2:")) {
+        if (isH2) {
             hc.addDataSourceProperty("ignore_startup_parameters", "search_path");
         }
 
@@ -86,9 +87,13 @@ public final class DBHelper {
             hc.setSchema("@@$$auto$$@@");
         }
 
-        CACHE.put(cacheId, new HikariDataSource(hc));
-        createSchema(CACHE.get(cacheId), config.getSchema());
-        return new HikariDS(CACHE.get(cacheId), config.getSchema());
+        HikariDataSource ds = new HikariDataSource(hc);
+
+        if (!isH2) {
+            CACHE.put(cacheId, ds);
+        }
+        createSchema(ds, config.getSchema());
+        return new HikariDS(ds, config.getSchema());
     }
 
     private static void createSchema(DataSource ds, String schema) {

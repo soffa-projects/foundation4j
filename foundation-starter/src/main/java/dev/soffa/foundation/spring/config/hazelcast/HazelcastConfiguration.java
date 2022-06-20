@@ -32,7 +32,7 @@ public class HazelcastConfiguration {
             Config config = new Config();
             return Hazelcast.newHazelcastInstance(config);
         } else {
-            LOG.info("Configuration HazelCast instance");
+            LOG.info("Connecting to HazelCast servers: %s", props.getServers());
             ClientConfig config = new ClientConfig();
             config.setInstanceName(appConfig.getName() + "-" + DefaultIdGenerator.shortId());
             for (String server : props.getServers().split(",")) {

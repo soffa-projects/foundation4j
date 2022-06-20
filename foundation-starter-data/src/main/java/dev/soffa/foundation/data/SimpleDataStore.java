@@ -2,6 +2,7 @@ package dev.soffa.foundation.data;
 
 import com.zaxxer.hikari.HikariDataSource;
 import dev.soffa.foundation.application.ID;
+import dev.soffa.foundation.commons.Logger;
 import dev.soffa.foundation.commons.TextUtil;
 import dev.soffa.foundation.data.jdbi.BeanMapper;
 import dev.soffa.foundation.data.jdbi.MapArgumentFactory;
@@ -31,6 +32,7 @@ import java.util.stream.Collectors;
 
 public class SimpleDataStore implements DataStore {
 
+    private static final Logger LOG = Logger.getLogger(SimpleDataStore.class);
     private static final String TABLE = "table";
     private static final String ID_COLUMN = "idColumn";
     private static final String ID_FIELD = "idField";
@@ -204,6 +206,7 @@ public class SimpleDataStore implements DataStore {
             EntityInfo<E> info = EntityInfo.get(entityClass, db.getTablesPrefix());
             return getLink(tenant).inTransaction(handle -> consumer.apply(handle, info));
         } catch (Exception e) {
+            LOG.error("Current tenant is: %s", TenantHolder.get().orElse(TenantId.DEFAULT_VALUE));
             throw new DatabaseException(e);
         }
     }
@@ -215,6 +218,7 @@ public class SimpleDataStore implements DataStore {
             EntityInfo<E> info = EntityInfo.get(entityClass, db.getTablesPrefix());
             return getLink(tenant).withHandle(handle -> consumer.apply(handle, info));
         } catch (Exception e) {
+            LOG.error("Current tenant is: %s", TenantHolder.get().orElse(TenantId.DEFAULT_VALUE));
             throw new DatabaseException(e);
         }
     }

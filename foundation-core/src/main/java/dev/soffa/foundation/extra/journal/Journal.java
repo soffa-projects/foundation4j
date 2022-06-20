@@ -1,6 +1,7 @@
 package dev.soffa.foundation.extra.journal;
 
 import dev.soffa.foundation.annotation.Store;
+import dev.soffa.foundation.commons.DateUtil;
 import dev.soffa.foundation.commons.DigestUtil;
 import dev.soffa.foundation.commons.TextUtil;
 import dev.soffa.foundation.context.Context;
@@ -34,6 +35,18 @@ public class Journal implements EntityModel {
     private Date date;
     private Date created;
 
+    public Journal(String kind, String subject, String event) {
+        this(ContextHolder.get().orElse(null), kind, subject, event);
+    }
+
+    public Journal(Context ctx, String kind, String subject, String event) {
+        this.event = event;
+        this.subject = subject;
+        this.kind = kind;
+        this.date = DateUtil.now();
+        this.setContext(ctx);
+    }
+
     @Override
     public void onInsert() {
         ContextHolder.get().ifPresent(this::setContext);
@@ -45,6 +58,9 @@ public class Journal implements EntityModel {
     }
 
     public void setContext(Context context) {
+        if (context==null) {
+            return;
+        }
         /*
         if (TextUtil.isEmpty(traceId)) {
             traceId = context.getTraceId();
