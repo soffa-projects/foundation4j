@@ -14,7 +14,10 @@ import io.swagger.v3.oas.models.security.OAuthFlow;
 import io.swagger.v3.oas.models.security.OAuthFlows;
 import io.swagger.v3.oas.models.security.Scopes;
 import io.swagger.v3.oas.models.security.SecurityScheme;
+import io.swagger.v3.oas.models.servers.Server;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 public class OpenApiBuilder {
@@ -43,8 +46,21 @@ public class OpenApiBuilder {
         } else {
             api = new OpenAPI().openapi(version);
         }
+        addServers(api);
         api.setComponents(components);
         return api;
+    }
+
+    private void addServers(OpenAPI api) {
+        if (TextUtil.isEmpty(desc.getServers()) || "default".equalsIgnoreCase(desc.getServers())) {
+            LOG.info("No OpenAPI servers defined, using default");
+            return;
+        }
+        List<io.swagger.v3.oas.models.servers.Server> servers = new ArrayList<>();
+        for (String server : desc.getServers().split(",")) {
+            servers.add(new Server().url(server));
+        }
+        api.setServers(servers);
     }
 
     private Info buildInfo() {
@@ -116,6 +132,10 @@ public class OpenApiBuilder {
         );
 
     }
+
+    private void buildDefaultOperations() {
+    }
+
 
     private void buildParameters() {
 

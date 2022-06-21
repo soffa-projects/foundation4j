@@ -18,7 +18,7 @@ class PlatformWebMvcConfigurer implements WebMvcConfigurer {
         if (healthRootEnabled) {
             registry.addViewController("/").setViewName("forward:/actuator/health");
         }
-        registry.addViewController("/health").setViewName("forward:/actuator/health");
+        // registry.addViewController("/health").setViewName("forward:/actuator/health");
         registry.addViewController("/metrics").setViewName("forward:/actuator/prometheus");
     }
 

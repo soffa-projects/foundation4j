@@ -29,7 +29,7 @@ spring.output.ansi.enabled: always
 
 
 server.compression.enabled: true
-server.forward-headers-strategy: framework
+server.forward-headers-strategy: NATIVE
 server.port: ${PORT:8080}
 
 
@@ -100,6 +100,7 @@ app.openapi:
   enabled: true
   access: permitAll
   title: ${spring.application.name}
+  servers: ${OPENAPI_SERVERS:default}
 
 app.health.root.enabled: false
 

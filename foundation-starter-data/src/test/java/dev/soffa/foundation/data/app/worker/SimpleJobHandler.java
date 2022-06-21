@@ -2,12 +2,12 @@ package dev.soffa.foundation.data.app.worker;
 
 import dev.soffa.foundation.annotation.Cron;
 import dev.soffa.foundation.scheduling.ServiceWorker;
-import org.springframework.stereotype.Component;
 
+import javax.inject.Named;
 import java.util.concurrent.atomic.AtomicInteger;
 
 
-@Component
+@Named
 @Cron(Cron.EVERY_5_SECONDS)
 public class SimpleJobHandler implements ServiceWorker {
 

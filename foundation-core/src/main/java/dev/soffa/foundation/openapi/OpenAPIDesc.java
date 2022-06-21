@@ -13,6 +13,7 @@ public class OpenAPIDesc {
     private String version = "3.0.1";
     private Info info;
     private Security security;
+    private String servers;
     private List<Parameter> parameters;
 
     @Data

@@ -6,4 +6,5 @@ public interface VO extends Serializable {
 
     String getValue();
 
+
 }

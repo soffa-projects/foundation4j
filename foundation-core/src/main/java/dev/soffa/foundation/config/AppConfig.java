@@ -38,7 +38,7 @@ public class AppConfig {
         }
         if (db != null && TextUtil.isNotEmpty(db.getTablesPrefix())) {
             String value = TextUtil.trimToEmpty(db.getTablesPrefix())
-                .replaceAll("[^a-zA-Z0-9]", "_")
+                .replaceAll("[^a-zA-Z\\d]", "_")
                 .replaceAll("_+$", "_").trim();
 
             if (!value.endsWith("_")) {
