@@ -7,18 +7,23 @@ import dev.soffa.foundation.commons.TextUtil;
 import dev.soffa.foundation.resource.OpenApi;
 import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
+import io.swagger.v3.oas.models.Operation;
+import io.swagger.v3.oas.models.PathItem;
 import io.swagger.v3.oas.models.info.Info;
+import io.swagger.v3.oas.models.media.Content;
+import io.swagger.v3.oas.models.media.MediaType;
 import io.swagger.v3.oas.models.media.Schema;
 import io.swagger.v3.oas.models.parameters.Parameter;
+import io.swagger.v3.oas.models.responses.ApiResponse;
+import io.swagger.v3.oas.models.responses.ApiResponses;
 import io.swagger.v3.oas.models.security.OAuthFlow;
 import io.swagger.v3.oas.models.security.OAuthFlows;
 import io.swagger.v3.oas.models.security.Scopes;
 import io.swagger.v3.oas.models.security.SecurityScheme;
 import io.swagger.v3.oas.models.servers.Server;
+import io.swagger.v3.oas.models.tags.Tag;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 public class OpenApiBuilder {
 
@@ -47,8 +52,29 @@ public class OpenApiBuilder {
             api = new OpenAPI().openapi(version);
         }
         addServers(api);
+        addHealthCheck(api);
         api.setComponents(components);
+
         return api;
+    }
+
+    private void addHealthCheck(OpenAPI api) {
+        api.addTagsItem(new Tag().name("Health").description("Service healthcheck"));
+        Operation op = new Operation()
+            .addTagsItem("Health")
+            .summary("Returns the health status of the service")
+            .operationId("healthCheck");
+
+        MediaType mediaType = new MediaType().schema(new Schema<Map<String,Object>>().type("object"));
+        Content content = new Content()
+            .addMediaType("application/json", mediaType);
+
+        ApiResponses responses = new ApiResponses()
+            .addApiResponse("200", new ApiResponse().content(content));
+        op.setResponses(responses);
+
+        PathItem path = new PathItem().get(op);
+        api.path("/health", path);
     }
 
     private void addServers(OpenAPI api) {

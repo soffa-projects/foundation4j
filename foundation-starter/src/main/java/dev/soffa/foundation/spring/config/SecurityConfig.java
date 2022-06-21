@@ -58,6 +58,7 @@ public class SecurityConfig {
             .antMatchers("/v3/api-docs").access(openApiAccess)
             .antMatchers("/swagger/*").access(openApiAccess)
             .antMatchers("/actuator/**").permitAll()
+            .antMatchers("/health").permitAll()
             .antMatchers("/**").permitAll()
             .and().addFilterBefore(
                 new RequestFilter(authManager),

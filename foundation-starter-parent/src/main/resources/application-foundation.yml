@@ -38,6 +38,7 @@ management.endpoints.web.exposure.include: info,health,prometheus,metrics,refres
 management.endpoint.health.enabled: true
 management.endpoint.health.show-components: when-authorized
 management.endpoint.health.show-details: when-authorized
+management.endpoints.web.base-path: /
 
 management.metrics.export.simple.enabled: true
 management.health.diskspace.enabled: true
@@ -49,7 +50,7 @@ spring.groovy.template.check-template-location: false
 springdoc:
   api-docs.enabled: true
   show-actuator: false
-  paths-to-exclude: graphiql, /graphiql, error, /error, /oauth/*, /user/auth, /actuator/*, /healthz
+  paths-to-exclude: graphiql, /graphiql, error, /error, /oauth/*, /user/auth, /healthz
   show-login-endpoint: false
   swagger-ui:
     enabled: ${app.swagger-ui.enabled:true}
