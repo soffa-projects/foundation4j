@@ -100,7 +100,7 @@ app.openapi:
   enabled: true
   access: permitAll
   title: ${spring.application.name}
-  servers: ${OPENAPI_SERVERS:default}
+  servers: ${OPENAPI_SERVERS:}
 
 app.health.root.enabled: false
 

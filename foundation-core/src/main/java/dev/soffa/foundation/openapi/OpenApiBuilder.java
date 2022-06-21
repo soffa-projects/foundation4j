@@ -52,7 +52,7 @@ public class OpenApiBuilder {
     }
 
     private void addServers(OpenAPI api) {
-        if (TextUtil.isEmpty(desc.getServers()) || "default".equalsIgnoreCase(desc.getServers())) {
+        if (TextUtil.isEmpty(desc.getServers())) {
             LOG.info("No OpenAPI servers defined, using default");
             return;
         }
@@ -132,10 +132,6 @@ public class OpenApiBuilder {
         );
 
     }
-
-    private void buildDefaultOperations() {
-    }
-
 
     private void buildParameters() {
 
