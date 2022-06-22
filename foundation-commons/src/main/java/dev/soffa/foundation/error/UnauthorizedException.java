@@ -4,6 +4,10 @@ public class UnauthorizedException extends FunctionalException {
 
     private static final long serialVersionUID = 1L;
 
+    public UnauthorizedException() {
+        this("RESOURCE_ACCESS_PROTECTED");
+    }
+
     public UnauthorizedException(String message, Object... args) {
         super(message, args);
     }

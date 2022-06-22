@@ -4,6 +4,10 @@ public class ForbiddenException extends FunctionalException {
 
     private static final long serialVersionUID = 1L;
 
+    public ForbiddenException() {
+        this("RESOURCE_ACCESS_DEFINED");
+    }
+
     public ForbiddenException(String message, Object... args) {
         super(message, args);
     }

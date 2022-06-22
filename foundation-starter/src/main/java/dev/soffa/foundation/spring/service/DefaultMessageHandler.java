@@ -30,6 +30,7 @@ public class DefaultMessageHandler implements MessageHandler {
 
     private static final Logger LOG = Logger.get(DefaultMessageHandler.class);
     private final OperationsMapping mapping;
+    private final OperationDispatcher dispatcher;
     private final MetricsRegistry metricsRegistry;
     private final PlatformAuthManager authManager;
 
@@ -92,7 +93,7 @@ public class DefaultMessageHandler implements MessageHandler {
                     }
                     TenantHolder.set(context.getTenantId());
                     //noinspection unchecked
-                    Object result = OperationHelper.invoke((Operation<Object, Object>) operation, payload.get(), context);
+                    Object result = dispatcher.invoke((Operation<Object, Object>) operation, payload.get(), context);
                     if (result == null) {
                         return Optional.empty();
                     }

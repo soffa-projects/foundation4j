@@ -1,6 +1,7 @@
 package dev.soffa.foundation.mail;
 
 
+import com.google.common.base.Preconditions;
 import dev.soffa.foundation.mail.models.Email;
 import dev.soffa.foundation.mail.models.EmailAck;
 
@@ -28,6 +29,7 @@ public class Mailer implements EmailSender {
 
     @Override
     public EmailAck send(Email message) {
+        Preconditions.checkNotNull(defaultSender, "No email sender defined");
         return defaultSender.send(message);
     }
 }

@@ -46,11 +46,22 @@ public interface EntityRepository<E> {
         return count(Criteria.of(filter));
     }
 
-    long count(Criteria criteria);
+    default long count(Criteria criteria) {
+        return count(TenantId.CONTEXT, criteria);
+    }
+    long count(TenantId tennant, Criteria criteria);
 
-    List<E> findAll();
+    default List<E> findAll() {
+        return findAll(TenantId.CONTEXT);
+    }
 
-    List<E> find(Criteria criteria);
+    List<E> findAll(TenantId tenantId);
+
+    List<E> find(TenantId tenant, Criteria criteria);
+
+    default List<E> find(Criteria criteria) {
+        return find(TenantId.CONTEXT, criteria);
+    }
 
     default List<E> find(Map<String, Object> filter) {
         return find(Criteria.of(filter));

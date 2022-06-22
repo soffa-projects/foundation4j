@@ -50,7 +50,6 @@ public class JobSchedulingConfig {
             LOG.info("Scheduler dashboard will be available on port %s", dashboardPort);
         }
 
-        return config.initialize()
-            .getJobScheduler();
+        return config.initialize().getJobScheduler();
     }
 }

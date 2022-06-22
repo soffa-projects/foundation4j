@@ -28,12 +28,13 @@ public class Context {
     private static String serviceName = "app";
     private String authorization;
     private String tenantId;
+
+    private String accountId;
     private String tenantName;
     private String applicationId;
+    private String ipAddress;
     private String applicationName;
     private String sender;
-    // private String traceId;
-    // private String spanId;
 
     @JsonIgnore
     private transient Authentication authentication;
@@ -148,6 +149,13 @@ public class Context {
     public boolean hasApplicationId() {
         return isNotEmpty(applicationId);
     }
+    public boolean hasAccountId() {
+        return isNotEmpty(accountId);
+    }
+
+    public boolean hasIpAddress() {
+        return isNotEmpty(ipAddress);
+    }
 
     public boolean isAuthenticated() {
         return authentication != null;
@@ -163,6 +171,7 @@ public class Context {
             applicationName = auth.getApplication();
         }
         applicationId = auth.getApplicationId();
+        accountId = auth.getAccountId();
         tenantName = auth.getTenantName();
     }
 
@@ -189,6 +198,9 @@ public class Context {
         if (hasApplicationId()) {
             contextMap.put("applicationId", getApplicationId());
         }
+        if (hasIpAddress()) {
+            contextMap.put("ipAddress", getApplicationId());
+        }
         /*
         if (isNotEmpty(getTraceId())) {
             contextMap.put("traceId", getTraceId());
@@ -201,8 +213,13 @@ public class Context {
         if (isNotEmpty(getSender())) {
             contextMap.put("sender", getSender());
         }
-        if (getAuthentication() != null && isNotEmpty(getAuthentication().getUsername())) {
-            contextMap.put("user", getAuthentication().getUsername());
+        if (getAuthentication() != null) {
+            if (isNotEmpty(getAuthentication().getUsername())) {
+                contextMap.put("user.username", getAuthentication().getUsername());
+            }
+            if (isNotEmpty(getAuthentication().getUserId())) {
+                contextMap.put("user.user_id", getAuthentication().getUserId());
+            }
         }
         contextMap.put("service_name", serviceName);
         return contextMap;

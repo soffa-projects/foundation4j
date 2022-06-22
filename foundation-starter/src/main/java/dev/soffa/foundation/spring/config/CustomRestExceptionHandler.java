@@ -1,9 +1,11 @@
 package dev.soffa.foundation.spring.config;
 
 import dev.soffa.foundation.commons.Logger;
+import dev.soffa.foundation.commons.Sentry;
 import dev.soffa.foundation.context.ContextHolder;
 import dev.soffa.foundation.error.ErrorUtil;
 import dev.soffa.foundation.error.FunctionalException;
+import io.opentelemetry.api.trace.Span;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.Ordered;
@@ -67,9 +69,15 @@ class CustomRestExceptionHandler extends ResponseEntityExceptionHandler {
         body.put("message", message);
         body.put("prod", isProduction);
 
+        Span span = Span.current();
+        if (span != null) {
+            body.put("traceId", span.getSpanContext().getTraceId());
+            body.put("spanId", span.getSpanContext().getSpanId());
+        }
+
+
         ContextHolder.get().ifPresent(context -> {
-            // body.put("traceId", context.getTraceId());
-            // body.put("spanId", context.getSpanId());
+
             Optional.ofNullable(context.getApplicationName()).ifPresent(s -> body.put("application", s));
             context.getUsername().ifPresent(s -> body.put("user", s));
             if (context.hasTenant()) {
@@ -79,6 +87,7 @@ class CustomRestExceptionHandler extends ResponseEntityExceptionHandler {
 
         if (status.value() >= HttpStatus.INTERNAL_SERVER_ERROR.value()) {
             LOG.error(error);
+            Sentry.getInstance().captureException(error);
         } else {
             LOG.error(error.getMessage());
         }

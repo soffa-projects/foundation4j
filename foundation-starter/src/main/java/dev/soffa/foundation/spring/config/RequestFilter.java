@@ -43,6 +43,7 @@ public class RequestFilter extends OncePerRequestFilter {
                                     @NonNull HttpServletResponse response,
                                     @NonNull FilterChain chain) {
 
+
         if (LOG.isDebugEnabled()) {
             LOG.debug("===================== Serving request: %s %s =====================", request.getMethod(), request.getRequestURI());
         }
@@ -101,6 +102,7 @@ public class RequestFilter extends OncePerRequestFilter {
 
         try {
             LOG.debug("Setting request context and tenant before proceeding");
+            context.setIpAddress(request.getRemoteAddr());
             ContextHolder.set(context);
             TenantHolder.set(context.getTenantId());
             chain.doFilter(request, response);

@@ -1,5 +1,6 @@
 package dev.soffa.foundation.spring.config;
 
+import dev.soffa.foundation.config.AppConfig;
 import dev.soffa.foundation.context.ApplicationLifecycle;
 import dev.soffa.foundation.data.DB;
 import dev.soffa.foundation.message.pubsub.PubSubMessenger;
@@ -12,7 +13,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.Map;
 
-import static dev.soffa.foundation.spring.config.ErrorTrackingConfig.NOOP_ERROR_TRACKING;
+import static dev.soffa.foundation.spring.config.ErrorTrackingFactory.NOOP_ERROR_TRACKING;
 
 @Component
 public class ApplicationLifecycleManager implements ApplicationListener<ContextRefreshedEvent> {
@@ -22,13 +23,14 @@ public class ApplicationLifecycleManager implements ApplicationListener<ContextR
     public ApplicationContext context;
 
     public ApplicationLifecycleManager(ApplicationContext context,
+                                       AppConfig appConfig,
                                        @Autowired(required = false) DB db,
                                        @Autowired(required = false) PubSubMessenger pubsub) {
         this.context = context;
         this.db = db;
         this.pubsub = pubsub;
         String errorTracking = context.getEnvironment().getProperty("app.errors_tracking.provider", NOOP_ERROR_TRACKING);
-        ErrorTrackingConfig.configure(errorTracking);
+        ErrorTrackingFactory.configure(appConfig, errorTracking);
     }
 
 

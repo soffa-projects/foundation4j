@@ -27,6 +27,11 @@ public class AppConfig {
         this.name = name;
     }
 
+    public AppConfig(String name, String version) {
+        this(name);
+        this.version = version;
+    }
+
     @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     public boolean hasDataSources() {
         return db != null && CollectionUtil.isNotEmpty(db.getDatasources());

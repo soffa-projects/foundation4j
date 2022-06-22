@@ -1,4 +1,4 @@
-package dev.soffa.foundation.test.scheduling;
+package dev.soffa.foundation.spring.service;
 
 import dev.soffa.foundation.context.Context;
 import dev.soffa.foundation.core.Dispatcher;
@@ -6,7 +6,9 @@ import dev.soffa.foundation.core.Operation;
 import dev.soffa.foundation.scheduling.Scheduler;
 import dev.soffa.foundation.scheduling.ServiceWorker;
 import lombok.AllArgsConstructor;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.ApplicationContext;
+import org.springframework.stereotype.Component;
 
 import java.util.TimerTask;
 import java.util.UUID;
@@ -14,11 +16,12 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-
+@Component
+@ConditionalOnMissingBean(Scheduler.class)
 @AllArgsConstructor
-public class DefaultTestScheduler implements Scheduler {
+public class NoopScheduler implements Scheduler {
 
-    private ApplicationContext context;
+    private final ApplicationContext context;
     private final ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
 
 
@@ -27,7 +30,7 @@ public class DefaultTestScheduler implements Scheduler {
         final Dispatcher dispatcher = context.getBean(Dispatcher.class);
         executorService.schedule(() -> {
             dispatcher.dispatch(operationClass, input, ctx);
-        },1, TimeUnit.SECONDS);
+        }, 1, TimeUnit.SECONDS);
     }
 
     @Override
@@ -40,4 +43,3 @@ public class DefaultTestScheduler implements Scheduler {
         }, 1, 1, TimeUnit.SECONDS);
     }
 }
-

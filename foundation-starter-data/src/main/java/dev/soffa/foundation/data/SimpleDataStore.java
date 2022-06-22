@@ -1,5 +1,6 @@
 package dev.soffa.foundation.data;
 
+import com.google.common.base.Preconditions;
 import com.zaxxer.hikari.HikariDataSource;
 import dev.soffa.foundation.application.ID;
 import dev.soffa.foundation.commons.Logger;
@@ -48,11 +49,11 @@ public class SimpleDataStore implements DataStore {
     private DB db;
     private Jdbi dbi;
 
-    public SimpleDataStore(DB db) {
+    public SimpleDataStore(@NonNull DB db) {
         this.db = db;
     }
 
-    public SimpleDataStore(String dbUrl) {
+    public SimpleDataStore(@NonNull String dbUrl) {
         DataSourceProperties props = DataSourceProperties.create("default", "default", dbUrl);
         this.dbi = Jdbi.create(props.getUrl(), props.getUsername(), props.getPassword());
     }
@@ -73,7 +74,7 @@ public class SimpleDataStore implements DataStore {
     }
 
 
-    private <E> void prepare(E model) {
+    private <E> void prepare(@NonNull E model) {
         if (model instanceof EntityLifecycle) {
             EntityLifecycle lc = (EntityLifecycle) model;
             lc.onInsert();
@@ -91,7 +92,7 @@ public class SimpleDataStore implements DataStore {
     }
 
     @Override
-    public <E> int[] batch(TenantId tenant, List<E> entities) {
+    public <E> int[] batch(TenantId tenant, @NonNull List<E> entities) {
         for (E model : entities) {
             prepare(model);
         }
@@ -107,7 +108,7 @@ public class SimpleDataStore implements DataStore {
     }
 
     @Override
-    public <E> int[] batch(TenantId tenant, String table, List<E> entities) {
+    public <E> int[] batch(TenantId tenant, @NonNull String table, @NonNull List<E> entities) {
         for (E model : entities) {
             prepare(model);
         }
@@ -289,10 +290,14 @@ public class SimpleDataStore implements DataStore {
     }
 
     private Jdbi getLink(TenantId tenant) {
-        String lTenant = tenant.getValue();
-        if (tenant.equals(TenantId.CONTEXT)) {
-            lTenant = TenantHolder.get().orElse(TenantId.DEFAULT_VALUE);
+        String lTenant = TenantId.DEFAULT_VALUE;
+        if (tenant != null) {
+            lTenant = tenant.getValue();
+            if (tenant.equals(TenantId.CONTEXT)) {
+                lTenant = TenantHolder.get().orElse(TenantId.DEFAULT_VALUE);
+            }
         }
+        Preconditions.checkNotNull(lTenant, "Null tenant received while fetching database link");
         if (LINKS_CACHE.containsKey(lTenant)) {
             return LINKS_CACHE.get(lTenant);
         }
@@ -309,21 +314,22 @@ public class SimpleDataStore implements DataStore {
     }
 
     private Jdbi getDataSource(String lTenant) {
-        if (db != null) {
-            DataSource dataSource = db.determineTargetDataSource(lTenant);
-            Jdbi jdbi = Jdbi.create(new TransactionAwareDataSourceProxy(dataSource))
-                .installPlugin(new SqlObjectPlugin());
-            if (dataSource instanceof HikariDataSource) {
-                String url = ((HikariDataSource) dataSource).getJdbcUrl();
-                if (url.startsWith("jdbc:postgres")) {
-                    jdbi.installPlugin(new PostgresPlugin());
-                }
-            }
-            jdbi.registerArgument(new SerializableArgumentFactory());
-            jdbi.registerArgument(new MapArgumentFactory());
-            jdbi.registerArgument(new ObjectArgumentFactory());
+        if (dbi != null) {
+            return dbi;
         }
-        return dbi;
+        DataSource dataSource = db.determineTargetDataSource(lTenant);
+        Jdbi jdbi = Jdbi.create(new TransactionAwareDataSourceProxy(dataSource))
+            .installPlugin(new SqlObjectPlugin());
+        if (dataSource instanceof HikariDataSource) {
+            String url = ((HikariDataSource) dataSource).getJdbcUrl();
+            if (url.startsWith("jdbc:postgres")) {
+                jdbi.installPlugin(new PostgresPlugin());
+            }
+        }
+        jdbi.registerArgument(new SerializableArgumentFactory());
+        jdbi.registerArgument(new MapArgumentFactory());
+        jdbi.registerArgument(new ObjectArgumentFactory());
+        return jdbi;
     }
 
 

@@ -14,11 +14,12 @@ import java.util.Set;
 @Builder
 public class Authentication {
 
+    private String userId;
     private String application;
-    // private String userId;
     private String username;
     private UserInfo profile;
     private String applicationId;
+    private String accountId;
     private String tenantId;
     private String tenantName;
     private Set<String> roles;
@@ -28,6 +29,7 @@ public class Authentication {
     private Map<String, Object> originalClaims;
     private Object principal;
     private boolean liveMode;
+
 
     public boolean hasPermission(String id) {
         return permissions != null && permissions.contains(id);

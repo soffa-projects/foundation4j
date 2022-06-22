@@ -62,7 +62,7 @@ app.consul:
   enabled: false
 
 app.errors_tracking:
-  provider: ${APP_ERRORS_TRACKING:none}
+  provider: ${ERRORS_TRACKING_PROVIDER:none}
 
 app.data.timeseries:
   enabled: ${TIMESERIES_ENABLED:false}

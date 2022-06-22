@@ -156,9 +156,11 @@ public class DefaultTokenProvider implements TokenProvider, ClaimsExtractor {
             liveMode(Boolean.parseBoolean(liveMode.toLowerCase())).
             username(token.getSubject()).
             tenantId(tenant).
-            tenantName(token.lookupClaim("tenantName").orElse(null)).
-            application(token.lookupClaim("applicationName", "application", "app").orElse(null)).
-            applicationId(token.lookupClaim("applicationId", "appId").orElse(null)).
+            userId(token.lookupClaim("user_id", "userId").orElse(token.getSubject())).
+            tenantName(token.lookupClaim("tenantName", "tenant_name").orElse(null)).
+            application(token.lookupClaim("applicationName", "application_name", "application", "ap_name", "app").orElse(null)).
+            applicationId(token.lookupClaim("applicationId", "application_id", "appId", "app_id").orElse(null)).
+            accountId(token.lookupClaim("accountId", "account", "accoun_id").orElse(null)).
             profile(profile).
             roles(roles).
             principal(principal).

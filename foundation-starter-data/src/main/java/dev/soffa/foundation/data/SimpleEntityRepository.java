@@ -41,28 +41,28 @@ public class SimpleEntityRepository<E> implements EntityRepository<E> {
     }
 
     @Override
-    public long count(Criteria criteria) {
-        return ds.count(getLockedTenant(), entityClass, criteria);
+    public long count(TenantId tenant, Criteria criteria) {
+        return ds.count(resolveTenant(tenant), entityClass, criteria);
     }
 
     @Override
     public long count() {
-        return ds.count(getLockedTenant(), entityClass);
+        return ds.count(resolveTenant(), entityClass);
     }
 
     @Override
-    public List<E> findAll() {
-        return find((Criteria) null);
+    public List<E> findAll(TenantId tenant) {
+        return find(resolveTenant(tenant), null);
     }
 
     @Override
-    public List<E> find(Criteria criteria) {
-        return ds.find(getLockedTenant(), entityClass, criteria);
+    public List<E> find(TenantId tenant, Criteria criteria) {
+        return ds.find(resolveTenant(tenant), entityClass, criteria);
     }
 
     @Override
     public Optional<E> get(Criteria criteria) {
-        return ds.get(getLockedTenant(), entityClass, criteria);
+        return ds.get(resolveTenant(), entityClass, criteria);
     }
 
     @Override
@@ -73,12 +73,12 @@ public class SimpleEntityRepository<E> implements EntityRepository<E> {
 
     @Override
     public E get(Object id) {
-        return ds.findById(getLockedTenant(), entityClass, id).orElseThrow(() -> new ResourceNotFoundException("No entity found for id: " + id));
+        return ds.findById(resolveTenant(), entityClass, id).orElseThrow(() -> new ResourceNotFoundException("No entity found for id: " + id));
     }
 
     @Override
     public Optional<E> findById(Object id) {
-        return ds.findById(getLockedTenant(), entityClass, id);
+        return ds.findById(resolveTenant(), entityClass, id);
     }
 
     @Override
@@ -88,7 +88,7 @@ public class SimpleEntityRepository<E> implements EntityRepository<E> {
 
     @Override
     public E insert(E entity) {
-        return ds.insert(getLockedTenant(), entity);
+        return ds.insert(resolveTenant(), entity);
     }
 
     @Override
@@ -98,7 +98,7 @@ public class SimpleEntityRepository<E> implements EntityRepository<E> {
 
     @Override
     public E update(E entity) {
-        return ds.update(getLockedTenant(), entity);
+        return ds.update(resolveTenant(), entity);
     }
 
     @Override
@@ -108,7 +108,7 @@ public class SimpleEntityRepository<E> implements EntityRepository<E> {
 
     @Override
     public int delete(E entity) {
-        return ds.delete(getLockedTenant(), entity);
+        return ds.delete(resolveTenant(), entity);
     }
 
     @Override
@@ -118,12 +118,21 @@ public class SimpleEntityRepository<E> implements EntityRepository<E> {
 
     @Override
     public int delete(Criteria criteria) {
-        return ds.delete(getLockedTenant(), entityClass, criteria);
+        return ds.delete(resolveTenant(), entityClass, criteria);
     }
-
-    protected TenantId getLockedTenant() {
+    
+    protected TenantId resolveTenant() {
         return lockedTenant;
     }
+
+    protected TenantId resolveTenant(TenantId tenant) {
+        if (tenant==null || TextUtil.isEmpty(tenant.getValue())) {
+            return lockedTenant;
+        }
+        return tenant;
+    }
+    
+    
 
 
 }

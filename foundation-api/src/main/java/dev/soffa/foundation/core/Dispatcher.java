@@ -8,5 +8,7 @@ public interface Dispatcher {
 
     <I, O, T extends Operation<I, O>> O dispatch(Class<T> operationClass, I input);
 
+    <I, O, T extends Operation<I, O>> O invoke(T operation, I input, Context ctx);
+
 
 }

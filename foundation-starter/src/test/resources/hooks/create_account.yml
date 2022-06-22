@@ -1,0 +1,17 @@
+kind: Hook
+post:
+  - name: welcome_email
+    type: email
+    spec:
+      subject: Your developer account is ready
+      to: "{{ email }}"
+      body: |
+        Your account has been created.<br />
+        Your account id is <code>{{ id }}</code><br />
+        Your api key is <code>{{ apiKey }}</code>
+  - name: notification
+    type: notification
+    spec:
+      message: |
+        Un nouveau compte a été créé: {{ name }}
+

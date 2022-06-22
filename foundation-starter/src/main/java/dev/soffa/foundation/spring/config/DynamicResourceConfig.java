@@ -5,14 +5,11 @@ import dev.soffa.foundation.commons.CollectionUtil;
 import dev.soffa.foundation.commons.JavaUtil;
 import dev.soffa.foundation.commons.Logger;
 import dev.soffa.foundation.config.AppConfig;
-import dev.soffa.foundation.config.OperationsMapping;
-import dev.soffa.foundation.core.Dispatcher;
 import dev.soffa.foundation.resource.Resource;
 import dev.soffa.foundation.spring.service.OperationDispatcher;
 import lombok.SneakyThrows;
 import org.apache.commons.lang3.reflect.MethodUtils;
 import org.jetbrains.annotations.NotNull;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -32,25 +29,20 @@ public class DynamicResourceConfig implements ApplicationContextAware {
     private static final Logger LOG = Logger.get(DynamicResourceConfig.class);
 
     private final AppConfig appConfig;
-    private final OperationsMapping operationsMapping;
+    private final OperationDispatcher dispatcher;
 
     public DynamicResourceConfig(AppConfig appConfig,
-                                 @Autowired(required = false) OperationsMapping operationsMapping) {
+                                 OperationDispatcher dispatcher) {
         this.appConfig = appConfig;
-        this.operationsMapping = operationsMapping;
+        this.dispatcher = dispatcher;
     }
 
     @Override
     @SneakyThrows
     @SuppressWarnings("PMD.CloseResource")
     public void setApplicationContext(@NotNull ApplicationContext applicationContext) {
-        if (operationsMapping == null || operationsMapping.isEmpty()) {
-            LOG.warn("No operations was found on this project");
-        } else {
-            ConfigurableApplicationContext context = (ConfigurableApplicationContext) applicationContext;
-            configure((DefaultListableBeanFactory) context.getBeanFactory());
-
-        }
+        ConfigurableApplicationContext context = (ConfigurableApplicationContext) applicationContext;
+        configure((DefaultListableBeanFactory) context.getBeanFactory());
     }
 
     @SneakyThrows
@@ -65,8 +57,6 @@ public class DynamicResourceConfig implements ApplicationContextAware {
         }
 
         LOG.info("Found %d resources", resources.size());
-
-        Dispatcher dispatcher = new OperationDispatcher(operationsMapping);
 
         for (Class<?> clazz : resources) {
             String className = clazz.getName() + "Controller";
