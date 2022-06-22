@@ -12,7 +12,7 @@ public final class RandomUtil {
     private RandomUtil() {
     }
 
-    public static String nextString(String[] candidates) {
+    public static String nextString(String... candidates) {
         return candidates[nextInt(0, candidates.length - 1)];
     }
 

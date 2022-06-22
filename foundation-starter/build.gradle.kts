@@ -21,8 +21,7 @@ dependencies {
     implementation("net.logstash.logback:logstash-logback-encoder:7.2")
     implementation("org.springframework.cloud:spring-cloud-starter-consul-discovery")
     implementation("com.hazelcast:hazelcast-all:4.2.5")
-
-
+    implementation("io.sentry:sentry:6.1.2")
     implementation("io.micrometer:micrometer-registry-prometheus")
     implementation("org.springdoc:springdoc-openapi-ui:1.6.9") {
         exclude(group = "io.github.classgraph")

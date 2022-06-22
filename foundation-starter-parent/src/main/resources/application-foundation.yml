@@ -61,6 +61,9 @@ springdoc:
 app.consul:
   enabled: false
 
+app.errors_tracking:
+  provider: ${APP_ERRORS_TRACKING:none}
+
 app.data.timeseries:
   enabled: ${TIMESERIES_ENABLED:false}
   provider: ${TIMESERIES_PROVIDER:none}

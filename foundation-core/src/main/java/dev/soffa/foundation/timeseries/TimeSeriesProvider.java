@@ -40,5 +40,6 @@ public interface TimeSeriesProvider {
     }
 
     default void close() {
+        // Nothing to do
     }
 }

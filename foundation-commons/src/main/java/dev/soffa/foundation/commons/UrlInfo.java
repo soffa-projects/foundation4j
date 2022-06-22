@@ -83,7 +83,7 @@ public class UrlInfo {
         StringBuilder urlWithoutCreds = new StringBuilder();
         urlWithoutCreds.append(url.getProtocol()).append("://").append(url.getHost());
         if (url.getPort() > 0) {
-            urlWithoutCreds.append(":").append(url.getPort());
+            urlWithoutCreds.append(':').append(url.getPort());
         }
         urlWithoutCreds.append(url.getPath());
 

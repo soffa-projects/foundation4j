@@ -12,6 +12,8 @@ import org.springframework.stereotype.Component;
 
 import java.util.Map;
 
+import static dev.soffa.foundation.spring.config.ErrorTrackingConfig.NOOP_ERROR_TRACKING;
+
 @Component
 public class ApplicationLifecycleManager implements ApplicationListener<ContextRefreshedEvent> {
 
@@ -25,7 +27,11 @@ public class ApplicationLifecycleManager implements ApplicationListener<ContextR
         this.context = context;
         this.db = db;
         this.pubsub = pubsub;
+        String errorTracking = context.getEnvironment().getProperty("app.errors_tracking.provider", NOOP_ERROR_TRACKING);
+        ErrorTrackingConfig.configure(errorTracking);
     }
+
+
 
     @Override
     public void onApplicationEvent(@NotNull ContextRefreshedEvent event) {

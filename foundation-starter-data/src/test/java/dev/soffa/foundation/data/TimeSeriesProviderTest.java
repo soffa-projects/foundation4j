@@ -21,6 +21,7 @@ import java.util.Date;
 public class TimeSeriesProviderTest {
 
     public static final int RECORDS = 100;
+    public static final String PAYMENTS_METRIC = "payments";
 
     @Test
     @Disabled
@@ -29,7 +30,7 @@ public class TimeSeriesProviderTest {
         TimeSeriesProvider client = InfluxDataProvider.create("http://foo:foo@localhost:8086");
         try (TimeSeriesProvider.Writer writer = client.getWriter("vitepay")) {
             for (int i = 0; i < RECORDS; i++) {
-                DataPoint point = DataPoint.metric("payments")
+                DataPoint point = DataPoint.metric(PAYMENTS_METRIC)
                     .addField("id", i)
                     .addTag("account", "acc_001")
                     .addTag("tenant", "apt_001")
@@ -48,7 +49,7 @@ public class TimeSeriesProviderTest {
 
         TimeSeriesProvider client = QuestDBProviderFactory.create("pg://admin:quest@localhost:8812/qdb");
 
-        TSTable table = new TSTable("payments")
+        TSTable table = new TSTable(PAYMENTS_METRIC)
             .field("id")
             .field("tenant", TSFieldType.SYMBOL)
             .field("application", TSFieldType.SYMBOL)
@@ -62,7 +63,7 @@ public class TimeSeriesProviderTest {
 
         String[] merchants = {"merchant1", "merchant2", "merchant3", "merchant4", "merchant5"};
 
-        try (TimeSeriesProvider.Writer writer = client.getWriter("payments")) {
+        try (TimeSeriesProvider.Writer writer = client.getWriter(PAYMENTS_METRIC)) {
 
             Instant startDate = Instant.now().minus(Duration.ofDays(30 * 6));
             Instant endDate = Instant.now();
@@ -94,7 +95,7 @@ public class TimeSeriesProviderTest {
         TimeSeriesProvider tpcClient = QuestDBProviderFactory.create("127.0.0.1:9009");
         try (TimeSeriesProvider.Writer writer = tpcClient.getWriter()) {
             for (int i = 0; i < RECORDS; i++) {
-                DataPoint point = DataPoint.metric("payments")
+                DataPoint point = DataPoint.metric(PAYMENTS_METRIC)
                     .addField("id", ID.generate())
                     .addTag("account", "acc_001")
                     .addTag("tenant", "apt_001")
