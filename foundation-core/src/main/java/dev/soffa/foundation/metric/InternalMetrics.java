@@ -1,4 +1,4 @@
-package dev.soffa.foundation.metrics;
+package dev.soffa.foundation.metric;
 
 import java.util.Locale;
 import java.util.Map;

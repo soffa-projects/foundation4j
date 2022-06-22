@@ -21,6 +21,14 @@ public class DateUtil {
         return Date.from(Instant.now());
     }
 
+    public static long nano() {
+        return Date.from(Instant.now()).getTime() * 1000;
+    }
+
+    public static long nano(Date date) {
+        return date.getTime() * 1000;
+    }
+
     public static void setDefaultLocale(Locale locale) {
         defaultLocale = locale;
     }

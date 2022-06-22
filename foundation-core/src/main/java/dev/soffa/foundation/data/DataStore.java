@@ -37,6 +37,18 @@ public interface DataStore {
         return insert(TenantId.CONTEXT, entity);
     }
 
+    default <E> int[] batch(List<E> entity) {
+        return batch(TenantId.CONTEXT, entity);
+    }
+
+    <E> int[] batch(TenantId tenant, List<E> entity);
+
+    default <E> int[] batch(String table, List<E> entity) {
+        return batch(TenantId.CONTEXT, table, entity);
+    }
+
+    <E> int[] batch(TenantId tenantId, String table, List<E> entity);
+
     <E> E insert(TenantId tenant, E entity);
 
     default <E> E update(E entity) {
@@ -54,6 +66,12 @@ public interface DataStore {
     default <E> List<E> find(Class<E> entityClass, Criteria criteria) {
         return find(TenantId.CONTEXT, entityClass, criteria);
     }
+
+    default int execute(String command) {
+        return execute(TenantId.CONTEXT, command);
+    }
+
+    int execute(TenantId tenant, String command);
 
     <E> List<E> find(TenantId tenant, Class<E> entityClass, Criteria criteria);
 

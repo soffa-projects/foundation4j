@@ -61,6 +61,10 @@ springdoc:
 app.consul:
   enabled: false
 
+app.data.timeseries:
+  enabled: ${TIMESERIES_ENABLED:false}
+  provider: ${TIMESERIES_PROVIDER:none}
+
 spring.cloud.consul:
   enabled: false
   discovery.enabled: false

@@ -39,7 +39,7 @@ public class JobSchedulingConfig {
         }
         JobRunrConfiguration config = JobRunr.configure()
             .useStorageProvider(storage)
-            .withJobFilter(new RetryFilter())
+            .withJobFilter(new RetryFilter(20, 3))
             .useJobActivator(context::getBean)
             .useBackgroundJobServer(3);
 

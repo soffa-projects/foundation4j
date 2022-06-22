@@ -44,7 +44,11 @@ public class UrlInfo {
         }
         String[] parts = v.split(PROTOCL_DIVIDER);
         String protocol = parts[0];
-        UrlInfo info = parse(new URL("https://" + parts[1]));
+        String fp = protocol;
+        if (!fp.startsWith("http")) {
+            fp = "https";
+        }
+        UrlInfo info = parse(new URL(fp + "://" + parts[1]));
         info.setProtocol(protocol);
         return info;
     }
@@ -79,7 +83,7 @@ public class UrlInfo {
         StringBuilder urlWithoutCreds = new StringBuilder();
         urlWithoutCreds.append(url.getProtocol()).append("://").append(url.getHost());
         if (url.getPort() > 0) {
-            urlWithoutCreds.append(url.getPort());
+            urlWithoutCreds.append(":").append(url.getPort());
         }
         urlWithoutCreds.append(url.getPath());
 

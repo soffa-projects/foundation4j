@@ -4,11 +4,13 @@ import com.zaxxer.hikari.HikariDataSource;
 import dev.soffa.foundation.application.ID;
 import dev.soffa.foundation.commons.Logger;
 import dev.soffa.foundation.commons.TextUtil;
+import dev.soffa.foundation.data.config.DataSourceProperties;
 import dev.soffa.foundation.data.jdbi.BeanMapper;
 import dev.soffa.foundation.data.jdbi.MapArgumentFactory;
 import dev.soffa.foundation.data.jdbi.ObjectArgumentFactory;
 import dev.soffa.foundation.data.jdbi.SerializableArgumentFactory;
 import dev.soffa.foundation.error.DatabaseException;
+import dev.soffa.foundation.error.TechnicalException;
 import dev.soffa.foundation.model.TenantId;
 import dev.soffa.foundation.multitenancy.TenantHolder;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -28,6 +30,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.BiFunction;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class SimpleDataStore implements DataStore {
@@ -42,14 +45,35 @@ public class SimpleDataStore implements DataStore {
     private static final String COLUMNS = "columns";
     private static final String VALUES = "values";
     private static final Map<String, Jdbi> LINKS_CACHE = new ConcurrentHashMap<>();
-    private final DB db;
+    private DB db;
+    private Jdbi dbi;
 
     public SimpleDataStore(DB db) {
         this.db = db;
     }
 
+    public SimpleDataStore(String dbUrl) {
+        DataSourceProperties props = DataSourceProperties.create("default", "default", dbUrl);
+        this.dbi = Jdbi.create(props.getUrl(), props.getUsername(), props.getPassword());
+    }
+
+
     @Override
     public <E> E insert(TenantId tenant, @NonNull E model) {
+        prepare(model);
+        return inTransaction(tenant, model.getClass(), (h, info) -> {
+            h.createUpdate("INSERT INTO <table> (<columns>) VALUES (<values>)")
+                .define(TABLE, info.getTableName())
+                .defineList(COLUMNS, info.getColumnsEscaped())
+                .defineList(VALUES, info.getValuesPlaceholder())
+                .bindBean(model)
+                .execute();
+            return model;
+        });
+    }
+
+
+    private <E> void prepare(E model) {
         if (model instanceof EntityLifecycle) {
             EntityLifecycle lc = (EntityLifecycle) model;
             lc.onInsert();
@@ -64,26 +88,52 @@ public class SimpleDataStore implements DataStore {
                 em.setId(ID.generate());
             }
         }
+    }
 
-        return inTransaction(tenant, model.getClass(), (h, info) -> {
-            h.createUpdate("INSERT INTO <table> (<columns>) VALUES (<values>)")
+    @Override
+    public <E> int[] batch(TenantId tenant, List<E> entities) {
+        for (E model : entities) {
+            prepare(model);
+        }
+        return inTransaction(tenant, entities.get(0).getClass(), (h, info) -> {
+            // EL
+            return h.prepareBatch("INSERT INTO <table> (<columns>) VALUES <values>")
                 .define(TABLE, info.getTableName())
                 .defineList(COLUMNS, info.getColumnsEscaped())
-                .defineList(VALUES, info.getValuesPlaceholder())
-                .bindBean(model)
+                //.defineList(VALUES, info.getValuesPlaceholder())
+                .bindBeanList("values", entities, info.getColumns())
                 .execute();
-            return model;
         });
     }
 
     @Override
+    public <E> int[] batch(TenantId tenant, String table, List<E> entities) {
+        for (E model : entities) {
+            prepare(model);
+        }
+        return inTransaction(tenant, entities.get(0).getClass(), (h, info) -> {
+            // EL
+            return h.prepareBatch("INSERT INTO <table> (<columns>) VALUES <values>")
+                .define(TABLE, table)
+                .defineList(COLUMNS, info.getColumnsEscaped())
+                .bindBeanList("values", entities, info.getColumns())
+                .execute();
+        });
+    }
+
+
+    @Override
     public <E> E update(TenantId tenant, @NonNull E model) {
+
         if (model instanceof EntityLifecycle) {
             EntityLifecycle lc = (EntityLifecycle) model;
             lc.onUpdate();
             lc.onSave();
         }
         return inTransaction(tenant, model.getClass(), (h, info) -> {
+            if (TextUtil.isEmpty(info.getIdProperty())) {
+                throw new TechnicalException("No @Id field defined for Entity %s", model.getClass());
+            }
             h.createUpdate("UPDATE <table> SET <columns> WHERE <idColumn> = :<idField>")
                 .define(TABLE, info.getTableName())
                 .defineList(COLUMNS, info.getUpdatePairs())
@@ -106,6 +156,11 @@ public class SimpleDataStore implements DataStore {
                 .bindBean(model)
                 .execute();
         });
+    }
+
+    @Override
+    public int execute(TenantId tenant, String command) {
+        return inTransaction(tenant, (handle) -> handle.createUpdate(command).execute());
     }
 
     @Override
@@ -186,7 +241,7 @@ public class SimpleDataStore implements DataStore {
     }
 
     private <E> Query buildQuery(Handle handle, Class<E> entityClass, String baseQuery, @Nullable Criteria criteria) {
-        EntityInfo<E> info = EntityInfo.get(entityClass, db.getTablesPrefix());
+        EntityInfo<E> info = EntityInfo.get(entityClass, getTablesPrefix());
         if (criteria == null) {
             return handle.createQuery(baseQuery + " FROM <table>")
                 .define(TABLE, info.getTableName());
@@ -203,8 +258,18 @@ public class SimpleDataStore implements DataStore {
                                    Class<E> entityClass,
                                    BiFunction<Handle, EntityInfo<E>, T> consumer) {
         try {
-            EntityInfo<E> info = EntityInfo.get(entityClass, db.getTablesPrefix());
+            EntityInfo<E> info = EntityInfo.get(entityClass, getTablesPrefix());
             return getLink(tenant).inTransaction(handle -> consumer.apply(handle, info));
+        } catch (Exception e) {
+            LOG.error("Current tenant is: %s", TenantHolder.get().orElse(TenantId.DEFAULT_VALUE));
+            throw new DatabaseException(e);
+        }
+    }
+
+    private <T> T inTransaction(TenantId tenant,
+                                Function<Handle, T> consumer) {
+        try {
+            return getLink(tenant).inTransaction(consumer::apply);
         } catch (Exception e) {
             LOG.error("Current tenant is: %s", TenantHolder.get().orElse(TenantId.DEFAULT_VALUE));
             throw new DatabaseException(e);
@@ -215,7 +280,7 @@ public class SimpleDataStore implements DataStore {
                                 Class<E> entityClass,
                                 BiFunction<Handle, EntityInfo<E>, T> consumer) {
         try {
-            EntityInfo<E> info = EntityInfo.get(entityClass, db.getTablesPrefix());
+            EntityInfo<E> info = EntityInfo.get(entityClass, getTablesPrefix());
             return getLink(tenant).withHandle(handle -> consumer.apply(handle, info));
         } catch (Exception e) {
             LOG.error("Current tenant is: %s", TenantHolder.get().orElse(TenantId.DEFAULT_VALUE));
@@ -231,20 +296,34 @@ public class SimpleDataStore implements DataStore {
         if (LINKS_CACHE.containsKey(lTenant)) {
             return LINKS_CACHE.get(lTenant);
         }
-        DataSource dataSource = db.determineTargetDataSource(lTenant);
-        Jdbi jdbi = Jdbi.create(new TransactionAwareDataSourceProxy(dataSource))
-            .installPlugin(new SqlObjectPlugin());
-        if (dataSource instanceof HikariDataSource) {
-            String url = ((HikariDataSource) dataSource).getJdbcUrl();
-            if (url.startsWith("jdbc:postgres")) {
-                jdbi.installPlugin(new PostgresPlugin());
-            }
-        }
-        jdbi.registerArgument(new SerializableArgumentFactory());
-        jdbi.registerArgument(new MapArgumentFactory());
-        jdbi.registerArgument(new ObjectArgumentFactory());
+        Jdbi jdbi = getDataSource(lTenant);
         LINKS_CACHE.put(lTenant, jdbi);
         return jdbi;
+    }
+
+    private String getTablesPrefix() {
+        if (db == null) {
+            return "";
+        }
+        return db.getTablesPrefix();
+    }
+
+    private Jdbi getDataSource(String lTenant) {
+        if (db != null) {
+            DataSource dataSource = db.determineTargetDataSource(lTenant);
+            Jdbi jdbi = Jdbi.create(new TransactionAwareDataSourceProxy(dataSource))
+                .installPlugin(new SqlObjectPlugin());
+            if (dataSource instanceof HikariDataSource) {
+                String url = ((HikariDataSource) dataSource).getJdbcUrl();
+                if (url.startsWith("jdbc:postgres")) {
+                    jdbi.installPlugin(new PostgresPlugin());
+                }
+            }
+            jdbi.registerArgument(new SerializableArgumentFactory());
+            jdbi.registerArgument(new MapArgumentFactory());
+            jdbi.registerArgument(new ObjectArgumentFactory());
+        }
+        return dbi;
     }
 
 

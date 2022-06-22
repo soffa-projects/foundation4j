@@ -13,6 +13,8 @@ dependencies {
     implementation("com.auth0:java-jwt:3.19.2")
     implementation("com.nimbusds:nimbus-jose-jwt:9.23")
     implementation("commons-validator:commons-validator:1.7")
+    
+
 
     @Suppress("GradlePackageUpdate")
     api("com.github.ben-manes.caffeine:caffeine") {  // Don't use version 3, it's not compatible with Java8

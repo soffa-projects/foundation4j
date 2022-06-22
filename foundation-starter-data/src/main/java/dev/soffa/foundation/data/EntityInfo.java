@@ -3,9 +3,9 @@ package dev.soffa.foundation.data;
 import dev.soffa.foundation.annotation.Store;
 import dev.soffa.foundation.annotation.StoreId;
 import dev.soffa.foundation.commons.ClassUtil;
+import dev.soffa.foundation.commons.Logger;
 import dev.soffa.foundation.commons.TextUtil;
 import dev.soffa.foundation.error.ConfigurationException;
-import dev.soffa.foundation.error.TechnicalException;
 import lombok.Getter;
 import org.apache.commons.lang3.reflect.FieldUtils;
 
@@ -31,6 +31,7 @@ public class EntityInfo<T> {
     private String tableName;
     private String idProperty;
     private List<String> updatePairs;
+    private static final Logger LOG = Logger.get(EntityInfo.class);
 
     public EntityInfo(Class<T> entityClass, String tablePrefix) {
         this.entityClass = entityClass;
@@ -69,7 +70,7 @@ public class EntityInfo<T> {
         }
 
         if (info.idProperty == null) {
-            throw new TechnicalException("Unable to locate @Id field on class: %s", entityClass.getName());
+            LOG.warn("******* NO @Id field found for class: %s *******", entityClass.getName());
         }
 
         info.afterPropertiesSet();
