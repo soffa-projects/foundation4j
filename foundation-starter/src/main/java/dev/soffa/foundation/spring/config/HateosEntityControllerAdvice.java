@@ -6,11 +6,10 @@ import dev.soffa.foundation.commons.JacksonMapper;
 import dev.soffa.foundation.commons.Logger;
 import dev.soffa.foundation.commons.UrlUtil;
 import dev.soffa.foundation.model.HateosLink;
-import lombok.AllArgsConstructor;
 import org.checkerframework.com.google.common.collect.ImmutableMap;
 import org.jetbrains.annotations.NotNull;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.MethodParameter;
+import org.springframework.core.env.Environment;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
@@ -23,14 +22,17 @@ import java.net.URI;
 import java.util.Map;
 
 @ControllerAdvice
-@AllArgsConstructor
 public class HateosEntityControllerAdvice implements ResponseBodyAdvice<Object> {
 
     private static final Logger LOG = Logger.getLogger(HateosEntityControllerAdvice.class);
     private final ObjectMapper mapper;
 
-    @Value("${app.public-url}")
     private final String publicUrl;
+
+    public HateosEntityControllerAdvice(ObjectMapper mapper, Environment env) {
+        this.publicUrl = env.getRequiredProperty("app.public-url");
+        this.mapper = mapper;
+    }
 
     @Override
     public boolean supports(MethodParameter returnType,
