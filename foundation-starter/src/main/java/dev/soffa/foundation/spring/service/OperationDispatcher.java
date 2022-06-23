@@ -87,7 +87,7 @@ public class OperationDispatcher implements Dispatcher {
             Map<String, Object> data = new HashMap<>();
             data.put("context", ctx.getContextMap());
             if (res != null) {
-                data.put("context", ctx.getContextMap());
+                data.put("data", res);
             }
             hooks.enqueue(operationId, messageId, data);
         }
@@ -95,9 +95,7 @@ public class OperationDispatcher implements Dispatcher {
         if (operation instanceof Command) {
             try {
                 String pubSubOperation = ctx.getServiceName() + "." + TextUtil.snakeCase(operationName) + ".success";
-                pubSubClient.broadcast(
-                        MessageFactory.create(pubSubOperation, res)
-                );
+                pubSubClient.broadcast(MessageFactory.create(pubSubOperation, res));
                 LOG.info("Operation success event published: %s", pubSubOperation);
             } catch (Exception e) {
                 Sentry.getInstance().captureException(e);
