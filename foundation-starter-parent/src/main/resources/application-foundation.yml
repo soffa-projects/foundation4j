@@ -58,6 +58,7 @@ springdoc:
     operations-sorter: alpha
     tags-sorter: alpha
 
+app.public-url: ${PUBLIC_URL:http://localhost:${PORT}}
 
 app.consul:
   enabled: false
