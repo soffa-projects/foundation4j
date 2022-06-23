@@ -83,11 +83,7 @@ public class OperationDispatcher implements Dispatcher {
             if (res instanceof EventModel) {
                 messageId = operationId + "." + ((EventModel) res).getId();
             }
-            if (operation instanceof Command) {
-                activities.record(ctx, operationName, res);
-            }else {
-                activities.record(ctx, operationName, input);
-            }
+            activities.record(ctx, operationName, input);
             Map<String, Object> data = new HashMap<>();
             data.put("context", ctx.getContextMap());
             if (res != null) {
