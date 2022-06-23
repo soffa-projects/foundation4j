@@ -3,6 +3,7 @@ package dev.soffa.foundation.spring.config;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import dev.soffa.foundation.annotation.Hateos;
 import dev.soffa.foundation.commons.JacksonMapper;
+import dev.soffa.foundation.commons.Logger;
 import dev.soffa.foundation.commons.UrlUtil;
 import dev.soffa.foundation.model.HateosLink;
 import lombok.AllArgsConstructor;
@@ -25,6 +26,7 @@ import java.util.Map;
 @AllArgsConstructor
 public class HateosEntityControllerAdvice implements ResponseBodyAdvice<Object> {
 
+    private static final Logger LOG = Logger.getLogger(HateosEntityControllerAdvice.class);
     private final ObjectMapper mapper;
 
     @Value("${app.public-url}")
@@ -49,10 +51,17 @@ public class HateosEntityControllerAdvice implements ResponseBodyAdvice<Object> 
         }
         // Hateos ano = body.getClass().getAnnotation(Hateos.class);
 
-        Map<String,HateosLink> links = ImmutableMap.of(
+        LOG.info("Writing hateos links for {}", body.getClass().getName());
+        LOG.info("RemoteAddr", request.getRemoteAddress().getHostName());
+        Map<String, String> hd = request.getHeaders().toSingleValueMap();
+        LOG.info("X-Forwarded-For", hd.get("x-forwarded-for"));
+        LOG.info("X-Forwarded-Host", hd.get("x-forwarded-host"));
+        LOG.info("X-Forwarded-Proto", hd.get("x-forwarded-proto"));
+
+        Map<String, HateosLink> links = ImmutableMap.of(
             "self", new HateosLink(rewriteInternalLink(request.getURI()))
         );
-        Map<String,Object> transformed = JacksonMapper.toMap(mapper, body, Object.class);
+        Map<String, Object> transformed = JacksonMapper.toMap(mapper, body, Object.class);
         transformed.put("_links", links);
         return transformed;
     }
