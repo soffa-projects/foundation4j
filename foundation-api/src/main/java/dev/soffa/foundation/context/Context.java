@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.SneakyThrows;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -15,6 +16,8 @@ import java.util.Optional;
 @Setter
 @SuppressWarnings("PMD.GodClass")
 public class Context {
+
+    private static boolean production = true;
 
     public static final String TENANT_ID = "X-TenantId";
     public static final String TENANT_NAME = "X-TenantName";
@@ -30,6 +33,7 @@ public class Context {
     private String tenantId;
 
     private String accountId;
+    private String accountName;
     private String tenantName;
     private String applicationId;
     private String ipAddress;
@@ -40,10 +44,15 @@ public class Context {
     private transient Authentication authentication;
 
     public Context() {
-        // this.traceId = UUID.randomUUID().toString();
-        // this.spanId = UUID.randomUUID().toString();
         this.sender = serviceName;
+    }
 
+    public static void setProduction(boolean production) {
+        Context.production = production;
+    }
+
+    public boolean isProduction() {
+        return Context.production;
     }
 
     public static Context create(String tenantId) {
@@ -149,6 +158,7 @@ public class Context {
     public boolean hasApplicationId() {
         return isNotEmpty(applicationId);
     }
+
     public boolean hasAccountId() {
         return isNotEmpty(accountId);
     }
@@ -189,39 +199,21 @@ public class Context {
     @SneakyThrows
     public Map<String, String> getContextMap() {
         Map<String, String> contextMap = new HashMap<>();
-        if (isNotEmpty(getApplicationName())) {
-            contextMap.put("application", getApplicationName());
-        }
-        if (hasTenant()) {
-            contextMap.put("tenant", getTenantId());
-        }
-        if (hasApplicationId()) {
-            contextMap.put("applicationId", getApplicationId());
-        }
-        if (hasIpAddress()) {
-            contextMap.put("ipAddress", getApplicationId());
-        }
-        /*
-        if (isNotEmpty(getTraceId())) {
-            contextMap.put("traceId", getTraceId());
-        }
-        if (isNotEmpty(getSpanId())) {
-            contextMap.put("spanId", getSpanId());
-        }
-
-         */
-        if (isNotEmpty(getSender())) {
-            contextMap.put("sender", getSender());
-        }
+        contextMap.put("account_id", getAccountId());
+        contextMap.put("application_name", getApplicationName());
+        contextMap.put("application_id", getApplicationId());
+        contextMap.put("tenant", getTenantId());
+        contextMap.put("tenant_id", getTenantId());
+        contextMap.put("tenant_name", getTenantName());
+        contextMap.put("ip_address", getApplicationId());
+        contextMap.put("sender", getSender());
+        contextMap.put("env", "production");
         if (getAuthentication() != null) {
-            if (isNotEmpty(getAuthentication().getUsername())) {
-                contextMap.put("user.username", getAuthentication().getUsername());
-            }
-            if (isNotEmpty(getAuthentication().getUserId())) {
-                contextMap.put("user.user_id", getAuthentication().getUserId());
-            }
+            contextMap.put("username", getAuthentication().getUsername());
+            contextMap.put("user_id", getAuthentication().getUserId());
         }
         contextMap.put("service_name", serviceName);
+        contextMap.values().removeAll(Collections.singleton(null));
         return contextMap;
     }
 
@@ -238,14 +230,6 @@ public class Context {
         if (hasApplicationId()) {
             headers.put(Context.APPLICATION_ID, getApplicationId());
         }
-        /*
-        if (isNotEmpty(getTraceId())) {
-            headers.put(Context.TRACE_ID, getTraceId());
-        }
-        if (isNotEmpty(getSpanId())) {
-            headers.put(Context.SPAN_ID, getSpanId());
-        }
-         */
         if (isNotEmpty(getSender())) {
             headers.put(Context.SERVICE_NAME, getSender());
         }

@@ -67,7 +67,7 @@ public final class ObjectMapperFactory {
             .registerModule(simpleModule);
     }
 
-    private static class IgnoreAnnotations extends JacksonAnnotationIntrospector {
+    public static class IgnoreAnnotations extends JacksonAnnotationIntrospector {
         private static final long serialVersionUID = 1L;
 
         @Override

@@ -2,6 +2,7 @@ package dev.soffa.foundation.spring.config;
 
 import dev.soffa.foundation.commons.Logger;
 import dev.soffa.foundation.commons.Sentry;
+import dev.soffa.foundation.commons.TextUtil;
 import dev.soffa.foundation.context.ContextHolder;
 import dev.soffa.foundation.error.ErrorUtil;
 import dev.soffa.foundation.error.FunctionalException;
@@ -22,6 +23,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.context.request.ServletWebRequest;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
@@ -50,12 +52,11 @@ class CustomRestExceptionHandler extends ResponseEntityExceptionHandler {
                                                                   @NonNull HttpHeaders headers,
                                                                   @NonNull HttpStatus status,
                                                                   @NonNull WebRequest request) {
-
-        return handleGlobalErrors(ex);
+        return handleGlobalErrors(ex, request);
     }
 
     @ExceptionHandler({Throwable.class, Exception.class})
-    public ResponseEntity<Object> handleGlobalErrors(Throwable ex) {
+    public ResponseEntity<Object> handleGlobalErrors(Throwable ex, WebRequest request) {
         boolean isProduction = environment.acceptsProfiles(Profiles.of("prod", "production"));
         Throwable error = ErrorUtil.unwrap(ex);
         HttpStatus status = deriveStatus(error);
@@ -69,15 +70,20 @@ class CustomRestExceptionHandler extends ResponseEntityExceptionHandler {
         body.put("message", message);
         body.put("prod", isProduction);
 
+        body.put("path", ((ServletWebRequest) request).getRequest().getRequestURI());
+
+        String auth = ((ServletWebRequest) request).getRequest().getHeader("Authorization");
+        if (TextUtil.isNotEmpty(auth)) {
+            body.put("authorization", "**********" + TextUtil.takeLast(auth, 4));
+        }
         Span span = Span.current();
+
         if (span != null) {
             body.put("traceId", span.getSpanContext().getTraceId());
             body.put("spanId", span.getSpanContext().getSpanId());
         }
 
-
         ContextHolder.get().ifPresent(context -> {
-
             Optional.ofNullable(context.getApplicationName()).ifPresent(s -> body.put("application", s));
             context.getUsername().ifPresent(s -> body.put("user", s));
             if (context.hasTenant()) {

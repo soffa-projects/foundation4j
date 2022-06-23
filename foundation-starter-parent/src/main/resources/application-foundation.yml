@@ -6,6 +6,7 @@ logging.level:
   ROOT: ${ROOT_LOG_LEVEL:WARN}
   io.leangen: ERROR
   ext.springboot: WARN
+  org.jobrunr: WARN
   org.springframework: ${SPRING_LOG_LEVEL:WARN}
   liquibase: ERROR
   dev.soffa: ${PLATFORM_LOG_LEVEL:INFO}
@@ -62,7 +63,7 @@ app.consul:
   enabled: false
 
 app.errors_tracking:
-  provider: ${ERRORS_TRACKING_PROVIDER:none}
+  provider: ${SENTRY_PROVIDER:none}
 
 app.data.timeseries:
   enabled: ${TIMESERIES_ENABLED:false}
@@ -140,6 +141,9 @@ management.health.vault.enabled: false
 management.endpoint.health.show-components: always
 management.endpoint.health.show-details: always
 
+logging.level:
+  dev.soffa: DEBUG
+  dev.bantu: DEBUG
 
 ---
 spring.config.activate.on-profile: production,prd,prod

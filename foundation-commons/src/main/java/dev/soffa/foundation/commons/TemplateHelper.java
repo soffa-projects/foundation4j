@@ -1,5 +1,6 @@
 package dev.soffa.foundation.commons;
 
+import com.google.common.collect.ImmutableMap;
 import com.mitchellbosecke.pebble.PebbleEngine;
 import com.mitchellbosecke.pebble.template.PebbleTemplate;
 import dev.soffa.foundation.error.TechnicalException;
@@ -39,6 +40,9 @@ public final class TemplateHelper {
     }
 
     public static String render(String template, Map<String, Object> context) {
+        if (context == null) {
+            return render(PEBBLE, template, ImmutableMap.of());
+        }
         return render(PEBBLE, template, context);
     }
 

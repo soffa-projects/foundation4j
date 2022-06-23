@@ -24,7 +24,7 @@ import java.util.concurrent.atomic.AtomicLong;
 @ActiveProfiles({"test", "foundation-pubsub"})
 @AutoConfigureMockMvc
 @EnableNatsServer(port = 14_222)
-public class NatsClientTest {
+public class NatsIntegrationTest {
 
     @Autowired
     private PubSubMessenger messenger;

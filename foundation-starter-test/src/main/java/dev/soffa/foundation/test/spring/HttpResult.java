@@ -110,7 +110,7 @@ public class HttpResult {
 
     @SneakyThrows
     public HttpResult json(String path, Matcher<?> matcher) {
-        result.andExpect(jsonPath(path).value(matcher));
+        result.andExpect(jsonPath(path).isNotEmpty()).andExpect(jsonPath(path).value(matcher));
         return this;
     }
 

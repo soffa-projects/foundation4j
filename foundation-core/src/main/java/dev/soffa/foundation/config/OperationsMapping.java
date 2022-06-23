@@ -3,10 +3,13 @@ package dev.soffa.foundation.config;
 import dev.soffa.foundation.annotation.Handle;
 import dev.soffa.foundation.commons.TextUtil;
 import dev.soffa.foundation.context.Context;
+import dev.soffa.foundation.core.Command;
 import dev.soffa.foundation.core.Operation;
+import dev.soffa.foundation.core.Query;
 import dev.soffa.foundation.error.TechnicalException;
 import lombok.Getter;
 import lombok.SneakyThrows;
+import org.checkerframework.checker.nullness.qual.NonNull;
 import org.springframework.aop.framework.Advised;
 import org.springframework.aop.support.AopUtils;
 
@@ -18,6 +21,7 @@ public class OperationsMapping {
 
     private final Set<Operation<?, ?>> registry;
     private final Map<String, Object> internal = new HashMap<>();
+    private final Map<String, String> operationNames = new HashMap<>();
     private final Map<String, Class<?>> inputTypes = new HashMap<>();
 
     public OperationsMapping(Set<Operation<?, ?>> registry) {
@@ -49,12 +53,12 @@ public class OperationsMapping {
     }
 
     public <I, O, T extends Operation<I, O>> T require(Class<T> operationClass) {
-        return require(operationClass.getName());
+        return require(resolveClass(operationClass).getName());
     }
 
     @SneakyThrows
-    private Class<?> resolveClass(Object op) {
-        Class<?> targetClass = op.getClass();
+    public static Class<?> resolveClass(Object op) {
+        Class<?> targetClass = op instanceof Class<?> ? (Class<?>) op : op.getClass();
         if (AopUtils.isAopProxy(op) && op instanceof Advised) {
             Object target = ((Advised) op).getTargetSource().getTarget();
             targetClass = Objects.requireNonNull(target).getClass();
@@ -87,10 +91,11 @@ public class OperationsMapping {
                         .filter(m -> "handle".equals(m.getName()) && 2 == m.getParameterCount() && m.getParameterTypes()[1] == Context.class)
                         .findFirst().orElseThrow(() -> new TechnicalException("Invalid operation definition"));
 
-                    if (intf != Operation.class) {
+                    register(targetClass, operation, method, bindingName);
+                    if (intf != Operation.class && intf != Command.class && intf != Query.class) {
                         register(intf, operation, method, bindingName);
-                    } else {
-                        register(targetClass, operation, method, bindingName);
+                        operationNames.put(targetClass.getName(), intf.getSimpleName());
+                        operationNames.put(targetClass.getSimpleName(), intf.getSimpleName());
                     }
                     break;
                 }
@@ -103,7 +108,7 @@ public class OperationsMapping {
         internal.put(target.getName(), operation);
 
 
-        Class<?> inputType = method.getParameterTypes()[0];
+        Class<?> inputType = resolveClass(method.getParameterTypes()[0]);
         inputTypes.put(target.getSimpleName(), inputType);
         inputTypes.put(target.getName(), inputType);
 
@@ -114,4 +119,14 @@ public class OperationsMapping {
     }
 
 
+    public String getOperationId(@NonNull Object operation) {
+        String className = resolveClass(operation).getSimpleName();
+        String operationId;
+        if (operationNames.containsKey(className)) {
+            operationId = operationNames.get(className);
+        } else {
+            operationId = operation.getClass().getSimpleName();
+        }
+        return operationId;
+    }
 }

@@ -24,6 +24,10 @@ public final class Mappers {
         new YAMLMapper()
     );
 
+    public static final Mapper YAML_FULLACCESS = new JacksonMapper(
+        new YAMLMapper().setAnnotationIntrospector(new ObjectMapperFactory.IgnoreAnnotations())
+    );
+
     private Mappers() {
     }
 

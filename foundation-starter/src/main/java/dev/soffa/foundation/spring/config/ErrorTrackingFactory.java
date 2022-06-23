@@ -21,9 +21,10 @@ public final class ErrorTrackingFactory {
             return;
         }
         String[] config = provider.split("\\|");
-        if (SENTRY_PROVIDER.equals(config[0])) {
+        if (SENTRY_PROVIDER.equals(config[0]) || config[0].contains("sentry.io")) {
+            String dsn = config.length == 2 ? config[1] : config[0];
             io.sentry.Sentry.init(options -> {
-                options.setDsn(config[1]);
+                options.setDsn(dsn);
                 // Set tracesSampleRate to 1.0 to capture 100% of transactions for performance monitoring.
                 // We recommend adjusting this value in production.
                 options.setTracesSampleRate(1.0);

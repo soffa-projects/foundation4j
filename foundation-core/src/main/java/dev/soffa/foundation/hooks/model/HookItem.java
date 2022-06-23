@@ -9,6 +9,6 @@ public class HookItem {
 
     private String name;
     private String type;
-    private Map<String,Object> spec;
+    private Map<String, Object> spec;
 
 }

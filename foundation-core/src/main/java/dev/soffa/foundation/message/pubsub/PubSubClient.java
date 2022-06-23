@@ -13,7 +13,6 @@ import java.util.concurrent.CompletableFuture;
 
 public interface PubSubClient {
 
-
     @SneakyThrows
     default void subscribe(@NonNull String subject, MessageHandler messageHandler) {
         subscribe(subject, false, messageHandler);

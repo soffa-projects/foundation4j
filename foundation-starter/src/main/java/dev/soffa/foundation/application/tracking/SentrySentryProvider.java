@@ -1,9 +1,6 @@
 package dev.soffa.foundation.application.tracking;
 
-import dev.soffa.foundation.commons.DateUtil;
-import dev.soffa.foundation.commons.EventLevel;
-import dev.soffa.foundation.commons.SentryProvider;
-import dev.soffa.foundation.commons.TextUtil;
+import dev.soffa.foundation.commons.*;
 import dev.soffa.foundation.config.AppConfig;
 import dev.soffa.foundation.context.Context;
 import dev.soffa.foundation.model.Authentication;
@@ -31,7 +28,7 @@ public class SentrySentryProvider implements SentryProvider {
     public void captureEvent(Context context, @Nullable String messageId, String message, EventLevel level) {
         SentryEvent e = new SentryEvent(DateUtil.now());
         if (messageId!=null && TextUtil.isNotEmpty(messageId)) {
-            e.setEventId(new SentryId(messageId));
+            e.setEventId(new SentryId(DigestUtil.makeUUID(messageId)));
         }
         if (context != null) {
             Authentication auth = context.getAuthentication();

@@ -1,5 +1,6 @@
 package dev.soffa.foundation.starter.test;
 
+import dev.soffa.foundation.activity.ActivityService;
 import dev.soffa.foundation.commons.Mappers;
 import dev.soffa.foundation.model.Token;
 import dev.soffa.foundation.model.TokenType;
@@ -36,10 +37,11 @@ public class EchoResourceTest {
 
     @Autowired
     private Echo echoUseCase;
-
     @Autowired
     private TokenProvider tokenProvider;
 
+    @Autowired
+    private ActivityService activities;
 
     @Test
     public void testListener() {
@@ -52,11 +54,12 @@ public class EchoResourceTest {
     public void testDynamicResource() {
         assertNotNull(resource);
         assertNotNull(echoUseCase);
+        long echoCount = activities.count(Echo.class.getSimpleName());
 
 
         HttpExpect client = new HttpExpect(mockMvc);
         client.get("/v3/api-docs")
-            .expect().isOK().hasJson("paths./v1/echo");
+                .expect().isOK().hasJson("paths./v1/echo");
 
         String content = "Hello World!";
 
@@ -67,30 +70,38 @@ public class EchoResourceTest {
         assertEquals(content, input.getMessage());
 
         client.post("/v1/echo")
-            .withJson(input)
-            .expect().isOK().json("content", content);
+                .withJson(input)
+                .expect().isOK().json("content", content);
 
         client.get("/v1/echo")
-            .withJson(input)
-            .expect().isOK().json(jsonExpect -> {
-                jsonExpect.eq("content", "Echo");
-                jsonExpect.exists("message_id");
-                jsonExpect.exists("_links.self.href");
-            });
+                .withJson(input)
+                .expect().isOK().json(jsonExpect -> {
+                    jsonExpect.eq("content", "Echo");
+                    jsonExpect.exists("message_id");
+                    jsonExpect.exists("_links.self.href");
+                });
 
         client.patch("/v1/messages/123456")
-            .withJson(ImmutableMap.of("content", content))
-            .expect().isCreated().json("$.content", "123456/" + content);
+                .withJson(ImmutableMap.of("content", content))
+                .expect().isCreated().json("$.content", "123456/" + content);
 
         client.patch("/v1.1/messages/123456")
-            .expect().isOK().json("content", "123456");
+                .expect().isOK().json("content", "123456");
 
         client.get("/v1.1/messages")
-            .expect().isOK();
+                .expect().isOK();
 
         client.get("/v1.2/messages")
-            .expect().isOK();
+                .expect().isOK();
 
+        assertEquals(echoCount + 2, activities.count(Echo.class.getSimpleName()));
+
+        client.get("/_activities/Echo/count")
+                .expect().isOK()
+                .json(t -> {
+                    t.eq("name", "Echo");
+                    t.eq("count", 2);
+                });
     }
 
     @SneakyThrows
@@ -104,22 +115,22 @@ public class EchoResourceTest {
         String requestBody = Mappers.JSON.serialize(new EchoInput(content));
         EchoInput input = Mappers.JSON.deserialize(requestBody, EchoInput.class);
         Token bearerToken = tokenProvider.create(
-            TokenType.JWT, "user",
-            ImmutableMap.of("permissions", "foo")
+                TokenType.JWT, "user",
+                ImmutableMap.of("permissions", "foo")
         );
         client.post("/v1/echo/secured")
-            .bearerAuth(bearerToken.getValue())
-            .withJson(input)
-            .expect().isForbidden();
+                .bearerAuth(bearerToken.getValue())
+                .withJson(input)
+                .expect().isForbidden();
 
         bearerToken = tokenProvider.create(
-            TokenType.JWT, "user",
-            ImmutableMap.of("permissions", "admin")
+                TokenType.JWT, "user",
+                ImmutableMap.of("permissions", "admin")
         );
         client.post("/v1/echo/secured")
-            .bearerAuth(bearerToken.getValue())
-            .withJson(input)
-            .expect().isOK();
+                .bearerAuth(bearerToken.getValue())
+                .withJson(input)
+                .expect().isOK();
 
     }
 

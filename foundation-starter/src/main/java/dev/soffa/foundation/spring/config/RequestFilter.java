@@ -83,7 +83,7 @@ public class RequestFilter extends OncePerRequestFilter {
                     if (statusCode > -1) {
                         response.setContentType("application/json");
                         response.sendError(statusCode, Mappers.JSON.serialize(ImmutableMap.of(
-                            "message", e.getMessage()
+                                "message", e.getMessage()
                         )));
                     } else if (e instanceof AccessDeniedException) {
                         response.sendError(HttpStatus.UNAUTHORIZED.value(), e.getMessage());
@@ -102,6 +102,11 @@ public class RequestFilter extends OncePerRequestFilter {
 
         try {
             LOG.debug("Setting request context and tenant before proceeding");
+            if (context.hasAuthorization()) {
+                LOG.info("Authenticated access [%s] %s", request.getMethod(), request.getRequestURI());
+            }else {
+                LOG.info("Anonymous access [%s] %s", request.getMethod(), request.getRequestURI());
+            }
             context.setIpAddress(request.getRemoteAddr());
             ContextHolder.set(context);
             TenantHolder.set(context.getTenantId());

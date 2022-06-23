@@ -114,7 +114,7 @@ public class JacksonMapper implements Mapper {
     @SneakyThrows
     public <T> Map<String, T> deserializeMap(String input) {
         if (input == null) {
-            new HashMap<>();
+            return new HashMap<>();
         }
         MapLikeType mapType = mapper.getTypeFactory().constructMapLikeType(Map.class, String.class, Object.class);
         return mapper.readValue(input, mapType);
@@ -124,7 +124,7 @@ public class JacksonMapper implements Mapper {
     @SneakyThrows
     public <T> Map<String, T> deserializeMap(InputStream input) {
         if (input == null) {
-            new HashMap<>();
+            return new HashMap<>();
         }
         MapLikeType mapType = mapper.getTypeFactory().constructMapLikeType(Map.class, String.class, Object.class);
         return mapper.readValue(input, mapType);

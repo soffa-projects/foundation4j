@@ -5,24 +5,22 @@ import dev.soffa.foundation.commons.TextUtil;
 import dev.soffa.foundation.config.OperationsMapping;
 import dev.soffa.foundation.context.Context;
 import dev.soffa.foundation.context.ContextHolder;
-import dev.soffa.foundation.context.ContextUtil;
+import dev.soffa.foundation.core.Dispatcher;
 import dev.soffa.foundation.core.Operation;
 import dev.soffa.foundation.error.TechnicalException;
 import dev.soffa.foundation.message.Message;
 import dev.soffa.foundation.message.MessageFactory;
 import dev.soffa.foundation.message.MessageHandler;
-import dev.soffa.foundation.metric.MetricsRegistry;
 import dev.soffa.foundation.model.ResponseEntity;
 import dev.soffa.foundation.multitenancy.TenantHolder;
 import dev.soffa.foundation.security.PlatformAuthManager;
 import lombok.AllArgsConstructor;
-import lombok.SneakyThrows;
 import org.checkerframework.checker.nullness.qual.NonNull;
+import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.function.Supplier;
 
 @Component
 @AllArgsConstructor
@@ -30,12 +28,18 @@ public class DefaultMessageHandler implements MessageHandler {
 
     private static final Logger LOG = Logger.get(DefaultMessageHandler.class);
     private final OperationsMapping mapping;
-    private final OperationDispatcher dispatcher;
-    private final MetricsRegistry metricsRegistry;
     private final PlatformAuthManager authManager;
+    private final ApplicationContext context;
+    private final AtomicReference<Dispatcher> dispatcher = new AtomicReference<>();
 
     @Override
+    @SuppressWarnings("PMD.CyclomaticComplexity")
     public Optional<Object> handle(@NonNull Message message) {
+
+        if (dispatcher.get() == null) {
+            dispatcher.set(this.context.getBean(Dispatcher.class));
+        }
+
         final Context context = message.getContext();
         ContextHolder.set(context);
         TenantHolder.set(context.getTenantId());
@@ -77,34 +81,21 @@ public class DefaultMessageHandler implements MessageHandler {
             }
         }
 
-        //noinspection Convert2Lambda
-        return metricsRegistry.track(
-            "app_operation_" + message.getOperation(),
-            ContextUtil.tagify(context),
-            new Supplier<Optional<Object>>() {
-                @SuppressWarnings("unchecked")
-                @SneakyThrows
-                @Override
-                public Optional<Object> get() {
-                    if (payload.get() == null) {
-                        LOG.debug("Invoking operation %s with empty payload", operation.getClass().getSimpleName());
-                    } else {
-                        LOG.debug("Invoking operation %s with payload of type %s", operation.getClass().getSimpleName(), payload.get().getClass().getSimpleName());
-                    }
-                    TenantHolder.set(context.getTenantId());
-                    //noinspection unchecked
-                    Object result = dispatcher.invoke((Operation<Object, Object>) operation, payload.get(), context);
-                    if (result == null) {
-                        return Optional.empty();
-                    }
-                    if (result instanceof ResponseEntity) {
-                        //TODO: handle status ?
-                        result = ((ResponseEntity<?>) result).getData();
-                    }
-                    return Optional.of(result);
-                }
-            });
+        if (payload.get() == null) {
+            LOG.debug("Invoking operation %s with empty payload", operation.getClass().getSimpleName());
+        } else {
+            LOG.debug("Invoking operation %s with payload of type %s", operation.getClass().getSimpleName(), payload.get().getClass().getSimpleName());
+        }
+        TenantHolder.set(context.getTenantId());
+        //noinspection unchecked
+        Object result = dispatcher.get().invoke((Operation<Object, Object>) operation, payload.get(), context);
+        if (result == null) {
+            return Optional.empty();
+        }
+        if (result instanceof ResponseEntity) {
+            //TODO: handle status ?
+            result = ((ResponseEntity<?>) result).getData();
+        }
+        return Optional.of(result);
     }
-
-
 }

@@ -8,19 +8,21 @@ import dev.soffa.foundation.scheduling.Scheduler;
 import dev.soffa.foundation.scheduling.ServiceWorker;
 import org.jobrunr.scheduling.JobScheduler;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Component;
 
 import java.util.Optional;
 import java.util.UUID;
 
 @Component
-class SchedulerImpl implements Scheduler {
+@Primary
+class JobRunrScheduler implements Scheduler {
 
     private final JobScheduler jobScheduler;
     private final ApplicationContext context;
     private Dispatcher dispatcher;
 
-    public SchedulerImpl(JobScheduler jobScheduler, ApplicationContext context) {
+    public JobRunrScheduler(JobScheduler jobScheduler, ApplicationContext context) {
         this.jobScheduler = jobScheduler;
         this.context = context;
     }

@@ -5,6 +5,7 @@ import lombok.SneakyThrows;
 
 import java.io.File;
 import java.io.InputStream;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -57,6 +58,9 @@ public interface Mapper {
     <E> Map<String, E> toMap(Object input, Class<E> valueClass);
 
     default Map<String, Object> toMap(Object input) {
+        if (input==null) {
+            return new HashMap<>();
+        }
         return toMap(input, Object.class);
     }
 }

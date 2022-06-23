@@ -22,7 +22,6 @@ public class AmqpClient extends AbstractPubSubClient implements PubSubClient {
 
     private static final Logger LOG = Logger.get(AmqpClient.class);
     private final PubSubClientConfig config;
-
     private final RabbitAdmin rabbitAdmin;
     private final List<SimpleMessageListenerContainer> listeners = new ArrayList<>();
     private final boolean embedded;

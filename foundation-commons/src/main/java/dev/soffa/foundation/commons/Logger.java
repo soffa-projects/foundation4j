@@ -5,6 +5,7 @@ import dev.soffa.foundation.error.ErrorUtil;
 import org.slf4j.LoggerFactory;
 
 import java.text.MessageFormat;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Consumer;
@@ -71,6 +72,7 @@ public final class Logger {
         if (context == null || context.isEmpty()) {
             org.slf4j.MDC.clear();
         } else {
+            context.values().removeAll(Collections.singleton(null));
             org.slf4j.MDC.setContextMap(context);
         }
     }
