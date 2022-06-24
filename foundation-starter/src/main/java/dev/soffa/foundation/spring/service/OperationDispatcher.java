@@ -74,11 +74,8 @@ public class OperationDispatcher implements Dispatcher {
         operation.validate(input, ctx);
         O res = operation.handle(input, ctx);
 
-        if (!(operation instanceof ProcessHook || operation instanceof ProcessHookItem)) {
-            activities.record(ctx, operationName, input);
-        }
-
         if (operation instanceof Command) {
+            activities.record(ctx, operationName, input);
             try {
                 String pubSubOperation = ctx.getServiceName() + "." + TextUtil.snakeCase(operationName) + ".success";
                 pubSubClient.broadcast(MessageFactory.create(pubSubOperation, res));

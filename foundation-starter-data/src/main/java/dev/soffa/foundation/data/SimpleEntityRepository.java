@@ -126,7 +126,7 @@ public class SimpleEntityRepository<E> implements EntityRepository<E> {
     }
 
     protected TenantId resolveTenant(TenantId tenant) {
-        if (tenant != null && tenant != TenantId.CONTEXT) {
+        if (tenant != null && !tenant.equals(TenantId.CONTEXT)) {
             return tenant;
         }
         return lockedTenant;

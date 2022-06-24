@@ -2,10 +2,10 @@ package dev.soffa.foundation.spring.config.hazelcast;
 
 import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.flakeidgen.FlakeIdGenerator;
-import dev.soffa.foundation.helper.ID;
 import dev.soffa.foundation.commons.Hashids;
 import dev.soffa.foundation.commons.IdGenerator;
 import dev.soffa.foundation.config.AppConfig;
+import dev.soffa.foundation.helper.ID;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Component;

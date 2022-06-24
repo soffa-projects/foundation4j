@@ -2,7 +2,6 @@ package dev.soffa.foundation.data;
 
 import com.google.common.base.Preconditions;
 import com.zaxxer.hikari.HikariDataSource;
-import dev.soffa.foundation.helper.ID;
 import dev.soffa.foundation.commons.Logger;
 import dev.soffa.foundation.commons.TextUtil;
 import dev.soffa.foundation.data.config.DataSourceProperties;
@@ -12,6 +11,7 @@ import dev.soffa.foundation.data.jdbi.ObjectArgumentFactory;
 import dev.soffa.foundation.data.jdbi.SerializableArgumentFactory;
 import dev.soffa.foundation.error.DatabaseException;
 import dev.soffa.foundation.error.TechnicalException;
+import dev.soffa.foundation.helper.ID;
 import dev.soffa.foundation.model.TenantId;
 import dev.soffa.foundation.multitenancy.TenantHolder;
 import org.checkerframework.checker.nullness.qual.NonNull;

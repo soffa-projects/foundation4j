@@ -5,6 +5,7 @@ import dev.soffa.foundation.commons.http.DefaultHttpClient;
 import dev.soffa.foundation.commons.http.HttpClient;
 import dev.soffa.foundation.commons.http.HttpResponse;
 import dev.soffa.foundation.error.TechnicalException;
+import dev.soffa.foundation.extra.notifications.slack.Block;
 import lombok.NoArgsConstructor;
 import org.checkerframework.com.google.common.collect.ImmutableMap;
 
@@ -16,6 +17,8 @@ import java.util.stream.Collectors;
 @NoArgsConstructor
 public class SlackNotificationAgent implements NotificationAgent {
 
+    private static final String TYPE = "type";
+
     private String webhook;
     private final HttpClient client = DefaultHttpClient.newInstance();
 
@@ -25,21 +28,17 @@ public class SlackNotificationAgent implements NotificationAgent {
 
     @Override
     public void notify(String message, Map<String, String> context) {
-        List<Map<String, Object>> blocks = new ArrayList<>();
-        blocks.add(ImmutableMap.of(
-            "type", "section",
-            "text", ImmutableMap.of("type", "mrkdwn", "text", message)
-        ));
+        List<Block> blocks = new ArrayList<>();
+        blocks.add(Block.section(Block.markdown(message)));
         if (context != null) {
-            blocks.add(ImmutableMap.of(
-                "type", "context",
-                "elements", context.entrySet().stream().map(e -> {
-                    return ImmutableMap.of(
-                        "type", "mrkdwn",
-                        "text", String.format("%s: %s", e.getKey(), e.getValue())
-                    );
-                }).collect(Collectors.toList())
-            ));
+            blocks.add(
+                new Block(
+                    "context",
+                    context.entrySet().stream().map(e -> Block.markdown(
+                        String.format("%s: %s", e.getKey(), e.getValue()))
+                    ).collect(Collectors.toList())
+                )
+            );
         }
         String payload = Mappers.JSON.serialize(ImmutableMap.of("blocks", blocks));
         HttpResponse response = client.post(webhook, payload);
