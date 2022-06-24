@@ -176,13 +176,17 @@ public class Context {
         if (auth == null) {
             return;
         }
+
         tenantId = auth.getTenantId();
+        tenantName = auth.getTenantName();
+
         if (auth.getApplication() != null && !auth.getApplication().isEmpty()) {
             applicationName = auth.getApplication();
         }
         applicationId = auth.getApplicationId();
+
         accountId = auth.getAccountId();
-        tenantName = auth.getTenantName();
+        accountName = auth.getAccountName();
     }
 
     public Optional<String> getUsername() {
@@ -200,6 +204,7 @@ public class Context {
     public Map<String, String> getContextMap() {
         Map<String, String> contextMap = new HashMap<>();
         contextMap.put("account_id", getAccountId());
+        contextMap.put("account_name", getAccountName());
         contextMap.put("application_name", getApplicationName());
         contextMap.put("application_id", getApplicationId());
         contextMap.put("tenant", getTenantId());

@@ -15,13 +15,18 @@ import java.util.Set;
 public class Authentication {
 
     private String userId;
-    private String application;
     private String username;
     private UserInfo profile;
+
     private String applicationId;
+    private String application;
+
     private String accountId;
+    private String accountName;
+
     private String tenantId;
     private String tenantName;
+
     private Set<String> roles;
     private Set<String> groups;
     private Set<String> permissions;

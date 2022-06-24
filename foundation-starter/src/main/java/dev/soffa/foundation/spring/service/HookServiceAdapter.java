@@ -63,8 +63,8 @@ public class HookServiceAdapter implements HookService {
             scheduler.enqueue(ProcessHookItem.class, new ProcessHookItemInput(
                     hookItem.getName(),
                     hookItem.getType(),
-                    Mappers.JSON_FULLACCESS.serialize(hookItem.getSpec()),
-                    Mappers.JSON_FULLACCESS.serialize(data)
+                    Mappers.JSON_FULLACCESS_SNAKE.serialize(hookItem.getSpec()),
+                    Mappers.JSON_FULLACCESS_SNAKE.serialize(data)
             ));
             LOG.info("Hook queued: %s.%s", operationId, hookItem.getName());
         }
@@ -91,7 +91,7 @@ public class HookServiceAdapter implements HookService {
     public void internalProcessItem(Context context, String type, String spec, String data) {
         Map<String, Object> mData = Mappers.JSON_FULLACCESS.deserializeMap(data);
         String tpl = TemplateHelper.render(spec, mData);
-        LOG.info("Processing hook [%s] with data -- %s", type, data);
+        LOG.info("Processing hook [%s]", type);
         if (Hook.EMAIL.equals(type)) {
             handleEmailHook(Mappers.YAML_FULLACCESS.deserialize(tpl, EmailHook.class));
             activities.record(context, EmailHook.class, data);
