@@ -31,6 +31,7 @@ public class QuestDBTcpProvider implements TimeSeriesProvider {
         private LineTcpSender sender;
 
         @Override
+        @SuppressWarnings("PMD.CloseResource")
         public void write(@NonNull List<DataPoint> points) {
             for (DataPoint point : points) {
                 AbstractLineSender ls = sender.metric(point.getMetric());
@@ -62,7 +63,7 @@ public class QuestDBTcpProvider implements TimeSeriesProvider {
     }
 
     @Override
-    public Writer getWriter(String _) {
+    public Writer getWriter(String ignore) {
         return new LocalWriter(new LineTcpSender(host, port, BUFFER_CAPACITY));
     }
 

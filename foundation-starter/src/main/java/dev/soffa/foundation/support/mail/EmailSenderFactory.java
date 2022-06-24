@@ -1,5 +1,7 @@
 package dev.soffa.foundation.support.mail;
 
+import com.hazelcast.org.slf4j.Logger;
+import com.hazelcast.org.slf4j.LoggerFactory;
 import dev.soffa.foundation.commons.TextUtil;
 import dev.soffa.foundation.commons.UrlInfo;
 import dev.soffa.foundation.error.ConfigurationException;
@@ -12,6 +14,7 @@ import java.util.Objects;
 
 public final class EmailSenderFactory {
 
+    private static final Logger LOG = LoggerFactory.getLogger(EmailSenderFactory.class);
     private EmailSenderFactory() {
     }
 
@@ -30,10 +33,12 @@ public final class EmailSenderFactory {
             config.setPort(uri.getPort());
             boolean hasTlS = Objects.equals(uri.param("tls", "enabled"), "disabled");
             config.setTls(hasTlS);
+            LOG.info("Using SMTP email sender with config: %s", uri.getHostname());
             return new SmtpEmailSender(config);
 
         } else if ("faker".equalsIgnoreCase(uri.getProtocol())) {
 
+            LOG.info("Using FakeEmailSender");
             return new FakeEmailSender();
 
         } else if ("sendgrid".equalsIgnoreCase(uri.getProtocol())) {
@@ -45,6 +50,7 @@ public final class EmailSenderFactory {
             if (TextUtil.isEmpty(apiKey)) {
                 throw new ConfigurationException("Unable to locate Sendgrid apiKey");
             }
+            LOG.info("Using SendgridEmailSender");
             return new SendgridEmailSender(apiKey, lDefaultSender);
         }
 

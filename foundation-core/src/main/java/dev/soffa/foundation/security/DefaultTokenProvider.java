@@ -122,7 +122,6 @@ public class DefaultTokenProvider implements TokenProvider, ClaimsExtractor {
         profile.setCity(token.lookupClaim("city", "location").orElse(null));
         profile.setCountry(token.lookupClaim("country", "countryId").orElse(null));
         profile.setGender(token.lookupClaim("gender", "sex", "sexe").orElse(null));
-        profile.setEmail(token.lookupClaim("email", "mail").orElse(null));
         profile.setPhoneNumber(token.lookupClaim("mobile", "mobileNumber", "phoneNumber", "phone").orElse(null));
         profile.setGivenName(token.lookupClaim("givenname", "given_name", "firstname", "first_name", "prenom").orElse(null));
         profile.setFamilyName(token.lookupClaim("familyname", "family_name", "lastName", "last_name").orElse(null));
@@ -155,6 +154,7 @@ public class DefaultTokenProvider implements TokenProvider, ClaimsExtractor {
             claims(token.getClaims()).
             liveMode(Boolean.parseBoolean(liveMode.toLowerCase())).
             username(token.getSubject()).
+            email(token.lookupClaim("email", "mail", "emailAddress", "email_address").orElse(null)).
             userId(token.lookupClaim("user_id", "userId").orElse(token.getSubject())).
             tenantId(tenant).
             tenantName(token.lookupClaim("tenantName", "tenant_name").orElse(null)).

@@ -17,7 +17,6 @@ dependencies {
     api("com.jayway.jsonpath:json-path:2.7.0")
     api("org.apache.commons:commons-text:1.9")
     implementation("com.github.f4b6a3:uuid-creator:4.6.1")
-
     api("org.glassfish:javax.el:3.0.0")
     api("commons-io:commons-io:2.11.0")
     api("com.squareup.okhttp3:okhttp:4.10.0")
@@ -30,10 +29,10 @@ dependencies {
     implementation("com.auth0:java-jwt:3.19.2")
     implementation("com.nimbusds:nimbus-jose-jwt:9.23")
     implementation("com.aventrix.jnanoid:jnanoid:2.0.0")
-    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:${property("jackson.version")}")
     implementation("com.github.michaelgantman:MgntUtils:1.6.0.3")
-    api("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:${property("jackson.version")}")
-    api("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:${property("jackson.version")}")
-    api("com.fasterxml.jackson.dataformat:jackson-dataformat-xml:${property("jackson.version")}")
+    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.13.3")
+    api("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.13.3")
+    api("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.13.3")
+    api("com.fasterxml.jackson.dataformat:jackson-dataformat-xml:2.13.3")
 
 }

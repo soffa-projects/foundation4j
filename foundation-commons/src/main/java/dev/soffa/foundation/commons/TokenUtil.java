@@ -120,4 +120,8 @@ public final class TokenUtil {
         return signedJWT.serialize();
     }
 
+
+    public static String createPaseto(String issuer, String subjet, Map<String, Object> claims, int ttlInMinutes) {
+        return null;
+    }
 }

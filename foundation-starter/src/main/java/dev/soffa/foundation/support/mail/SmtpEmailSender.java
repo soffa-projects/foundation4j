@@ -53,8 +53,12 @@ public class SmtpEmailSender implements EmailSender {
         } else {
             email.setFrom(config.getSender());
         }
-        email.setHtmlMsg(message.getHtmlMessage());
-        email.setTextMsg(message.getTextMessage());
+        if (TextUtil.isNotEmpty(message.getHtmlMessage())) {
+            email.setHtmlMsg(message.getHtmlMessage());
+        }
+        if (TextUtil.isNotEmpty(message.getTextMessage())) {
+            email.setTextMsg(message.getTextMessage());
+        }
         email.setSubject(message.getSubject());
 
         for (EmailAddress to : message.getTo()) {

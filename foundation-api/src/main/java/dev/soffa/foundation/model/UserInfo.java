@@ -10,6 +10,5 @@ public class UserInfo {
     private String gender;
     private String city;
     private String country;
-    private String email;
     private String phoneNumber;
 }

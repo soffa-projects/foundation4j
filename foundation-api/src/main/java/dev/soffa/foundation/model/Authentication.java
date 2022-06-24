@@ -16,6 +16,8 @@ public class Authentication {
 
     private String userId;
     private String username;
+    private String email;
+
     private UserInfo profile;
 
     private String applicationId;
