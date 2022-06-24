@@ -12,8 +12,6 @@ import dev.soffa.foundation.core.Command;
 import dev.soffa.foundation.core.Dispatcher;
 import dev.soffa.foundation.core.Operation;
 import dev.soffa.foundation.hooks.HookService;
-import dev.soffa.foundation.hooks.action.ProcessHook;
-import dev.soffa.foundation.hooks.action.ProcessHookItem;
 import dev.soffa.foundation.message.MessageFactory;
 import dev.soffa.foundation.message.pubsub.PubSubClient;
 import dev.soffa.foundation.multitenancy.TenantHolder;
@@ -74,7 +72,8 @@ public class OperationDispatcher implements Dispatcher {
         operation.validate(input, ctx);
         O res = operation.handle(input, ctx);
 
-        if (operation instanceof Command) {
+        boolean pkg = operation.getClass().getPackage().getName().startsWith("dev.soffa");
+        if (operation instanceof Command && pkg) {
             activities.record(ctx, operationName, input);
             try {
                 String pubSubOperation = ctx.getServiceName() + "." + TextUtil.snakeCase(operationName) + ".success";
