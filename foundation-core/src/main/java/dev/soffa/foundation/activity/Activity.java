@@ -6,10 +6,13 @@ import lombok.Data;
 public class Activity {
 
     private String event;
+    private String subject;
     private String data;
 
     public Activity(String event, String data) {
         this.event = event;
         this.data = data;
     }
+
+
 }

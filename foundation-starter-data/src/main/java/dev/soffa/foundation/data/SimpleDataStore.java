@@ -2,7 +2,7 @@ package dev.soffa.foundation.data;
 
 import com.google.common.base.Preconditions;
 import com.zaxxer.hikari.HikariDataSource;
-import dev.soffa.foundation.application.ID;
+import dev.soffa.foundation.helper.ID;
 import dev.soffa.foundation.commons.Logger;
 import dev.soffa.foundation.commons.TextUtil;
 import dev.soffa.foundation.data.config.DataSourceProperties;

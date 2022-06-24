@@ -1,6 +1,6 @@
 package dev.soffa.foundation.starter.test;
 
-import dev.soffa.foundation.application.ID;
+import dev.soffa.foundation.helper.ID;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;

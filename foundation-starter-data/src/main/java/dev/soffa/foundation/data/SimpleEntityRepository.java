@@ -120,19 +120,17 @@ public class SimpleEntityRepository<E> implements EntityRepository<E> {
     public int delete(Criteria criteria) {
         return ds.delete(resolveTenant(), entityClass, criteria);
     }
-    
+
     protected TenantId resolveTenant() {
         return lockedTenant;
     }
 
     protected TenantId resolveTenant(TenantId tenant) {
-        if (tenant==null || TextUtil.isEmpty(tenant.getValue())) {
-            return lockedTenant;
+        if (tenant != null && tenant != TenantId.CONTEXT) {
+            return tenant;
         }
-        return tenant;
+        return lockedTenant;
     }
-    
-    
 
 
 }

@@ -6,6 +6,7 @@ import dev.soffa.foundation.commons.Mappers;
 import dev.soffa.foundation.commons.Sentry;
 import dev.soffa.foundation.commons.TemplateHelper;
 import dev.soffa.foundation.context.Context;
+import dev.soffa.foundation.error.ResourceNotFoundException;
 import dev.soffa.foundation.extra.notifications.NotificationAgent;
 import dev.soffa.foundation.hooks.HookService;
 import dev.soffa.foundation.hooks.action.ProcessHookItem;
@@ -16,11 +17,13 @@ import dev.soffa.foundation.model.EmailAddress;
 import dev.soffa.foundation.scheduling.Scheduler;
 import lombok.AllArgsConstructor;
 import lombok.SneakyThrows;
+import org.checkerframework.checker.nullness.qual.NonNull;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Component;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
@@ -54,19 +57,22 @@ public class HookServiceAdapter implements HookService {
     }
 
     @Override
-    public void enqueue(String operationId, String subject, Map<String, Object> data) {
-        Hook hook = getHook(operationId);
-        if (NO_HOOK.equals(hook)) {
-            return;
+    public void enqueue(@NonNull String hook, @NonNull String subject, @NonNull Map<String,Object> data, @NonNull Context context) {
+        Hook lhook = getHook(hook);
+        if (NO_HOOK.equals(lhook)) {
+            throw new ResourceNotFoundException("Hook not found: " + hook);
         }
-        for (HookItem hookItem : hook.getPost()) {
-            scheduler.enqueue(ProcessHookItem.class, new ProcessHookItemInput(
+        Map<String,Object> ldata = new HashMap<>();
+        ldata.putAll(data);
+        ldata.put("context", context.getContextMap());
+        for (HookItem hookItem : lhook.getPost()) {
+            scheduler.enqueue(subject, ProcessHookItem.class, new ProcessHookItemInput(
                     hookItem.getName(),
                     hookItem.getType(),
                     Mappers.JSON_FULLACCESS_SNAKE.serialize(hookItem.getSpec()),
-                    Mappers.JSON_FULLACCESS_SNAKE.serialize(data)
-            ));
-            LOG.info("Hook queued: %s.%s", operationId, hookItem.getName());
+                    Mappers.JSON_FULLACCESS_SNAKE.serialize(ldata)
+            ), context);
+            LOG.info("Hook queued: %s.%s", hook, hookItem.getName());
         }
     }
 
@@ -113,7 +119,7 @@ public class HookServiceAdapter implements HookService {
 
     private void handleNotificationHook(NotificationHook hook) {
         NotificationAgent sender = context.getBean(NotificationAgent.class);
-        sender.notify(hook.getMessage());
+        sender.notify(hook.getMessage(), hook.getContext());
     }
 
 

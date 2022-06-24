@@ -1,5 +1,6 @@
 package dev.soffa.foundation;
 
+import com.google.common.collect.ImmutableMap;
 import dev.soffa.foundation.extra.notifications.NoopNotificationAgent;
 import dev.soffa.foundation.extra.notifications.NotificationAgent;
 import dev.soffa.foundation.extra.notifications.SlackNotificationAgent;
@@ -14,13 +15,13 @@ public class NotificationAgentTest {
     @EnabledIfEnvironmentVariable(named = "SLACK_WEBHOOK", matches = ".*")
     public void test() {
         NotificationAgent agent = new SlackNotificationAgent(System.getenv("SLACK_WEBHOOK"));
-        agent.notify("Hello world");
+        agent.notify("Hello world", ImmutableMap.of("field1", "*value2*"));
     }
 
     @Test
     public void testNoopAgent() {
         NotificationAgent agent = new NoopNotificationAgent();
-        agent.notify("Hello world");
+        agent.notify("Hello world", ImmutableMap.of());
         assertNotNull(agent);
     }
 

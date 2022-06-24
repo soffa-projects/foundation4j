@@ -2,7 +2,7 @@ package dev.soffa.foundation.spring.config.hazelcast;
 
 import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.flakeidgen.FlakeIdGenerator;
-import dev.soffa.foundation.application.ID;
+import dev.soffa.foundation.helper.ID;
 import dev.soffa.foundation.commons.Hashids;
 import dev.soffa.foundation.commons.IdGenerator;
 import dev.soffa.foundation.config.AppConfig;

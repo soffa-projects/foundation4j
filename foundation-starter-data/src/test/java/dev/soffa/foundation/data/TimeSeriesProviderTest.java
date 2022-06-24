@@ -1,6 +1,6 @@
 package dev.soffa.foundation.data;
 
-import dev.soffa.foundation.application.ID;
+import dev.soffa.foundation.helper.ID;
 import dev.soffa.foundation.commons.DateUtil;
 import dev.soffa.foundation.commons.RandomUtil;
 import dev.soffa.foundation.data.analytics.InfluxDataProvider;

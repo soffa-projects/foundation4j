@@ -16,7 +16,6 @@ import dev.soffa.foundation.hooks.action.ProcessHook;
 import dev.soffa.foundation.hooks.action.ProcessHookItem;
 import dev.soffa.foundation.message.MessageFactory;
 import dev.soffa.foundation.message.pubsub.PubSubClient;
-import dev.soffa.foundation.model.EventModel;
 import dev.soffa.foundation.multitenancy.TenantHolder;
 import lombok.AllArgsConstructor;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -25,7 +24,6 @@ import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -71,25 +69,13 @@ public class OperationDispatcher implements Dispatcher {
     @Transactional
     protected <I, O, T extends Operation<I, O>> O apply(T operation, I input, @NonNull Context ctx) {
         String operationName = operations.getOperationId(operation);
-        String operationId = TextUtil.snakeCase(operationName);
         LOG.info("Invoking operation %s with tenant %s", operationName, ctx.getTenant());
 
         operation.validate(input, ctx);
         O res = operation.handle(input, ctx);
-        // operation.postHandle(res, ctx);
 
         if (!(operation instanceof ProcessHook || operation instanceof ProcessHookItem)) {
-            String messageId = null;
-            if (res instanceof EventModel) {
-                messageId = operationId + "." + ((EventModel) res).getId();
-            }
             activities.record(ctx, operationName, input);
-            Map<String, Object> data = new HashMap<>();
-            data.put("context", ctx.getContextMap());
-            if (res != null) {
-                data.put("data", res);
-            }
-            hooks.enqueue(operationId, messageId, data);
         }
 
         if (operation instanceof Command) {

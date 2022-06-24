@@ -1,4 +1,4 @@
-package dev.soffa.foundation.application;
+package dev.soffa.foundation.helper;
 
 import dev.soffa.foundation.commons.DefaultIdGenerator;
 import dev.soffa.foundation.commons.IdGenerator;
