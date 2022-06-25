@@ -7,7 +7,7 @@ import dev.soffa.foundation.extra.journal.JournalRepository;
 import org.springframework.stereotype.Component;
 
 @Component
-public class JournalRepositoryImpl extends SimpleEntityRepository<Journal> implements JournalRepository {
+public class JournalRepositoryImpl extends SimpleEntityRepository<Journal, String> implements JournalRepository {
 
     public JournalRepositoryImpl(DB db) {
         super(db, Journal.class);

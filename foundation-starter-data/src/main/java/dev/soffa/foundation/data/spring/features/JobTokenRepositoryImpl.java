@@ -13,7 +13,7 @@ import java.util.function.Function;
 
 
 @Component
-public class JobTokenRepositoryImpl extends SimpleEntityRepository<PendingJob> implements JobTokenRepository {
+public class JobTokenRepositoryImpl extends SimpleEntityRepository<PendingJob, String> implements JobTokenRepository {
 
     private static final Logger LOG = Logger.get(JobTokenRepository.class);
     private static final String OPERATION = "operation";

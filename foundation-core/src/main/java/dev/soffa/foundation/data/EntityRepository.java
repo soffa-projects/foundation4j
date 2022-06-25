@@ -1,46 +1,16 @@
 package dev.soffa.foundation.data;
 
 import com.google.common.collect.ImmutableMap;
-import dev.soffa.foundation.commons.Logger;
-import dev.soffa.foundation.commons.RandomUtil;
-import dev.soffa.foundation.commons.TextUtil;
-import dev.soffa.foundation.error.FunctionalException;
 import dev.soffa.foundation.model.TenantId;
 
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-@SuppressWarnings("UnusedReturnValue")
-public interface EntityRepository<E> {
-
-    int SHORT_ID_RETRIES_TRESHOLD_1 = 10;
-    int SHORT_ID_RETRIES_TRESHOLD_2 = 50;
-
-    default String shortId(String prefix, int length, int maxLength) {
-        int count = 0;
-        while (true) {
-            String id = TextUtil.join("_", prefix, RandomUtil.nextString(length).toLowerCase());
-            if (!exists(id)) {
-                return id;
-            }
-            count++;
-            if (count == SHORT_ID_RETRIES_TRESHOLD_1) {
-                Logger logger = Logger.get(getClass());
-                if (length == maxLength) {
-                    logger.warn("Could not generate unique id after 10 tries with length to %d", length);
-                } else {
-                    logger.warn("Could not generate unique id after 10 tries, increasing length to %d", length);
-                    return shortId(prefix, length + 1, maxLength);
-                }
-            } else if (count == SHORT_ID_RETRIES_TRESHOLD_2) {
-                throw new FunctionalException("Could not generate unique id after 50 tries");
-            }
-        }
-    }
+@SuppressWarnings({"UnusedReturnValue", "unused"})
+public interface EntityRepository<E, I> {
 
     long count();
-
 
     default long count(Map<String, Object> filter) {
         return count(Criteria.of(filter));
@@ -79,11 +49,11 @@ public interface EntityRepository<E> {
         return get(tenant, Criteria.of(filter));
     }
 
-    E get(Object id);
+    E get(I id);
 
-    Optional<E> findById(Object id);
+    Optional<E> findById(I id);
 
-    Optional<E> findById(TenantId tenant, Object id);
+    Optional<E> findById(TenantId tenant, I id);
 
     E insert(E entity);
 
@@ -111,7 +81,7 @@ public interface EntityRepository<E> {
         return count(criteria) > 0;
     }
 
-    default boolean exists(String id) {
+    default boolean exists(I id) {
         return exists(ImmutableMap.of("id", id));
     }
 

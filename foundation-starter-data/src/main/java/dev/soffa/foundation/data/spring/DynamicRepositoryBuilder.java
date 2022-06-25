@@ -62,8 +62,8 @@ class DynamicRepositoryBuilder {
             String collection = res.collection();
             String tenant = res.fixedTenant();
             Class<?>[] parameterizedTypes = ClassUtil.lookupGeneric(resourceClass, EntityRepository.class);
-            Preconditions.checkArgument(parameterizedTypes != null && parameterizedTypes.length == 1, "Entity class not found for repository %s", resourceClass);
-            SimpleEntityRepository<?> repo = new SimpleEntityRepository<>(sds, parameterizedTypes[0], collection, tenant);
+            Preconditions.checkArgument(parameterizedTypes != null && parameterizedTypes.length == 2, "Entity class not found for repository %s", resourceClass);
+            SimpleEntityRepository<?, ?> repo = new SimpleEntityRepository<>(sds, parameterizedTypes[0], collection, tenant);
 
             AtomicReference<MethodHandles.Lookup> instance = new AtomicReference<>(null);
             if (JavaUtil.isJava8()) {

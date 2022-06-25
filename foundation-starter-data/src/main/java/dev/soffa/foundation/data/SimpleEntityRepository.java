@@ -7,7 +7,7 @@ import dev.soffa.foundation.model.TenantId;
 import java.util.List;
 import java.util.Optional;
 
-public class SimpleEntityRepository<E> implements EntityRepository<E> {
+public class SimpleEntityRepository<E, I> implements EntityRepository<E, I> {
 
     private final DataStore ds;
     private final Class<E> entityClass;
@@ -77,7 +77,7 @@ public class SimpleEntityRepository<E> implements EntityRepository<E> {
     }
 
     @Override
-    public Optional<E> findById(Object id) {
+    public Optional<E> findById(I id) {
         return ds.findById(resolveTenant(), entityClass, id);
     }
 

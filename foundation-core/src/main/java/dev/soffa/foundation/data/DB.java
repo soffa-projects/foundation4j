@@ -62,7 +62,7 @@ public interface DB {
         throw new TodoException("Implement me");
     }
 
-    default <E> EntityRepository<E> newEntityRepository(Class<E> entityClass) {
+    default <E, ID> EntityRepository<E, ID> newEntityRepository(Class<E> entityClass) {
         throw new TodoException("Implement me");
     }
 

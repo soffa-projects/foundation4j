@@ -8,7 +8,7 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 
 import java.util.function.Supplier;
 
-public interface JournalRepository extends EntityRepository<Journal> {
+public interface JournalRepository extends EntityRepository<Journal, String> {
 
     default void log(Context context, @NonNull String kind, @NonNull Object subject, @NonNull String event) {
         insert(

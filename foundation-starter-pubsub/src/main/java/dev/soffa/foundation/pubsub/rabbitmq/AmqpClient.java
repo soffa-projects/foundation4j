@@ -1,6 +1,5 @@
 package dev.soffa.foundation.pubsub.rabbitmq;
 
-import dev.soffa.foundation.commons.Logger;
 import dev.soffa.foundation.commons.Mappers;
 import dev.soffa.foundation.message.Message;
 import dev.soffa.foundation.message.MessageHandler;
@@ -20,7 +19,6 @@ import static dev.soffa.foundation.pubsub.rabbitmq.AmqpUtil.TOPIC;
 
 public class AmqpClient extends AbstractPubSubClient implements PubSubClient {
 
-    private static final Logger LOG = Logger.get(AmqpClient.class);
     private final PubSubClientConfig config;
     private final RabbitAdmin rabbitAdmin;
     private final List<SimpleMessageListenerContainer> listeners = new ArrayList<>();
