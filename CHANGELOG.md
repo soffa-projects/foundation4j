@@ -6,15 +6,28 @@ All notable changes to this project will be documented in this file.
 Le format utilisé se base sur [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 et le versioning du projet respect les règles  [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.14.11] - 2022-06-23
+
+### Changed
+
+- Improved Scheduling
+- Logs cleanup
+
 ## [0.14.0] - 2022-06-23
+
+### Added
 
 - Hooks
 
 ## [0.13.6] - 2022-06-20
 
+### Added
+
 - Hateos integration (annotation based)
 
 ## [0.13.2] - 2022-06-19
+
+### Added
 
 - NotificationAgent (Contract)
 - NotificationAgent (Slack implementation)

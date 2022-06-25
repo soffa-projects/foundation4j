@@ -64,7 +64,7 @@ public final class HttpUtil {
             .followSslRedirects(true);
 
         if (trustAll) {
-            LOG.info("Trust all certificates");
+            LOG.info("HttpClient is configured to trust all certificates");
             final TrustManager[] trustAllCerts = {new TrustAllManager()};
             final SSLContext sslContext = SSLContext.getInstance("SSL");
             sslContext.init(null, trustAllCerts, new java.security.SecureRandom());
@@ -74,7 +74,7 @@ public final class HttpUtil {
         }
 
         if (TextUtil.isNotEmpty(proxy)) {
-            LOG.info("Using http proxy: %s", proxy);
+            LOG.info("HttpClient is using proxy: %s", proxy);
             URL parsedUrl = new URL(proxy);
             Proxy p = new Proxy(Proxy.Type.HTTP, new InetSocketAddress(parsedUrl.getHost(), parsedUrl.getPort()));
             String userInfo = parsedUrl.getUserInfo();

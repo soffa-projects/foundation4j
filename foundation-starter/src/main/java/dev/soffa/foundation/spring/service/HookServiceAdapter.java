@@ -83,7 +83,6 @@ public class HookServiceAdapter implements HookService {
 
         int count = 0;
         for (HookItem item : hook.getPost()) {
-            LOG.info("Processing hook-item: %s.%s", input.getOperationId(), item.getType());
             internalProcessItem(
                 item.getType(),
                 Mappers.JSON_FULLACCESS.serialize(item.getSpec()),
@@ -91,8 +90,6 @@ public class HookServiceAdapter implements HookService {
             );
             count++;
         }
-        LOG.info("%d hooks processed", count);
-
         return count;
     }
 

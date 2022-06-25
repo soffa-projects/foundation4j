@@ -3,7 +3,6 @@ package dev.soffa.foundation.spring.service;
 import dev.soffa.foundation.activity.ActivityService;
 import dev.soffa.foundation.annotation.DefaultTenant;
 import dev.soffa.foundation.commons.Logger;
-import dev.soffa.foundation.commons.Mappers;
 import dev.soffa.foundation.commons.Sentry;
 import dev.soffa.foundation.commons.TextUtil;
 import dev.soffa.foundation.config.OperationsMapping;
@@ -69,17 +68,13 @@ public class OperationDispatcher implements Dispatcher {
 
     @Transactional
     protected <I, O, T extends Operation<I, O>> O apply(T operation, I input, @NonNull Context ctx) {
-
         String operationName = operations.getOperationId(operation);
-        LOG.info("Invoking operation %s with tenant %s", operationName, ctx.getTenant());
-
         O res;
         try {
             operation.validate(input, ctx);
             res = operation.handle(input, ctx);
-            Logger.getInstance().info("Operation processed %s -- %s", operationName, Mappers.JSON.serialize(input));
         }catch (Exception e) {
-            Logger.getInstance().error("Error while executing operation %s", operationName, Mappers.JSON.serialize(input), e);
+            Logger.getInstance().error("Error while executing operation %s", operationName, e);
             throw e;
         }
 
@@ -88,7 +83,6 @@ public class OperationDispatcher implements Dispatcher {
             try {
                 String pubSubOperation = ctx.getServiceName() + "." + TextUtil.snakeCase(operationName) + ".success";
                 pubSubClient.broadcast(MessageFactory.create(pubSubOperation, res));
-                LOG.info("Operation success event published: %s", pubSubOperation);
             } catch (Exception e) {
                 Sentry.getInstance().captureException(e);
                 LOG.error("Failed to publish operation success", e);

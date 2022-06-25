@@ -62,7 +62,6 @@ public class AmqpClient extends AbstractPubSubClient implements PubSubClient {
         container.setMessageListener(message -> {
             //EL
             messageHandler.handle(Mappers.JSON.deserialize(message.getBody(), Message.class));
-            LOG.info("Message processed: %s", message.getMessageProperties().getDeliveryTag());
         });
         listeners.add(container);
         container.start();
@@ -80,7 +79,6 @@ public class AmqpClient extends AbstractPubSubClient implements PubSubClient {
             // Message should go to TOPIC exchange
             target = target + TOPIC;
         }
-        LOG.info("[amqp] Publishing message to %s", target);
         this.rabbitAdmin.getRabbitTemplate().convertAndSend(
             target,
             "", Mappers.JSON.serialize(message));

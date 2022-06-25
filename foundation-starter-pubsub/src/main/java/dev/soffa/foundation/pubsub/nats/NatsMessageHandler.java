@@ -36,8 +36,6 @@ public class NatsMessageHandler implements MessageHandler {
             return;
         }
         boolean sendReply = !msg.isJetStream() && TextUtil.isNotEmpty(msg.getReplyTo());
-        LOG.info("Message received: SID=%s Jetstream:%s", msg.getSID(), msg.isJetStream());
-
         dev.soffa.foundation.message.Message message;
 
         try {
@@ -64,7 +62,6 @@ public class NatsMessageHandler implements MessageHandler {
                     connection.publish(msg.getReplyTo(), msg.getSubject(), Mappers.JSON.serializeAsBytes(response));
                 }
             }
-            LOG.info("Message SID=%s processed with no error", msg.getSID());
         } catch (Exception e) {
             LOG.error("Nats event handling failed with error", e);
             if (e instanceof ManagedException) {

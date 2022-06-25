@@ -52,15 +52,6 @@ public class HateosEntityControllerAdvice implements ResponseBodyAdvice<Object> 
             return body;
         }
 
-        if (LOG.isInfoEnabled()) {
-            Map<String, String> hd = request.getHeaders().toSingleValueMap();
-            LOG.info("Writing hateos links for %s", body.getClass().getName());
-            LOG.info("RemoteAddr", request.getRemoteAddress().getHostName());
-            LOG.info("X-Forwarded-For: %s", hd.get("x-forwarded-for"));
-            LOG.info("X-Forwarded-Hos: %s", hd.get("x-forwarded-host"));
-            LOG.info("X-Forwarded-Proto: %s", hd.get("x-forwarded-proto"));
-        }
-
         Map<String, HateosLink> links = ImmutableMap.of(
             "self", new HateosLink(rewriteInternalLink(request.getURI()))
         );
