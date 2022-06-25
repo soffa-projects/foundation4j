@@ -54,6 +54,9 @@ public class OperationDispatcher implements Dispatcher {
         }
 
         String className = operation.getClass().getName();
+
+        Logger.getInstance().info("Dispatching operation: %s", className);
+
         if (!DEFAULTS.containsKey(className)) {
             DEFAULTS.put(className, AnnotationUtils.findAnnotation(operation.getClass(), DefaultTenant.class) != null);
         }
@@ -69,8 +72,14 @@ public class OperationDispatcher implements Dispatcher {
         String operationName = operations.getOperationId(operation);
         LOG.info("Invoking operation %s with tenant %s", operationName, ctx.getTenant());
 
-        operation.validate(input, ctx);
-        O res = operation.handle(input, ctx);
+        O res;
+        try {
+            operation.validate(input, ctx);
+            res = operation.handle(input, ctx);
+        }catch (Exception e) {
+            Logger.getInstance().error("Error while executing operation %s", operationName, e);
+            throw e;
+        }
 
         boolean pkg = operation.getClass().getPackage().getName().startsWith("dev.soffa");
         if (operation instanceof Command && pkg) {

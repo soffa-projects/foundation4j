@@ -33,6 +33,10 @@ public final class Logger {
         this.tag = tag;
     }
 
+    public static Logger getInstance() {
+        return appLogger;
+    }
+
     public static void withContext(Map<String, String> context, Consumer<Logger> consumer) {
         withContext(context, logger -> {
             consumer.accept(appLogger);

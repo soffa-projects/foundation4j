@@ -1,6 +1,5 @@
 package dev.soffa.foundation.starter.test;
 
-import dev.soffa.foundation.activity.ActivityService;
 import dev.soffa.foundation.commons.Mappers;
 import dev.soffa.foundation.model.Token;
 import dev.soffa.foundation.model.TokenType;
@@ -40,9 +39,6 @@ public class EchoResourceTest {
     @Autowired
     private TokenProvider tokenProvider;
 
-    @Autowired
-    private ActivityService activities;
-
     @Test
     public void testListener() {
         Assertions.assertTrue(ApplicationListener.onApplicationReadyCalled.get());
@@ -54,8 +50,6 @@ public class EchoResourceTest {
     public void testDynamicResource() {
         assertNotNull(resource);
         assertNotNull(echoUseCase);
-        long echoCount = activities.count(Echo.class.getSimpleName());
-
 
         HttpExpect client = new HttpExpect(mockMvc);
         client.get("/v3/api-docs")
@@ -93,15 +87,6 @@ public class EchoResourceTest {
 
         client.get("/v1.2/messages")
                 .expect().isOK();
-
-        assertEquals(echoCount + 2, activities.count(Echo.class.getSimpleName()));
-
-        client.get("/_activities/Echo/count")
-                .expect().isOK()
-                .json(t -> {
-                    t.eq("name", "Echo");
-                    t.eq("count", 2);
-                });
     }
 
     @SneakyThrows

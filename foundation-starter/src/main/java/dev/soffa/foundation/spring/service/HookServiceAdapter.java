@@ -1,6 +1,5 @@
 package dev.soffa.foundation.spring.service;
 
-import dev.soffa.foundation.activity.ActivityService;
 import dev.soffa.foundation.commons.Logger;
 import dev.soffa.foundation.commons.Mappers;
 import dev.soffa.foundation.commons.Sentry;
@@ -39,12 +38,11 @@ public class HookServiceAdapter implements HookService {
     private final ResourceLoader rLoader;
     private final ApplicationContext context;
     private final Scheduler scheduler;
-    private final ActivityService activities;
 
     @Override
     public int process(Context context, ProcessHookInput input) {
         try {
-            return internalProcess(context, input);
+            return internalProcess( input);
         } catch (Exception e) {
             Sentry.getInstance().captureException(e);
             throw e;
@@ -53,57 +51,61 @@ public class HookServiceAdapter implements HookService {
 
     @Override
     public void process(Context context, ProcessHookItemInput input) {
-        internalProcessItem(context, input.getType(), input.getSpec(), input.getData());
+        internalProcessItem(input.getType(), input.getSpec(), input.getData());
     }
 
     @Override
-    public void enqueue(@NonNull String hook, @NonNull String subject, @NonNull Map<String,Object> data, @NonNull Context context) {
+    public void enqueue(@NonNull String hook, @NonNull String subject, @NonNull Map<String, Object> data, @NonNull Context context) {
+
         Hook lhook = getHook(hook);
         if (NO_HOOK.equals(lhook)) {
             throw new ResourceNotFoundException("Hook not found: " + hook);
         }
-        Map<String,Object> ldata = new HashMap<>();
-        ldata.putAll(data);
+        LOG.info("Hook enqueued %s", hook);
+
+        Map<String, Object> ldata = new HashMap<>(data);
         ldata.put("context", context.getContextMap());
         for (HookItem hookItem : lhook.getPost()) {
             scheduler.enqueue(subject, ProcessHookItem.class, new ProcessHookItemInput(
-                    hookItem.getName(),
-                    hookItem.getType(),
-                    Mappers.JSON_FULLACCESS_SNAKE.serialize(hookItem.getSpec()),
-                    Mappers.JSON_FULLACCESS_SNAKE.serialize(ldata)
+                hookItem.getName(),
+                hookItem.getType(),
+                Mappers.JSON_FULLACCESS_SNAKE.serialize(hookItem.getSpec()),
+                Mappers.JSON_FULLACCESS_SNAKE.serialize(ldata)
             ), context);
             LOG.info("Hook queued: %s.%s", hook, hookItem.getName());
         }
     }
 
-    private int internalProcess(Context context, ProcessHookInput input) {
+    private int internalProcess(ProcessHookInput input) {
+
         Hook hook = getHook(input.getOperationId());
         if (NO_HOOK.equals(hook)) {
+            LOG.warn("No hook found to process:: %s", input.getOperationId());
             return 0;
         }
+
         int count = 0;
         for (HookItem item : hook.getPost()) {
+            LOG.info("Processing hook-item: %s.%s", input.getOperationId(), item.getType());
             internalProcessItem(
-                    context, item.getType(),
-                    Mappers.JSON_FULLACCESS.serialize(item.getSpec()),
-                    input.getData()
+                item.getType(),
+                Mappers.JSON_FULLACCESS.serialize(item.getSpec()),
+                input.getData()
             );
-            activities.record(context, Hook.class, null);
             count++;
         }
+        LOG.info("%d hooks processed", count);
+
         return count;
     }
 
-    public void internalProcessItem(Context context, String type, String spec, String data) {
+    public void internalProcessItem(String type, String spec, String data) {
         Map<String, Object> mData = Mappers.JSON_FULLACCESS.deserializeMap(data);
         String tpl = TemplateHelper.render(spec, mData);
-        LOG.info("Processing hook [%s]", type);
         if (Hook.EMAIL.equals(type)) {
             handleEmailHook(Mappers.YAML_FULLACCESS.deserialize(tpl, EmailHook.class));
-            activities.record(context, EmailHook.class, data);
         } else if (Hook.NOTIFICATION.equals(type)) {
             handleNotificationHook(Mappers.YAML_FULLACCESS.deserialize(tpl, NotificationHook.class));
-            activities.record(context, NotificationHook.class, data);
         } else {
             LOG.error("Hook type not supported: %s", type);
         }

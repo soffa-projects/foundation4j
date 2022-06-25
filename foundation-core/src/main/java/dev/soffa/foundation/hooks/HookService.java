@@ -7,8 +7,8 @@ import dev.soffa.foundation.hooks.model.ProcessHookItemInput;
 
 public interface HookService extends Hooks{
 
-    Hook getHook(String operationId);
 
+    Hook getHook(String operationId);
     int process(Context context, ProcessHookInput input);
     void process(Context context, ProcessHookItemInput input);
 

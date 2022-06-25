@@ -232,7 +232,6 @@ public class DefaultTokenProvider implements TokenProvider, ClaimsExtractor {
             for (Map.Entry<String, Claim> entry : baseClaims.entrySet()) {
                 Object value = getClaimValue(entry.getValue());
                 if (value != null) {
-                    LOG.debug("Claim set %s = %s", entry.getKey(), value);
                     claims.put(entry.getKey(), value);
                 }
             }
