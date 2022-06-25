@@ -9,10 +9,6 @@ public interface Operation<I, O> {
 
     O handle(I input, @NonNull Context ctx);
 
-    default O handle(@NonNull Context ctx) {
-        return handle(null, ctx);
-    }
-
     default void validate(I input, @NonNull Context ctx) {
         // do nothing
     }

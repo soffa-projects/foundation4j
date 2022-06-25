@@ -22,4 +22,10 @@ public class SpringConfigManager implements ConfigManager {
         Bindable<T> target = Bindable.ofInstance(ClassUtil.newInstance(kind));
         return binder.bind(prefix, target).get();
     }
+
+    @Override
+    public String require(String name) {
+        return env.getRequiredProperty(name);
+    }
+
 }

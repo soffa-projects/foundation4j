@@ -39,12 +39,11 @@ public class OperationsMapping {
 
     @SuppressWarnings("unchecked")
     public <I, O, T extends Operation<I, O>> T invoke(String name) {
-        return (T) require(name).handle(Context.create());
+        return (T) require(name).handle(null, Context.create());
     }
 
-    @SuppressWarnings("unchecked")
     public void send(String name) {
-        require(name).handle(Context.create());
+        require(name).handle(null, Context.create());
     }
 
     @SuppressWarnings("unchecked")

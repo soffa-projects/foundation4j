@@ -87,4 +87,6 @@ public interface DataStore {
 
     <E> List<E> findAll(TenantId tenant, Class<E> entityClass);
 
+    <T> List<T> query(String query, Class<T> resultClass);
+
 }

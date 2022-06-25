@@ -33,7 +33,7 @@ public class SimpleRepository<E, I> implements EntityRepository<E, I> {
         }
     }
     public SimpleRepository(DB db, Class<E> entityClass, String tableName, String tenant) {
-        this(new SimpleDataStore(db), entityClass, tenant);
+        this(new SimpleDataStore(db), entityClass, tableName, tenant);
     }
 
     @SuppressWarnings("unchecked")
