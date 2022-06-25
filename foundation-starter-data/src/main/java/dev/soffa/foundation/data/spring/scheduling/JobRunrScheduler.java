@@ -7,13 +7,13 @@ import dev.soffa.foundation.core.Operation;
 import dev.soffa.foundation.multitenancy.TenantHolder;
 import dev.soffa.foundation.scheduling.Scheduler;
 import dev.soffa.foundation.scheduling.ServiceWorker;
+import org.jobrunr.jobs.JobId;
 import org.jobrunr.scheduling.JobScheduler;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Component;
 
-import java.util.Optional;
 import java.util.UUID;
 
 @Component
@@ -42,10 +42,11 @@ class JobRunrScheduler implements Scheduler {
         if (dispatcher == null) {
             dispatcher = context.getBeansOfType(Dispatcher.class).values().iterator().next();
         }
-        TenantHolder.useDefault(() -> {
-            jobScheduler.enqueue(uuid, () -> dispatcher.dispatch(operationClass, input, ctx));
-            return Optional.empty();
+        JobId jobId = TenantHolder.useDefault(() -> {
+            // EL
+            return jobScheduler.enqueue(uuid, () -> dispatcher.dispatch(operationClass, input, ctx));
         });
+        Logger.getInstance().info("Operation scheduled: %s --> %s", operationClass.getSimpleName(), jobId);
     }
 
 }

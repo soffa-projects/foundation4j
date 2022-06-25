@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public final class ProcessHookItemInput {
 
+    private String operation;
     private String name;
     private String type;
     private String spec;

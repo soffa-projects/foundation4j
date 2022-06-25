@@ -61,13 +61,15 @@ public class HookServiceAdapter implements HookService {
         Map<String, Object> ldata = new HashMap<>(data);
         ldata.put("context", context.getContextMap());
         for (HookItem hookItem : lhook.getPost()) {
-            scheduler.enqueue(DigestUtil.makeUUID(hookItem.getName() + ":" + subject), ProcessHookItem.class, new ProcessHookItemInput(
+            String uuid = hook + ":" + subject + ":" + hookItem.getName();
+            scheduler.enqueue(DigestUtil.makeUUID(uuid), ProcessHookItem.class, new ProcessHookItemInput(
+                hook,
                 hookItem.getName(),
                 hookItem.getType(),
                 Mappers.JSON_FULLACCESS_SNAKE.serialize(hookItem.getSpec()),
                 Mappers.JSON_FULLACCESS_SNAKE.serialize(ldata)
             ), context);
-            LOG.info("Hook queued: %s.%s", hook, hookItem.getName());
+            LOG.info("Hook queued: %s.%s [%s]", hook, hookItem.getName(), uuid);
         }
     }
 

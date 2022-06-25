@@ -1,5 +1,6 @@
 package dev.soffa.foundation.extra.notifications;
 
+import dev.soffa.foundation.commons.Logger;
 import dev.soffa.foundation.commons.Mappers;
 import dev.soffa.foundation.commons.http.DefaultHttpClient;
 import dev.soffa.foundation.commons.http.HttpClient;
@@ -43,6 +44,7 @@ public class SlackNotificationAgent implements NotificationAgent {
         String payload = Mappers.JSON.serialize(ImmutableMap.of("blocks", blocks));
         HttpResponse response = client.post(webhook, payload);
         if (!response.isOK()) {
+            Logger.getInstance().info("Slack notification failed: %s", response.getBody());
             throw new TechnicalException("Slack notification failed: " + response.getBody());
         } else {
             COUNTER.incrementAndGet();

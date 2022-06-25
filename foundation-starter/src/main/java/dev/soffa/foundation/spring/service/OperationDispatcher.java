@@ -3,6 +3,7 @@ package dev.soffa.foundation.spring.service;
 import dev.soffa.foundation.activity.ActivityService;
 import dev.soffa.foundation.annotation.DefaultTenant;
 import dev.soffa.foundation.commons.Logger;
+import dev.soffa.foundation.commons.Mappers;
 import dev.soffa.foundation.commons.Sentry;
 import dev.soffa.foundation.commons.TextUtil;
 import dev.soffa.foundation.config.OperationsMapping;
@@ -53,9 +54,8 @@ public class OperationDispatcher implements Dispatcher {
             return null;
         }
 
-        String className = operation.getClass().getName();
+        String className = operation.getClass().getSimpleName();
 
-        Logger.getInstance().info("Dispatching operation: %s", className);
 
         if (!DEFAULTS.containsKey(className)) {
             DEFAULTS.put(className, AnnotationUtils.findAnnotation(operation.getClass(), DefaultTenant.class) != null);
@@ -69,6 +69,7 @@ public class OperationDispatcher implements Dispatcher {
 
     @Transactional
     protected <I, O, T extends Operation<I, O>> O apply(T operation, I input, @NonNull Context ctx) {
+
         String operationName = operations.getOperationId(operation);
         LOG.info("Invoking operation %s with tenant %s", operationName, ctx.getTenant());
 
@@ -76,8 +77,9 @@ public class OperationDispatcher implements Dispatcher {
         try {
             operation.validate(input, ctx);
             res = operation.handle(input, ctx);
+            Logger.getInstance().info("Operation processed %s -- %s", operationName, Mappers.JSON.serialize(input));
         }catch (Exception e) {
-            Logger.getInstance().error("Error while executing operation %s", operationName, e);
+            Logger.getInstance().error("Error while executing operation %s", operationName, Mappers.JSON.serialize(input), e);
             throw e;
         }
 
