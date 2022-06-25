@@ -12,7 +12,6 @@ public class EntityRepositoryTest extends BaseTest {
 
     @Inject
     private UserRepository repository;
-    ;
 
     @Test
     public void testRepository() {

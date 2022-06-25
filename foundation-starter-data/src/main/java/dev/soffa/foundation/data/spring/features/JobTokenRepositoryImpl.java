@@ -3,7 +3,7 @@ package dev.soffa.foundation.data.spring.features;
 import com.google.common.collect.ImmutableMap;
 import dev.soffa.foundation.commons.Logger;
 import dev.soffa.foundation.data.DB;
-import dev.soffa.foundation.data.SimpleEntityRepository;
+import dev.soffa.foundation.data.SimpleRepository;
 import dev.soffa.foundation.extra.jobs.JobTokenRepository;
 import dev.soffa.foundation.extra.jobs.PendingJob;
 import org.springframework.stereotype.Component;
@@ -13,7 +13,7 @@ import java.util.function.Function;
 
 
 @Component
-public class JobTokenRepositoryImpl extends SimpleEntityRepository<PendingJob, String> implements JobTokenRepository {
+public class JobTokenRepositoryImpl extends SimpleRepository<PendingJob, String> implements JobTokenRepository {
 
     private static final Logger LOG = Logger.get(JobTokenRepository.class);
     private static final String OPERATION = "operation";

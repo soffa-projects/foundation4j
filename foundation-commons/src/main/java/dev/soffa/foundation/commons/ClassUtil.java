@@ -7,7 +7,6 @@ import io.github.classgraph.ClassGraph;
 import io.github.classgraph.ClassInfo;
 import io.github.classgraph.ScanResult;
 import lombok.SneakyThrows;
-import org.apache.commons.lang3.reflect.TypeUtils;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
 import java.lang.annotation.Annotation;
@@ -55,37 +54,38 @@ public class ClassUtil {
     }
 
     @NonNull
-    public static Class<?>[] lookupGeneric(@NonNull Class<?> type, @NonNull Class<?> genericClass) {
-        List<Type> parents = new ArrayList<>();
-        if (type.getSuperclass() != null) {
-            parents.add(type.getSuperclass());
-        }
-        parents.addAll(Arrays.asList(type.getInterfaces()));
-
-        if (parents.isEmpty() || parents.size() == 1 && type.getSuperclass() == Object.class) {
+    public static Class<?>[] lookupGeneric(Class<?> type, @NonNull Class<?> genericClass) {
+        if (type==null || type == Object.class) {
             return null;
         }
+        final List<Type> candidates = new ArrayList<>();
+        Optional.of(type.getGenericInterfaces()).ifPresent(types -> candidates.addAll(Arrays.asList(types)));
+        Optional.ofNullable(type.getGenericSuperclass()).ifPresent(candidates::add);
 
-        for (Type candidate : parents) {
-            if (candidate == genericClass) {
-                for (Type gi : type.getGenericInterfaces()) {
-                    if (TypeUtils.isAssignable(gi, genericClass)) {
-                        return Arrays.stream(((ParameterizedType) gi).getActualTypeArguments()).map(t -> {
-                            //EL
-                            return (Class<?>) t;
-                        }).toArray(Class<?>[]::new);
-                    }
+        for (Type candidate : candidates) {
+            if (candidate == null) {
+                continue;
+            }
+            boolean matches = candidate instanceof ParameterizedType && ((ParameterizedType)candidate).getRawType() == genericClass;
+            if (matches) {
+                return Arrays.stream(((ParameterizedType) candidate).getActualTypeArguments()).map(t -> {
+                    //EL
+                    return (Class<?>) t;
+                }).toArray(Class<?>[]::new);
+            }
+        }
+
+        Class<?>[] result = lookupGeneric(type.getSuperclass(), genericClass);
+        if (result == null) {
+            for (Class<?> anInterface : type.getInterfaces()) {
+                result = lookupGeneric(anInterface, genericClass);
+                if (result==null) {
+                    break;
                 }
             }
         }
 
-        for (Type parent : parents) {
-            Class<?>[] match = lookupGeneric((Class<?>) parent, genericClass);
-            if (match != null && match.length > 0) {
-                return match;
-            }
-        }
-        return new Class<?>[]{};
+        return result;
     }
 
 

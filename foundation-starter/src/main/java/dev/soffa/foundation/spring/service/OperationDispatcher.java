@@ -15,6 +15,7 @@ import dev.soffa.foundation.hooks.HookService;
 import dev.soffa.foundation.message.MessageFactory;
 import dev.soffa.foundation.message.pubsub.PubSubClient;
 import dev.soffa.foundation.multitenancy.TenantHolder;
+import dev.soffa.foundation.resource.Resource;
 import lombok.AllArgsConstructor;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.springframework.boot.actuate.endpoint.invoke.OperationInvoker;
@@ -27,7 +28,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 @Service
 @AllArgsConstructor
-public class OperationDispatcher implements Dispatcher {
+public class OperationDispatcher implements Dispatcher, Resource {
 
     private final OperationsMapping operations;
     private final ActivityService activities;
@@ -73,7 +74,7 @@ public class OperationDispatcher implements Dispatcher {
         try {
             operation.validate(input, ctx);
             res = operation.handle(input, ctx);
-        }catch (Exception e) {
+        } catch (Exception e) {
             Logger.getInstance().error("Error while executing operation %s", operationName, e);
             throw e;
         }
@@ -90,5 +91,15 @@ public class OperationDispatcher implements Dispatcher {
         }
 
         return res;
+    }
+
+    @Override
+    public <I, O, T extends Operation<I, O>> O invoke(Class<T> operationClass, I input, @NonNull Context ctx) {
+        return dispatch(operationClass, input, ctx);
+    }
+
+    @Override
+    public <I, O, T extends Operation<I, O>> O invoke(Class<T> operationClass, I input) {
+        return dispatch(operationClass, input, ContextHolder.require());
     }
 }

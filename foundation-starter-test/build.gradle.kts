@@ -15,6 +15,7 @@ dependencies {
     implementation("com.hazelcast:hazelcast-all:4.2.5")
 
     compileOnly("org.springframework.boot:spring-boot-starter-web")
+    compileOnly("org.springframework.boot:spring-boot-starter-security")
 
     @Suppress("GradlePackageUpdate")
     api("com.h2database:h2:2.1.210")

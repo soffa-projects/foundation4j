@@ -27,10 +27,7 @@ public class DBConfiguration {
     @Bean
     public DB createDB(AppConfig appConfig, ApplicationContext context) {
         appConfig.configure();
-        DB db = new DBImpl(context, appConfig);
-        DynamicRepositoryBuilder builder = new DynamicRepositoryBuilder(context, appConfig.getPkg(), db);
-        builder.register();
-        return db;
+        return new DBImpl(context, appConfig);
     }
 
     @Bean

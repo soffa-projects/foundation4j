@@ -1,6 +1,7 @@
 package dev.soffa.foundation.data;
 
 import com.google.common.collect.ImmutableMap;
+import dev.soffa.foundation.error.ResourceNotFoundException;
 import dev.soffa.foundation.model.TenantId;
 
 import java.util.List;
@@ -49,7 +50,9 @@ public interface EntityRepository<E, I> {
         return get(tenant, Criteria.of(filter));
     }
 
-    E get(I id);
+    default E get(I id) {
+        return findById(id).orElseThrow(() -> new ResourceNotFoundException("Resource does not exists"));
+    }
 
     Optional<E> findById(I id);
 

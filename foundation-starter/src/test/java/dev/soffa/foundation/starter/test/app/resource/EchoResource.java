@@ -1,4 +1,4 @@
-package dev.soffa.foundation.starter.test.app;
+package dev.soffa.foundation.starter.test.app.resource;
 
 import dev.soffa.foundation.resource.Resource;
 import dev.soffa.foundation.starter.test.app.handlers.Echo;
@@ -20,8 +20,6 @@ import java.util.List;
 @Tags(
     @Tag(name = "Echo", description = "All things echo messaging")
 )
-@RestController
-//@Generated
 public interface EchoResource extends Resource {
 
     @Operation(
