@@ -81,8 +81,7 @@ public class OperationDispatcher implements Dispatcher {
             throw e;
         }
 
-        boolean pkg = operation.getClass().getPackage().getName().startsWith("dev.soffa");
-        if (operation instanceof Command && pkg) {
+        if (operation instanceof Command) {
             activities.record(ctx, operationName, input);
             try {
                 String pubSubOperation = ctx.getServiceName() + "." + TextUtil.snakeCase(operationName) + ".success";
