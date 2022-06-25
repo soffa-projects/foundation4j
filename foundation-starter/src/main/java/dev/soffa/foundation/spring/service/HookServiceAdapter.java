@@ -1,9 +1,6 @@
 package dev.soffa.foundation.spring.service;
 
-import dev.soffa.foundation.commons.Logger;
-import dev.soffa.foundation.commons.Mappers;
-import dev.soffa.foundation.commons.Sentry;
-import dev.soffa.foundation.commons.TemplateHelper;
+import dev.soffa.foundation.commons.*;
 import dev.soffa.foundation.context.Context;
 import dev.soffa.foundation.error.ResourceNotFoundException;
 import dev.soffa.foundation.extra.notifications.NotificationAgent;
@@ -42,7 +39,7 @@ public class HookServiceAdapter implements HookService {
     @Override
     public int process(Context context, ProcessHookInput input) {
         try {
-            return internalProcess( input);
+            return internalProcess(input);
         } catch (Exception e) {
             Sentry.getInstance().captureException(e);
             throw e;
@@ -61,12 +58,10 @@ public class HookServiceAdapter implements HookService {
         if (NO_HOOK.equals(lhook)) {
             throw new ResourceNotFoundException("Hook not found: " + hook);
         }
-        LOG.info("Hook enqueued %s", hook);
-
         Map<String, Object> ldata = new HashMap<>(data);
         ldata.put("context", context.getContextMap());
         for (HookItem hookItem : lhook.getPost()) {
-            scheduler.enqueue(subject, ProcessHookItem.class, new ProcessHookItemInput(
+            scheduler.enqueue(DigestUtil.makeUUID(hookItem.getName() + ":" + subject), ProcessHookItem.class, new ProcessHookItemInput(
                 hookItem.getName(),
                 hookItem.getType(),
                 Mappers.JSON_FULLACCESS_SNAKE.serialize(hookItem.getSpec()),
