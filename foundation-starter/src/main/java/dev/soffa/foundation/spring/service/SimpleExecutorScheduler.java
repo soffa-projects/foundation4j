@@ -25,12 +25,12 @@ public class SimpleExecutorScheduler implements Scheduler {
 
     public SimpleExecutorScheduler(ApplicationContext context) {
         this.context = context;
-        Logger.platform().info("SimpleExecutorScheduler initialized");
+        Logger.platform.info("SimpleExecutorScheduler initialized");
     }
 
     @Override
     public <I, O, T extends Operation<I, O>> void enqueue(UUID uuid, Class<T> operationClass, I input, Context ctx) {
-        Logger.platform().info("Operation scheduled: %s", operationClass.getName());
+        Logger.platform.info("Operation scheduled: %s", operationClass.getName());
         final Dispatcher dispatcher = context.getBean(Dispatcher.class);
         executorService.schedule(() -> {
             dispatcher.dispatch(operationClass, input, ctx);

@@ -81,7 +81,7 @@ public class OpenApiBuilder {
 
     private void addServers(OpenAPI api) {
         if (TextUtil.isEmpty(desc.getServers())) {
-            Logger.platform().info("No OpenAPI servers defined, using default");
+            Logger.platform.info("No OpenAPI servers defined, using default");
             return;
         }
         List<io.swagger.v3.oas.models.servers.Server> servers = new ArrayList<>();
@@ -106,7 +106,7 @@ public class OpenApiBuilder {
         if (desc.getSecurity().getOAuth2() == null) {
             return;
         }
-        Logger.platform().info("[security] oAuth is enabled");
+        Logger.platform.info("[security] oAuth is enabled");
 
         Scopes scopes = new Scopes();
         int flows = 0;
@@ -136,7 +136,7 @@ public class OpenApiBuilder {
         if (!desc.getSecurity().isBearerAuth()) {
             return;
         }
-        Logger.platform().info("[security] BearerAuth is enabled");
+        Logger.platform.info("[security] BearerAuth is enabled");
         components.addSecuritySchemes(OpenApi.BEARER_AUTH,
             new SecurityScheme()
                 .description("Bearer Auth")
@@ -151,7 +151,7 @@ public class OpenApiBuilder {
         if (!desc.getSecurity().isBasicAuth()) {
             return;
         }
-        Logger.platform().info("[security] BasicAuth is enabled");
+        Logger.platform.info("[security] BasicAuth is enabled");
         components.addSecuritySchemes(OpenApi.BASIC_AUTH,
             new SecurityScheme()
                 .description("Basic Auth")

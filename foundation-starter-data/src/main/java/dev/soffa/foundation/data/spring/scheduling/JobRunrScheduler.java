@@ -29,7 +29,7 @@ class JobRunrScheduler implements Scheduler {
     public JobRunrScheduler(JobScheduler jobScheduler, ApplicationContext context) {
         this.jobScheduler = jobScheduler;
         this.context = context;
-        Logger.platform().info("JobRunrScheduler initialized");
+        Logger.platform.info("JobRunrScheduler initialized");
     }
 
     @Override
@@ -46,7 +46,7 @@ class JobRunrScheduler implements Scheduler {
             // EL
             return jobScheduler.enqueue(uuid, () -> dispatcher.dispatch(operationClass, input, ctx));
         });
-        Logger.platform().info("Operation scheduled: %s --> %s", operationClass.getSimpleName(), jobId);
+        Logger.platform.info("Operation scheduled: %s --> %s", operationClass.getSimpleName(), jobId);
     }
 
 }

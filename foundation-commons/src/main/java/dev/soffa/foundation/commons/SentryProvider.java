@@ -6,6 +6,7 @@ import dev.soffa.foundation.error.TechnicalException;
 
 import java.util.function.Supplier;
 
+@SuppressWarnings("unused")
 public interface SentryProvider {
 
     void captureException(Throwable e);
@@ -29,7 +30,7 @@ public interface SentryProvider {
         try {
             return runnable.get();
         }catch (Exception e) {
-            Logger.app().error(e, "%s has failed with error: %s", label, e.getMessage());
+            Logger.app.error(e, "%s has failed with error: %s", label, e.getMessage());
             captureTechnical(e);
             if (errorPropagation) {
                 throw e;
