@@ -1,7 +1,6 @@
 package dev.soffa.foundation.spring.config;
 
 import dev.soffa.foundation.commons.Logger;
-import dev.soffa.foundation.commons.Sentry;
 import dev.soffa.foundation.commons.TextUtil;
 import dev.soffa.foundation.context.ContextHolder;
 import dev.soffa.foundation.error.ErrorUtil;
@@ -93,7 +92,6 @@ class CustomRestExceptionHandler extends ResponseEntityExceptionHandler {
 
         if (status.value() >= HttpStatus.INTERNAL_SERVER_ERROR.value()) {
             LOG.error(error);
-            Sentry.getInstance().captureException(error);
         } else {
             LOG.error(error.getMessage());
         }

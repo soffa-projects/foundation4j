@@ -211,6 +211,13 @@ public class SimpleDataStore implements DataStore {
     }
 
     @Override
+    public boolean ping() {
+        Jdbi jdbi = getLink(null);
+        jdbi.withHandle(handle -> handle.createQuery("SELECT 1").mapToMap().findFirst());
+        return true;
+    }
+
+    @Override
     public <E> Optional<E> findById(TenantId tenant, Class<E> entityClass,
                                     Object value) {
         return withHandle(tenant, entityClass, (handle, info) -> {

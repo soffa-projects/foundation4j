@@ -16,6 +16,7 @@ import java.util.function.Supplier;
 public final class Logger {
 
     private static Logger appLogger = Logger.get("dev.soffa");
+    private static Logger platformLogger = Logger.get("dev.soffa");
 
     static {
         Logger.setRelevantPackage("dev.soffa");
@@ -33,8 +34,12 @@ public final class Logger {
         this.tag = tag;
     }
 
-    public static Logger getInstance() {
+    public static Logger app() {
         return appLogger;
+    }
+
+    public static Logger platform() {
+        return platformLogger;
     }
 
     public static void withContext(Map<String, String> context, Consumer<Logger> consumer) {

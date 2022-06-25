@@ -11,7 +11,7 @@ public final class Sentry {
         Sentry.instance = instance;
     }
 
-    public static SentryProvider getInstance() {
+    public static SentryProvider get() {
         return instance;
     }
 

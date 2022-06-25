@@ -76,7 +76,6 @@ public final class PubSubMessengerFactory {
                 }
                 client.subscribe(rsub, isBroadcast, handler);
             }
-            LOG.info("All listeners registered");
         }
     }
 

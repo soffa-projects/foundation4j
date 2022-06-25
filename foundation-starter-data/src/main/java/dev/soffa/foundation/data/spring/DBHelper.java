@@ -120,6 +120,7 @@ public final class DBHelper {
         changeLogParams.put("tablePrefix", "");
         changeLogParams.put("tablesPrefix", "");
 
+
         if (TextUtil.isNotEmpty(tablesPrefix)) {
             changeLogParams.put("prefix", tablesPrefix);
             changeLogParams.put("table_prefix", tablesPrefix);

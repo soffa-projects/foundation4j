@@ -60,7 +60,6 @@ public class LocalPlatformAuthManager implements PlatformAuthManager {
             return null;
         }
 
-        LOG.info("Decoding token with TokenProvider");
         return tokens.decode(token);
     }
 

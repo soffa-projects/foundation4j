@@ -10,9 +10,6 @@ logging.level:
   org.springframework: ${SPRING_LOG_LEVEL:WARN}
   liquibase: ERROR
   dev.soffa: ${PLATFORM_LOG_LEVEL:INFO}
-  foundation: ${PLATFORM_LOG_LEVEL:INFO}
-  app: ${LOG_LEVEL:INFO}
-  service: ${LOG_LEVEL:INFO}
   org.springframework.boot.autoconfigure.security.servlet.UserDetailsServiceAutoConfiguration: OFF
 
 spring.profiles.group:
@@ -145,7 +142,6 @@ management.endpoint.health.show-details: always
 
 logging.level:
   dev.soffa: DEBUG
-  dev.bantu: DEBUG
 
 ---
 spring.config.activate.on-profile: production,prd,prod

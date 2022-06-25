@@ -11,7 +11,6 @@ import dev.soffa.foundation.context.ContextHolder;
 import dev.soffa.foundation.core.Command;
 import dev.soffa.foundation.core.Dispatcher;
 import dev.soffa.foundation.core.Operation;
-import dev.soffa.foundation.hooks.HookService;
 import dev.soffa.foundation.message.MessageFactory;
 import dev.soffa.foundation.message.pubsub.PubSubClient;
 import dev.soffa.foundation.multitenancy.TenantHolder;
@@ -32,7 +31,6 @@ public class OperationDispatcher implements Dispatcher, Resource {
 
     private final OperationsMapping operations;
     private final ActivityService activities;
-    private final HookService hooks;
     private final PubSubClient pubSubClient;
     private static final Map<String, Boolean> DEFAULTS = new ConcurrentHashMap<>();
     private static final Logger LOG = Logger.getLogger(OperationInvoker.class);
@@ -56,7 +54,6 @@ public class OperationDispatcher implements Dispatcher, Resource {
 
         String className = operation.getClass().getSimpleName();
 
-
         if (!DEFAULTS.containsKey(className)) {
             DEFAULTS.put(className, AnnotationUtils.findAnnotation(operation.getClass(), DefaultTenant.class) != null);
         }
@@ -70,27 +67,20 @@ public class OperationDispatcher implements Dispatcher, Resource {
     @Transactional
     protected <I, O, T extends Operation<I, O>> O apply(T operation, I input, @NonNull Context ctx) {
         String operationName = operations.getOperationId(operation);
-        O res;
-        try {
+        return Sentry.get().watch("Operation dispatch: " + operationName, () -> {
+
             operation.validate(input, ctx);
-            res = operation.handle(input, ctx);
-        } catch (Exception e) {
-            Logger.getInstance().error("Error while executing operation %s", operationName, e);
-            throw e;
-        }
+            O res = operation.handle(input, ctx);
 
-        if (operation instanceof Command) {
-            activities.record(ctx, operationName, input);
-            try {
-                String pubSubOperation = ctx.getServiceName() + "." + TextUtil.snakeCase(operationName) + ".success";
-                pubSubClient.broadcast(MessageFactory.create(pubSubOperation, res));
-            } catch (Exception e) {
-                Sentry.getInstance().captureException(e);
-                LOG.error("Failed to publish operation success", e);
+            if (operation instanceof Command) {
+                activities.record(ctx, operationName, input);
+                Sentry.get().watch("Operation success broadcast: " + operationName, () -> {
+                    String pubSubOperation = ctx.getServiceName() + "." + TextUtil.snakeCase(operationName) + ".success";
+                    pubSubClient.broadcast(MessageFactory.create(pubSubOperation, res));
+                });
             }
-        }
-
-        return res;
+            return res;
+        });
     }
 
     @Override

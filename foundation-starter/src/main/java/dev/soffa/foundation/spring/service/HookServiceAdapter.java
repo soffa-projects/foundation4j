@@ -41,7 +41,7 @@ public class HookServiceAdapter implements HookService {
         try {
             return internalProcess(input);
         } catch (Exception e) {
-            Sentry.getInstance().captureException(e);
+            Sentry.get().captureException(e);
             throw e;
         }
     }

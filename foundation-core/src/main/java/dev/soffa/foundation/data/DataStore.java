@@ -13,6 +13,8 @@ public interface DataStore {
         return findById(TenantId.CONTEXT, entityClass, value);
     }
 
+    boolean ping();
+
     <E> Optional<E> findById(TenantId tenant, Class<E> entityClass, Object value);
 
     default <E> long count(Class<E> entityClass) {

@@ -73,6 +73,7 @@ public class SimpleRepository<E, I> implements EntityRepository<E, I> {
         return ds.count(resolveTenant(), entityClass);
     }
 
+
     @Override
     public List<E> findAll(TenantId tenant) {
         return find(resolveTenant(tenant), null);
