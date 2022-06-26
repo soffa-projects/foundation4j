@@ -10,7 +10,10 @@ import dev.soffa.foundation.commons.validation.ValidationResult;
 import dev.soffa.foundation.config.OperationsMapping;
 import dev.soffa.foundation.context.Context;
 import dev.soffa.foundation.context.ContextHolder;
-import dev.soffa.foundation.core.*;
+import dev.soffa.foundation.core.Broadcast;
+import dev.soffa.foundation.core.Dispatcher;
+import dev.soffa.foundation.core.Operation;
+import dev.soffa.foundation.core.Recorded;
 import dev.soffa.foundation.message.MessageFactory;
 import dev.soffa.foundation.message.pubsub.PubSubClient;
 import dev.soffa.foundation.multitenancy.TenantHolder;
@@ -75,9 +78,7 @@ public class OperationDispatcher implements Dispatcher, Resource {
                     operationName,
                     Mappers.JSON.serialize(validation.getErrors())
                 );
-                if (!(operation instanceof EventHandler)) {
-                    validation.thowAnyError();
-                }
+                validation.thowAnyError();
                 return null;
             }
 
