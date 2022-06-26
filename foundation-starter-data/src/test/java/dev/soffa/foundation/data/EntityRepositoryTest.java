@@ -1,20 +1,45 @@
 package dev.soffa.foundation.data;
 
-import dev.soffa.foundation.data.app.UserRepository;
+import com.google.common.collect.ImmutableMap;
+import dev.soffa.foundation.commons.RandomUtil;
+import dev.soffa.foundation.data.app.MessageDao;
+import dev.soffa.foundation.data.app.model.Message;
+import dev.soffa.foundation.model.Paging;
 import dev.soffa.foundation.test.BaseTest;
 import org.junit.jupiter.api.Test;
 
 import javax.inject.Inject;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 public class EntityRepositoryTest extends BaseTest {
 
+
     @Inject
-    private UserRepository repository;
+    private MessageDao messages;
+
 
     @Test
-    public void testRepository() {
-        assertNotNull(repository);
+    public void testPaging() {
+        assertNotNull(messages);
+        assertEquals(0, messages.count());
+        final int generatedMessagesCount = 1000;
+        for (int i = 0; i < generatedMessagesCount; i++) {
+            messages.insert(new Message("msg_" + i, RandomUtil.nextString(20)));
+        }
+        assertEquals(generatedMessagesCount, messages.count());
+
+        assertEquals(Paging.DEFAULT.getSize(), messages.findAll().size());
+        assertEquals(10, messages.findAll(new Paging(1, 10)).size());
+        assertEquals(Paging.DEFAULT_MAX_SIZE, messages.findAll(new Paging(1, 10_000).cap()).size());
+
+        assertEquals(30, messages.findAll(new Paging(6, 194)).size());
+
+        assertNotNull(messages.get(ImmutableMap.of("id", "msg_1")));
+
+
+        assertEquals(10, messages.findAll(new Paging(0, 10)).size());
+        assertEquals(10, messages.findAll(new Paging(-1, 10)).size());
     }
 }

@@ -1,6 +1,7 @@
 package dev.soffa.foundation.data;
 
 
+import dev.soffa.foundation.model.Paging;
 import dev.soffa.foundation.model.TenantId;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
@@ -66,7 +67,12 @@ public interface DataStore {
     <E> int delete(TenantId tenant, E entity);
 
     default <E> List<E> find(Class<E> entityClass, Criteria criteria) {
-        return find(TenantId.CONTEXT, entityClass, criteria);
+        return find(TenantId.CONTEXT, entityClass, criteria, Paging.DEFAULT);
+    }
+
+    <E> List<E> find(TenantId tenant, Class<E> entityClass, Criteria criteria, Paging paging);
+    default <E> List<E> find(Class<E> entityClass, Criteria criteria, Paging paging) {
+        return find(TenantId.CONTEXT, entityClass, criteria, paging);
     }
 
     default int execute(String command) {
@@ -75,7 +81,9 @@ public interface DataStore {
 
     int execute(TenantId tenant, String command);
 
-    <E> List<E> find(TenantId tenant, Class<E> entityClass, Criteria criteria);
+    default <E> List<E> find(TenantId tenant, Class<E> entityClass, Criteria criteria){
+        return find(tenant, entityClass, criteria, Paging.DEFAULT);
+    }
 
     default <E> Optional<E> get(Class<E> entityClass, Criteria criteria) {
         return get(TenantId.CONTEXT, entityClass, criteria);
@@ -87,7 +95,11 @@ public interface DataStore {
         return findAll(TenantId.CONTEXT, entityClass);
     }
 
-    <E> List<E> findAll(TenantId tenant, Class<E> entityClass);
+    default <E> List<E> findAll(TenantId tenant, Class<E> entityClass) {
+        return findAll(tenant, entityClass, Paging.DEFAULT);
+    }
+
+    <E> List<E> findAll(TenantId tenant, Class<E> entityClass, Paging paging);
 
     <T> List<T> query(String query, Class<T> resultClass);
 

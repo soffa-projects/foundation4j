@@ -2,6 +2,7 @@ package dev.soffa.foundation.data;
 
 import com.google.common.collect.ImmutableMap;
 import dev.soffa.foundation.error.ResourceNotFoundException;
+import dev.soffa.foundation.model.Paging;
 import dev.soffa.foundation.model.TenantId;
 
 import java.util.List;
@@ -23,19 +24,39 @@ public interface EntityRepository<E, I> {
     long count(TenantId tennant, Criteria criteria);
 
     default List<E> findAll() {
-        return findAll(TenantId.CONTEXT);
+        return findAll(Paging.DEFAULT);
     }
 
-    List<E> findAll(TenantId tenantId);
+    default List<E> findAll(Paging paging) {
+        return findAll(TenantId.CONTEXT, paging);
+    }
 
-    List<E> find(TenantId tenant, Criteria criteria);
+    List<E> findAll(TenantId tenantId, Paging paging);
+
+    default List<E> find(TenantId tenant, Criteria criteria) {
+        return find(tenant, criteria, Paging.DEFAULT);
+    }
+
+
+    default List<E> findAll(TenantId tenantId) {
+        return findAll(tenantId, Paging.DEFAULT);
+    }
+
+    List<E> find(TenantId tenant, Criteria criteria, Paging paging);
 
     default List<E> find(Criteria criteria) {
-        return find(TenantId.CONTEXT, criteria);
+        return find(criteria, Paging.DEFAULT);
+    }
+
+    default List<E> find(Criteria criteria, Paging paging) {
+        return find(TenantId.CONTEXT, criteria, paging);
     }
 
     default List<E> find(Map<String, Object> filter) {
-        return find(Criteria.of(filter));
+        return find(filter, Paging.DEFAULT);
+    }
+    default List<E> find(Map<String, Object> filter, Paging paging) {
+        return find(Criteria.of(filter), paging);
     }
 
     Optional<E> get(Criteria criteria);

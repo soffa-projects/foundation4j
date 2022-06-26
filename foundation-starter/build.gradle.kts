@@ -26,7 +26,7 @@ dependencies {
     implementation("org.springdoc:springdoc-openapi-ui:1.6.9") {
         exclude(group = "io.github.classgraph")
     }
-    implementation("org.springdoc:springdoc-openapi-kotlin:1.6.9")
+
     implementation("org.springdoc:springdoc-openapi-security:1.6.9") {
         exclude(group = "io.github.classgraph")
     }

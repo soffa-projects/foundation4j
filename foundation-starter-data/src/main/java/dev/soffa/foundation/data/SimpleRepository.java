@@ -3,6 +3,7 @@ package dev.soffa.foundation.data;
 import com.google.common.base.Preconditions;
 import dev.soffa.foundation.commons.ClassUtil;
 import dev.soffa.foundation.commons.TextUtil;
+import dev.soffa.foundation.model.Paging;
 import dev.soffa.foundation.model.TenantId;
 
 import java.util.List;
@@ -75,14 +76,15 @@ public class SimpleRepository<E, I> implements EntityRepository<E, I> {
 
 
     @Override
-    public List<E> findAll(TenantId tenant) {
-        return find(resolveTenant(tenant), null);
+    public List<E> findAll(TenantId tenant, Paging paging) {
+        return find(resolveTenant(tenant), null, paging);
     }
 
     @Override
-    public List<E> find(TenantId tenant, Criteria criteria) {
-        return ds.find(resolveTenant(tenant), entityClass, criteria);
+    public List<E> find(TenantId tenant, Criteria criteria, Paging paging) {
+        return ds.find(resolveTenant(tenant), entityClass, criteria, paging);
     }
+
 
     @Override
     public Optional<E> get(Criteria criteria) {

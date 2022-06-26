@@ -13,6 +13,7 @@ import dev.soffa.foundation.data.jdbi.SerializableArgumentFactory;
 import dev.soffa.foundation.error.DatabaseException;
 import dev.soffa.foundation.error.TechnicalException;
 import dev.soffa.foundation.helper.ID;
+import dev.soffa.foundation.model.Paging;
 import dev.soffa.foundation.model.TenantId;
 import dev.soffa.foundation.multitenancy.TenantHolder;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -40,6 +41,9 @@ public class SimpleDataStore implements DataStore {
 
     private static final Logger LOG = Logger.getLogger(SimpleDataStore.class);
     private static final String TABLE = "table";
+    private static final String ORDER = "order";
+    private static final String LIMIT = "limit";
+    private static final String OFFSET = "offset";
     private static final String ID_COLUMN = "idColumn";
     private static final String ID_FIELD = "idField";
     private static final String WHERE = "where";
@@ -185,19 +189,20 @@ public class SimpleDataStore implements DataStore {
     }
 
     @Override
-    public <E> List<E> findAll(TenantId tenant, Class<E> entityClass) {
+    public <E> List<E> findAll(TenantId tenant, Class<E> entityClass, Paging paging) {
         return withHandle(tenant, entityClass, (handle, info) -> {
             // EL
-            return buildQuery(handle, entityClass, null)
+            return buildQuery(handle, entityClass, null, paging)
                 .map(BeanMapper.of(info)).collect(Collectors.toList());
         });
     }
 
     @Override
-    public <E> List<E> find(TenantId tenant, Class<E> entityClass, Criteria criteria) {
+    public <E> List<E> find(TenantId tenant, Class<E> entityClass, Criteria criteria, Paging paging) {
         return withHandle(tenant, entityClass, (handle, info) -> {
             //EL
-            return buildQuery(handle, entityClass, criteria)
+            return buildQuery(handle, entityClass, criteria, paging)
+                .setMaxRows(paging.getSize())
                 .map(BeanMapper.of(info)).collect(Collectors.toList());
         });
     }
@@ -206,7 +211,7 @@ public class SimpleDataStore implements DataStore {
     public <E> Optional<E> get(TenantId tenant, Class<E> entityClass, Criteria criteria) {
         return withHandle(tenant, entityClass, (handle, info) -> {
             //EL
-            return buildQuery(handle, entityClass, criteria)
+            return buildQuery(handle, entityClass, criteria, null)
                 .map(BeanMapper.of(info)).findFirst();
         });
     }
@@ -245,29 +250,59 @@ public class SimpleDataStore implements DataStore {
     public <E> long count(TenantId tenant, @NonNull Class<E> entityClass, @Nullable Criteria criteria) {
         return withHandle(tenant, entityClass, (handle, info) -> {
             // EL
-            return buildQuery(handle, entityClass, "SELECT COUNT(*)", criteria)
+            return buildQuery(handle, entityClass, "SELECT COUNT(*)", criteria, null)
                 .mapTo(Long.class).first();
         });
     }
 
     // =================================================================================================================
 
-    private <E> Query buildQuery(Handle handle, Class<E> entityClass, @Nullable Criteria criteria) {
-        return buildQuery(handle, entityClass, "SELECT *", criteria);
+    private <E> Query buildQuery(Handle handle, Class<E> entityClass, @Nullable Criteria criteria, Paging paging) {
+        return buildQuery(handle, entityClass, "SELECT *", criteria, paging);
     }
 
-    private <E> Query buildQuery(Handle handle, Class<E> entityClass, String baseQuery, @Nullable Criteria criteria) {
+    private <E> Query buildQuery(Handle handle,
+                                 Class<E> entityClass,
+                                 String baseQuery,
+                                 @Nullable Criteria criteria,
+                                 @Nullable Paging paging) {
         EntityInfo<E> info = EntityInfo.get(entityClass, getTablesPrefix());
-        if (criteria == null) {
-            return handle.createQuery(baseQuery + " FROM <table>")
-                .define(TABLE, info.getTableName());
-        } else {
-            return handle.createQuery(baseQuery + " FROM <table> WHERE <where>")
-                .define(TABLE, info.getTableName())
-                .define(WHERE, criteria.getWhere())
+        Query q = define(
+            info,
+            paging,
+            handle.createQuery(createBaseQuery(baseQuery, paging != null, criteria != null))
+        );
+        if (criteria != null) {
+            q.define(WHERE, criteria.getWhere())
                 .defineList(BINDING, criteria.getBinding())
                 .bindMap(criteria.getBinding());
         }
+        return q;
+    }
+
+    private String createBaseQuery(String base, boolean paging, boolean criteria) {
+        StringBuilder sb = new StringBuilder(base).append(" FROM <table>");
+        if (criteria) {
+            sb.append(" WHERE <where>");
+        }
+        if (paging) {
+            sb.append(" ORDER BY <order> LIMIT <limit> OFFSET <offset>");
+        }
+        return sb.toString();
+    }
+
+    private Query define(EntityInfo<?> info, Paging paging, Query query) {
+        if (paging == null) {
+            return query.define(TABLE, info.getTableName());
+        }
+        Paging p = Paging.of(paging);
+        if ("id".equalsIgnoreCase(p.getSort())) {
+            p.setSort(info.getIdColumn());
+        }
+        return query.define(TABLE, info.getTableName())
+            .define(ORDER, p.getSort())
+            .define(LIMIT, p.getSize())
+            .define(OFFSET, (p.getPage() - 1) * p.getSize());
     }
 
     private <T, E> T inTransaction(TenantId tenant,

@@ -16,6 +16,7 @@ dependencies {
     api("io.swagger.core.v3:swagger-annotations:2.2.0")
     api("io.swagger.core.v3:swagger-models:2.2.0")
     api("javax.transaction:javax.transaction-api:1.3")
+    api("org.springdoc:springdoc-openapi-common:1.6.9")
     api("javax.ws.rs:javax.ws.rs-api:2.1.1")
     api("com.fasterxml.jackson.core:jackson-annotations:${property("jackson.version")}")
     api("com.fasterxml.jackson.core:jackson-databind:${property("jackson.version")}")
