@@ -1,6 +1,7 @@
 package dev.soffa.foundation.commons;
 
 import dev.soffa.foundation.context.Context;
+import dev.soffa.foundation.error.ErrorUtil;
 import dev.soffa.foundation.error.ManagedException;
 import dev.soffa.foundation.error.TechnicalException;
 
@@ -30,7 +31,7 @@ public interface SentryProvider {
         try {
             return runnable.get();
         }catch (Exception e) {
-            Logger.app.error(e, "%s has failed with error: %s", label, e.getMessage());
+            Logger.app.error(e, "%s has failed with error: %s", label, ErrorUtil.loookupOriginalMessage(e));
             captureTechnical(e);
             if (errorPropagation) {
                 throw e;

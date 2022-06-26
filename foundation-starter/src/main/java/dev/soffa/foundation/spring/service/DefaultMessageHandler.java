@@ -15,7 +15,6 @@ import dev.soffa.foundation.model.ResponseEntity;
 import dev.soffa.foundation.multitenancy.TenantHolder;
 import dev.soffa.foundation.security.PlatformAuthManager;
 import lombok.AllArgsConstructor;
-import org.checkerframework.checker.nullness.qual.NonNull;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
@@ -34,10 +33,20 @@ public class DefaultMessageHandler implements MessageHandler {
 
     @Override
     @SuppressWarnings("PMD.CyclomaticComplexity")
-    public Optional<Object> handle(@NonNull Message message) {
+    public Optional<Object> handle(Message message) {
+
+        if (message==null) {
+            Logger.platform.error("Invalid pubsubs message received");
+            return Optional.empty();
+        }
 
         if (dispatcher.get() == null) {
-            dispatcher.set(this.context.getBean(Dispatcher.class));
+            try {
+                dispatcher.set(this.context.getBean(Dispatcher.class));
+            }catch (Exception e) {
+                Logger.platform.error("Unable to locate Dispatcher bean in current context");
+                return Optional.empty();
+            }
         }
 
 
@@ -58,13 +67,13 @@ public class DefaultMessageHandler implements MessageHandler {
         LOG.info("[pubsub] New message received with operation %s#%s", message.getOperation(), message.getId());
 
         if (!(operation instanceof Operation)) {
-            Logger.app.error("[pubsub] unsupported operation type: " + operation.getClass().getName());
+            Logger.app.error("[pubsub] unsupported operation type: %s", operation.getClass().getName());
             return Optional.empty();
         }
 
         Class<?> inputType = mapping.getInputTypes().get(message.getOperation());
         if (inputType == null) {
-            Logger.app.error("[pubsub] Unable to find input type for operation " + message.getOperation());
+            Logger.app.error("[pubsub] Unable to find input type for operation %s", message.getOperation());
             return Optional.empty();
         }
 

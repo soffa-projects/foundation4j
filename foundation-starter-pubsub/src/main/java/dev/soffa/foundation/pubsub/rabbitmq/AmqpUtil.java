@@ -91,11 +91,8 @@ public final class AmqpUtil {
         return createBindings(config.getBroadcasting(), applicationName, new RabbitTemplate(cf));
     }
 
-    public static void declareQueue(RabbitAdmin admin, String name) {
-        QueueInformation info = admin.getQueueInfo(name);
-        if (info == null) {
-            admin.declareQueue(new Queue(name));
-        }
+    public static void declarExchange(RabbitAdmin admin, String name) {
+        declareBinding(admin, name, new TopicExchange(name), "", null, true);
     }
 
     public static void createFanoutExchange(RabbitAdmin adm, String exchange, String queue) {

@@ -41,10 +41,12 @@ public class Validator implements ValidationResult {
         return this;
     }
 
+    @Override
     public Map<String, String> getErrors() {
         return errors;
     }
 
+    @Override
     public boolean hasErrors() {
         return !errors.isEmpty();
     }
