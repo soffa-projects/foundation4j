@@ -2,11 +2,8 @@ package dev.soffa.foundation.spring.service;
 
 import dev.soffa.foundation.activity.ActivityService;
 import dev.soffa.foundation.annotation.DefaultTenant;
-import dev.soffa.foundation.commons.Logger;
-import dev.soffa.foundation.commons.Mappers;
 import dev.soffa.foundation.commons.Sentry;
 import dev.soffa.foundation.commons.TextUtil;
-import dev.soffa.foundation.commons.validation.ValidationResult;
 import dev.soffa.foundation.config.OperationsMapping;
 import dev.soffa.foundation.context.Context;
 import dev.soffa.foundation.context.ContextHolder;
@@ -68,36 +65,25 @@ public class OperationDispatcher implements Dispatcher, Resource {
     @Transactional
     protected <I, O, T extends Operation<I, O>> O apply(T operation, I input, @NonNull Context ctx) {
         String operationName = operations.getOperationId(operation);
-        return Sentry.get().watch("Operation dispatch: " + operationName, () -> {
+        //return Sentry.get().watch("Operation dispatch: " + operationName, () -> {
 
-            ValidationResult validation = operation.validate(input, ctx);
+        operation.validate(input, ctx);
+        O res = operation.handle(input, ctx);
 
-            if (validation != null && validation.hasErrors()) {
-                Logger.app.error(
-                    "Operation dispatch canceled [%s], the provided input is not valid -- %s",
-                    operationName,
-                    Mappers.JSON.serialize(validation.getErrors())
-                );
-                validation.thowAnyError();
-                return null;
-            }
+        if (operation instanceof Recorded) {
+            activities.record(ctx, operationName, input);
+        }
 
-            O res = operation.handle(input, ctx);
+        if (operation instanceof Broadcast) {
+            Sentry.get().watch("Operation success broadcast: " + operationName, () -> {
+                String pubSubOperation = ctx.getServiceName() + "." + TextUtil.snakeCase(operationName) + ".success";
+                pubSubClient.broadcast(MessageFactory.create(pubSubOperation, res));
+            });
+        }
 
-            if (operation instanceof Recorded) {
-                activities.record(ctx, operationName, input);
-            }
+        return res;
 
-            if (operation instanceof Broadcast) {
-                Sentry.get().watch("Operation success broadcast: " + operationName, () -> {
-                    String pubSubOperation = ctx.getServiceName() + "." + TextUtil.snakeCase(operationName) + ".success";
-                    pubSubClient.broadcast(MessageFactory.create(pubSubOperation, res));
-                });
-            }
-
-            return res;
-
-        });
+        //});
     }
 
     @Override

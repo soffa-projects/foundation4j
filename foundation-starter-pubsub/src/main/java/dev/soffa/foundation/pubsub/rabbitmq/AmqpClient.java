@@ -4,6 +4,7 @@ import com.google.common.base.Preconditions;
 import dev.soffa.foundation.commons.Logger;
 import dev.soffa.foundation.commons.Mappers;
 import dev.soffa.foundation.commons.TextUtil;
+import dev.soffa.foundation.error.TechnicalException;
 import dev.soffa.foundation.message.Message;
 import dev.soffa.foundation.message.MessageHandler;
 import dev.soffa.foundation.message.MessageResponse;
@@ -67,13 +68,13 @@ public class AmqpClient extends AbstractPubSubClient implements PubSubClient {
     static class InternalMessageHandler {
 
         private MessageHandler handler;
-        public static Method HANDLER;
+        public static final Method HANDLER;
 
         static {
             try {
                 HANDLER = InternalMessageHandler.class.getMethod("handle", org.springframework.amqp.core.Message.class);
             } catch (NoSuchMethodException e) {
-                throw new RuntimeException(e);
+                throw new TechnicalException(e);
             }
         }
 

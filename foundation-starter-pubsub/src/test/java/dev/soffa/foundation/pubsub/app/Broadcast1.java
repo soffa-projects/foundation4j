@@ -10,15 +10,15 @@ import java.util.concurrent.atomic.AtomicLong;
 @Component
 public class Broadcast1 implements EventHandler<Void, String> {
 
-    private static final AtomicLong counter = new AtomicLong(0);
+    private static final AtomicLong COUNTER = new AtomicLong(0);
 
     @Override
     public String handle(Void input, @NonNull Context ctx) {
-        counter.incrementAndGet();
+        COUNTER.incrementAndGet();
         return "Broadcaster";
     }
 
     public static long count() {
-        return counter.get();
+        return COUNTER.get();
     }
 }

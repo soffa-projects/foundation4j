@@ -1,36 +1,39 @@
 package dev.soffa.foundation.error;
 
-import java.text.MessageFormat;
 
-public class ValidationException extends FunctionalException {
+import com.google.common.collect.ImmutableMap;
+
+import java.util.Map;
+
+public class ValidationException extends Exception implements ManagedException {
 
     private static final long serialVersionUID = 1L;
 
-    private String field;
+    private final Map<String, String> errors;
 
-    public ValidationException(String field, String message, Object... args) {
-        super(message, args);
-        this.field = field;
+    private final String message;
+
+    public ValidationException(String message) {
+        super(message);
+        this.message = message;
+        errors = ImmutableMap.of();
+    }
+    public ValidationException(Map<String, String> errors) {
+        this("Validation's failed", errors);
     }
 
-    public ValidationException(String field, String message, Throwable cause, Object... args) {
-        super(cause, message, args);
-        this.field = field;
+    public ValidationException(String message, Map<String, String> errors) {
+        super(message);
+        this.errors = errors;
+        this.message = message;
     }
 
-    public ValidationException(String message, Object... args) {
-        super(MessageFormat.format(message, args));
+    public Map<String, String> getErrors() {
+        return errors;
     }
 
-    public ValidationException(Throwable cause, String message, Object... args) {
-        super(cause, message, args);
-    }
-
-    public ValidationException(String message, Throwable cause) {
-        super(message, cause);
-    }
-
-    public String getField() {
-        return field;
+    @Override
+    public String getMessage() {
+        return message;
     }
 }

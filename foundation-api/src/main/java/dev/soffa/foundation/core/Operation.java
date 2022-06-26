@@ -1,6 +1,5 @@
 package dev.soffa.foundation.core;
 
-import dev.soffa.foundation.commons.validation.ValidationResult;
 import dev.soffa.foundation.context.Context;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
@@ -10,8 +9,8 @@ public interface Operation<I, O> {
 
     O handle(I input, @NonNull Context ctx);
 
-    default ValidationResult validate(I input, @NonNull Context ctx) {
-        return null;
+    default void validate(I input, @NonNull Context ctx) {
+        // Nothing to do here
     }
 
 }
