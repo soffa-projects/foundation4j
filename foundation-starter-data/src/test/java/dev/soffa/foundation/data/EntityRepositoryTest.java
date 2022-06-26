@@ -16,6 +16,5 @@ public class EntityRepositoryTest extends BaseTest {
     @Test
     public void testRepository() {
         assertNotNull(repository);
-        ((SimpleRepository<?,?>)repository).ping();
     }
 }

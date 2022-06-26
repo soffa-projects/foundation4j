@@ -35,6 +35,7 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+@SuppressWarnings("PMD.GodClass")
 public class SimpleDataStore implements DataStore {
 
     private static final Logger LOG = Logger.getLogger(SimpleDataStore.class);
