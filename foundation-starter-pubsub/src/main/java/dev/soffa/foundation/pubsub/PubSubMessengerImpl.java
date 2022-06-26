@@ -48,8 +48,8 @@ public class PubSubMessengerImpl implements PubSubMessenger {
     }
 
     @Override
-    public <T> CompletableFuture<T> request(@NonNull String subject, @NotNull Message message, Class<T> expectedClass) {
-        return getDefaultClient().request(subject, message, expectedClass);
+    public <T> CompletableFuture<T> request(@NonNull String subject, @NotNull Message message, Class<T> returnType) {
+        return getDefaultClient().request(subject, message, returnType);
     }
 
     @Override

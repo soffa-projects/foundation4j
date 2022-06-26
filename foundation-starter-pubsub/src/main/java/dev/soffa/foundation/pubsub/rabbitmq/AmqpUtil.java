@@ -22,7 +22,7 @@ import java.util.Set;
 
 public final class AmqpUtil {
 
-    public static final String TOPIC = ".topic";
+    //public static final String TOPIC = ".topic";
     private static final String DLQ = ".dlq";
     private static final String VHOST = "vhost";
     private static final String EXCHANGE = "exchange";
@@ -91,8 +91,8 @@ public final class AmqpUtil {
         return createBindings(config.getBroadcasting(), applicationName, new RabbitTemplate(cf));
     }
 
-    public static void declarExchange(RabbitAdmin admin, String name) {
-        declareBinding(admin, name, new TopicExchange(name), "", null, true);
+    public static void declarExchange(RabbitAdmin admin, String exchange, String queue) {
+        declareBinding(admin, queue, new TopicExchange(exchange), "", null, true);
     }
 
     public static void createFanoutExchange(RabbitAdmin adm, String exchange, String queue) {
@@ -106,7 +106,7 @@ public final class AmqpUtil {
         Map<String, Object> args = ImmutableMap.of(
             "x-dead-letter-exchange", appName + DLQ
         );
-        Exchange ex = new TopicExchange(appName + TOPIC);
+        Exchange ex = new TopicExchange(appName);
         declareBinding(adm, appName, ex, "", args, true);
 
         ex = new FanoutExchange(appName + DLQ);

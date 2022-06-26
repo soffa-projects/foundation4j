@@ -28,7 +28,15 @@ public interface PubSubClient {
         throw new TodoException("Not implemented");
     }
 
-    <T> CompletableFuture<T> request(@NonNull String subject, @NotNull Message message, Class<T> expectedClass);
+    <T> CompletableFuture<T> request(@NonNull String subject, @NotNull Message message, Class<T> returnType);
+
+    default <I, O, T extends Operation<I, O>> CompletableFuture<O> request(String target, Class<T> operation, I input, Class<O> returnType) {
+        return request(target, MessageFactory.create(operation.getSimpleName(), input), returnType);
+    }
+
+    default <I, O, T extends Operation<I, O>> CompletableFuture<O> request(String target, Class<T> operation, Class<O> returnType) {
+        return request(target, MessageFactory.create(operation.getSimpleName(), null), returnType);
+    }
 
     void publish(@NonNull String subject, @NotNull Message message);
 

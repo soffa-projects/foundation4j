@@ -3,16 +3,15 @@ package ext.springboot;
 import dev.soffa.foundation.commons.EventBus;
 import dev.soffa.foundation.events.ApplicationStartedEvent;
 import dev.soffa.foundation.events.OnServiceStarted;
+import dev.soffa.foundation.message.DispatchMessageHandler;
 import dev.soffa.foundation.message.Message;
 import dev.soffa.foundation.message.MessageFactory;
-import dev.soffa.foundation.message.MessageHandler;
 import dev.soffa.foundation.message.pubsub.PubSubConfig;
 import dev.soffa.foundation.message.pubsub.PubSubMessenger;
 import dev.soffa.foundation.model.ServiceId;
 import dev.soffa.foundation.pubsub.PubSubMessengerFactory;
 import lombok.AllArgsConstructor;
 import org.checkerframework.checker.nullness.qual.NonNull;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.ApplicationListener;
@@ -36,7 +35,7 @@ public class FoundationPubSubAutoConfiguration {
     @Primary
     public PubSubMessenger createPubSubMessenger(@Value("${spring.application.name}") String applicationName,
                                                  PubSubConfig config,
-                                                 @Autowired(required = false) MessageHandler handler) {
+                                                 DispatchMessageHandler handler) {
         PubSubMessenger messenger = PubSubMessengerFactory.create(applicationName, config, handler);
         messenger.afterPropertiesSet();
         return messenger;

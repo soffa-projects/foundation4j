@@ -8,9 +8,9 @@ import dev.soffa.foundation.context.Context;
 import dev.soffa.foundation.context.ContextHolder;
 import dev.soffa.foundation.core.Dispatcher;
 import dev.soffa.foundation.core.Operation;
+import dev.soffa.foundation.message.DispatchMessageHandler;
 import dev.soffa.foundation.message.Message;
 import dev.soffa.foundation.message.MessageFactory;
-import dev.soffa.foundation.message.MessageHandler;
 import dev.soffa.foundation.model.ResponseEntity;
 import dev.soffa.foundation.multitenancy.TenantHolder;
 import dev.soffa.foundation.security.PlatformAuthManager;
@@ -23,9 +23,9 @@ import java.util.concurrent.atomic.AtomicReference;
 
 @Component
 @AllArgsConstructor
-public class DefaultMessageHandler implements MessageHandler {
+public class OperationDispatchMessageHandler implements DispatchMessageHandler {
 
-    private static final Logger LOG = Logger.get(DefaultMessageHandler.class);
+    private static final Logger LOG = Logger.get(OperationDispatchMessageHandler.class);
     private final OperationsMapping mapping;
     private final PlatformAuthManager authManager;
     private final ApplicationContext context;

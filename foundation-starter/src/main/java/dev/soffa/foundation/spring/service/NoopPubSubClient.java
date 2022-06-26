@@ -10,7 +10,7 @@ public class NoopPubSubClient implements PubSubClient {
 
 
     @Override
-    public <T> CompletableFuture<T> request(@NonNull String subject, Message message, Class<T> expectedClass) {
+    public <T> CompletableFuture<T> request(@NonNull String subject, Message message, Class<T> returnType) {
         return null;
     }
 

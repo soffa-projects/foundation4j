@@ -15,7 +15,9 @@ import dev.soffa.foundation.pubsub.rabbitmq.AmqpClient;
 import dev.soffa.foundation.pubsub.simple.SimplePubSubClient;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 public final class PubSubMessengerFactory {
 
@@ -36,7 +38,7 @@ public final class PubSubMessengerFactory {
                 if (handler == null) {
                     throw new ConfigurationException("A MessageHandler is required when  pubsub.subjects is set");
                 }
-                configureListeners(client, subjects, handler);
+                configureListeners(client, subjects + "," + applicationName, handler);
             }
             clients.put(e.getKey(), client);
         }
@@ -66,16 +68,20 @@ public final class PubSubMessengerFactory {
             return;
         }
         String[] subs = subjects.split(",");
+        Set<String> values = new HashSet<>();
         for (String sub : subs) {
-            LOG.info("Adding listener: %s", sub);
-            if (TextUtil.isNotEmpty(sub)) {
-                boolean isBroadcast = sub.endsWith("*");
-                String rsub = sub.replaceAll("\\*", "");
-                if (isBroadcast) {
-                    client.addBroadcastChannel(rsub);
-                }
-                client.subscribe(rsub, isBroadcast, handler);
+            if (TextUtil.isNotEmpty(sub.trim())) {
+                values.add(sub.trim());
             }
+        }
+        for (String sub : values) {
+            LOG.info("Adding listener: %s", sub);
+            boolean isBroadcast = sub.endsWith("*");
+            String rsub = sub.replaceAll("\\*", "");
+            if (isBroadcast) {
+                client.addBroadcastChannel(rsub);
+            }
+            client.subscribe(rsub, isBroadcast, handler);
         }
     }
 

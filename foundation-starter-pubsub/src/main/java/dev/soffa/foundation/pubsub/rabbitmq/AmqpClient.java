@@ -1,6 +1,7 @@
 package dev.soffa.foundation.pubsub.rabbitmq;
 
 import com.google.common.base.Preconditions;
+import dev.soffa.foundation.commons.Logger;
 import dev.soffa.foundation.commons.Mappers;
 import dev.soffa.foundation.commons.TextUtil;
 import dev.soffa.foundation.message.Message;
@@ -24,14 +25,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
-import static dev.soffa.foundation.pubsub.rabbitmq.AmqpUtil.TOPIC;
-
 public class AmqpClient extends AbstractPubSubClient implements PubSubClient {
 
     private final PubSubClientConfig config;
     private final RabbitAdmin rabbitAdmin;
     private final List<AbstractMessageListenerContainer> listeners = new ArrayList<>();
     private final boolean embedded;
+
+
 
     @SneakyThrows
     public AmqpClient(String applicationName, PubSubClientConfig config, String broadcasting) {
@@ -93,19 +94,18 @@ public class AmqpClient extends AbstractPubSubClient implements PubSubClient {
             }
         }
 
-        ;
-        // public static Method method =
     }
 
     @SneakyThrows
     @Override
     public void subscribe(@NonNull String subject, boolean broadcast, MessageHandler messageHandler) {
+        registerSubscription(subject);
 
         if (broadcast && embedded) {
             AmqpUtil.createFanoutExchange(rabbitAdmin, subject, applicationName);
             return;
         } else if (embedded) {
-            AmqpUtil.declarExchange(rabbitAdmin, subject);
+            AmqpUtil.declarExchange(rabbitAdmin, subject, subject);
         }
 
         AbstractMessageListenerContainer container = AmqpUtil.createListener(
@@ -123,18 +123,17 @@ public class AmqpClient extends AbstractPubSubClient implements PubSubClient {
 
     @Override
     public void subscribe(MessageHandler handler) {
-        subscribe(applicationName, false, handler);
+        if (!hasSubscription(applicationName)) {
+            subscribe(applicationName, false, handler);
+        }else {
+            Logger.app.warn("A subscription already exists for: %s", applicationName);
+        }
     }
 
     @Override
     public void publish(@NonNull String subject, Message message) {
-        String target = subject;
-        if (applicationName.equals(target)) {
-            // Message should go to TOPIC exchange
-            target = target + TOPIC;
-        }
         this.rabbitAdmin.getRabbitTemplate().convertAndSend(
-            target,
+            subject,
             "", Mappers.JSON.serialize(message));
     }
 

@@ -1,30 +1,29 @@
 package dev.soffa.foundation.pubsub;
 
-import dev.soffa.foundation.error.ControlledRandomFailureError;
 import dev.soffa.foundation.error.TechnicalException;
 import dev.soffa.foundation.message.MessageFactory;
 import dev.soffa.foundation.message.pubsub.PubSubMessenger;
 import dev.soffa.foundation.pubsub.app.ApplicationListener;
+import dev.soffa.foundation.pubsub.app.Broadcast1;
+import dev.soffa.foundation.pubsub.app.Hello1;
 import lombok.SneakyThrows;
 import org.awaitility.Awaitility;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 
-import java.util.Optional;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 
 @SpringBootTest(properties = {
-    "app.name=sample",
     "app.pubsub.enabled=true",
     "app.pubsub.clients.default.broadcasting=foundation",
     "app.pubsub.clients.default.options.mode=test",
@@ -44,46 +43,25 @@ public class RabbitMqTest {
         Assertions.assertTrue(ApplicationListener.onApplicationReadyCalled.get());
     }
 
-    @SneakyThrows
-    @Test
-    public void testClient() {
-        Assertions.assertNotNull(messenger);
-        AtomicLong counter = new AtomicLong(0);
-        AtomicLong failures = new AtomicLong(0);
-        final double errorRate = 10 / 100.0;
-        messenger.subscribe(message -> {
-            if (Math.random() < errorRate) {
-                // Induce random failure
-                failures.incrementAndGet();
-                throw new ControlledRandomFailureError("TRIGGER_MQ_RETRY");
-            }
-            counter.incrementAndGet();
-            return Optional.of("Hello");
-        });
 
-        messenger.publish(MessageFactory.create("operation-test"));
-        Awaitility.await().atMost(5, TimeUnit.SECONDS).until(() -> counter.get() > 0);
-        Assertions.assertTrue(failures.get() >= 0);
+    @SneakyThrows
+    @RepeatedTest(3)
+    public void testClient() {
+        messenger.publish(MessageFactory.create(Hello1.class.getSimpleName()));
+        Awaitility.await().atMost(1, TimeUnit.SECONDS).until(() -> Hello1.count() > 0);
     }
 
     @SneakyThrows
     @Test
     public void testReply() {
-        Assertions.assertNotNull(messenger);
-        messenger.subscribe(message -> Optional.of("Hello"));
-        String response = messenger.request("sample", MessageFactory.create("operation-test"), String.class).get();
+        String response = messenger.request("sample", Hello1.class, String.class).get();
         assertEquals("Hello", response);
     }
 
     @Test
     public void testBroadcast() {
-        AtomicBoolean consumed = new AtomicBoolean(false);
-        messenger.subscribe(message -> {
-            consumed.set(true);
-            return Optional.empty();
-        });
-        messenger.publish("*", MessageFactory.create("broadcast-operation-test"));
-        Awaitility.await().atMost(2, TimeUnit.SECONDS).until(consumed::get);
+        messenger.publish("*", MessageFactory.create(Broadcast1.class.getSimpleName()));
+        Awaitility.await().atMost(1, TimeUnit.SECONDS).until(() -> Broadcast1.count() > 0);
     }
 
     @Test
