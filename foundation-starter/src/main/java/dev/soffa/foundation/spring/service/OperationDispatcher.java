@@ -3,21 +3,20 @@ package dev.soffa.foundation.spring.service;
 import dev.soffa.foundation.activity.ActivityService;
 import dev.soffa.foundation.annotation.DefaultTenant;
 import dev.soffa.foundation.commons.Logger;
+import dev.soffa.foundation.commons.Mappers;
 import dev.soffa.foundation.commons.Sentry;
 import dev.soffa.foundation.commons.TextUtil;
+import dev.soffa.foundation.commons.validation.ValidationResult;
 import dev.soffa.foundation.config.OperationsMapping;
 import dev.soffa.foundation.context.Context;
 import dev.soffa.foundation.context.ContextHolder;
-import dev.soffa.foundation.core.Command;
-import dev.soffa.foundation.core.Dispatcher;
-import dev.soffa.foundation.core.Operation;
+import dev.soffa.foundation.core.*;
 import dev.soffa.foundation.message.MessageFactory;
 import dev.soffa.foundation.message.pubsub.PubSubClient;
 import dev.soffa.foundation.multitenancy.TenantHolder;
 import dev.soffa.foundation.resource.Resource;
 import lombok.AllArgsConstructor;
 import org.checkerframework.checker.nullness.qual.NonNull;
-import org.springframework.boot.actuate.endpoint.invoke.OperationInvoker;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -33,7 +32,6 @@ public class OperationDispatcher implements Dispatcher, Resource {
     private final ActivityService activities;
     private final PubSubClient pubSubClient;
     private static final Map<String, Boolean> DEFAULTS = new ConcurrentHashMap<>();
-    private static final Logger LOG = Logger.getLogger(OperationInvoker.class);
 
 
     @Override
@@ -69,17 +67,32 @@ public class OperationDispatcher implements Dispatcher, Resource {
         String operationName = operations.getOperationId(operation);
         return Sentry.get().watch("Operation dispatch: " + operationName, () -> {
 
-            operation.validate(input, ctx);
+            ValidationResult validation = operation.validate(input, ctx);
+
+            if (validation != null && validation.hasErrors()) {
+                Logger.app.error(
+                    "Operation dispatch canceled [%s], the provided input is not valid -- %s",
+                    operationName,
+                    Mappers.JSON.serialize(validation.getErrors())
+                );
+                return null;
+            }
+
             O res = operation.handle(input, ctx);
 
-            if (operation instanceof Command) {
+            if (operation instanceof Recorded) {
                 activities.record(ctx, operationName, input);
+            }
+
+            if (operation instanceof Broadcast) {
                 Sentry.get().watch("Operation success broadcast: " + operationName, () -> {
                     String pubSubOperation = ctx.getServiceName() + "." + TextUtil.snakeCase(operationName) + ".success";
                     pubSubClient.broadcast(MessageFactory.create(pubSubOperation, res));
                 });
             }
+
             return res;
+
         });
     }
 

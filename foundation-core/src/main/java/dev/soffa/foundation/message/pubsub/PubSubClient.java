@@ -4,6 +4,7 @@ package dev.soffa.foundation.message.pubsub;
 import dev.soffa.foundation.core.Operation;
 import dev.soffa.foundation.error.TodoException;
 import dev.soffa.foundation.message.Message;
+import dev.soffa.foundation.message.MessageFactory;
 import dev.soffa.foundation.message.MessageHandler;
 import lombok.SneakyThrows;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -40,6 +41,9 @@ public interface PubSubClient {
 
     void broadcast(@NotNull Message message);
 
+    default void broadcast(String operation, Object payload) {
+        broadcast(MessageFactory.create(operation, payload));
+    }
 
     // <I, O, T extends Query<I, O>> T proxy(@NonNull String subjet, @NotNull Class<T> operationClass);
 

@@ -18,7 +18,7 @@ public @interface Cron {
     String EVERY_15_MINUTES = "*/15 * * * *";
     String EVERY_30_MINUTES = "*/30 * * * *";
 
-    String EVERY_1_HOUR = "0 * * * * *";
+    String HOURLY = "0 * * * *";
 
     String value();
 }

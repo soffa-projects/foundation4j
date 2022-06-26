@@ -1,5 +1,5 @@
 #!/usr/bin/env sh
 
-rm -rf ~/.m2/repository/dev/soffa/foundation
+#Òrm -rf ~/.m2/repository/dev/soffa/foundation
 gradle classes publishToMavenLocal -x test -x check -x javadoc -x sign
 sync

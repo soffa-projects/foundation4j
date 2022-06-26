@@ -4,6 +4,7 @@ import dev.soffa.foundation.annotation.Handle;
 import dev.soffa.foundation.commons.TextUtil;
 import dev.soffa.foundation.context.Context;
 import dev.soffa.foundation.core.Command;
+import dev.soffa.foundation.core.EventHandler;
 import dev.soffa.foundation.core.Operation;
 import dev.soffa.foundation.core.Query;
 import dev.soffa.foundation.error.TechnicalException;
@@ -91,7 +92,7 @@ public class OperationsMapping {
                         .findFirst().orElseThrow(() -> new TechnicalException("Invalid operation definition"));
 
                     register(targetClass, operation, method, bindingName);
-                    if (intf != Operation.class && intf != Command.class && intf != Query.class) {
+                    if (intf != Operation.class && intf != EventHandler.class && intf != Command.class && intf != Query.class) {
                         register(intf, operation, method, bindingName);
                         operationNames.put(targetClass.getName(), intf.getSimpleName());
                         operationNames.put(targetClass.getSimpleName(), intf.getSimpleName());

@@ -93,7 +93,7 @@ et le versioning du projet respect les règles  [Semantic Versioning](https://se
 
 ### Added
 
-- Check JWT shape before proceeding to the actual validation
+- Check JWT shape before proceeding to the actual validator
 
 ## [0.10.0] - 2022-04-29
 
