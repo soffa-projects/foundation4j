@@ -32,7 +32,7 @@ public class Validator implements ValidationResult {
             if (value instanceof String) {
                 isNullOrEmpty = ((String) value).isEmpty();
             } else if (value instanceof VO) {
-                isNullOrEmpty = (((VO) value).getValue()).isEmpty();
+                isNullOrEmpty = ((VO) value).getValue().isEmpty();
             }
         }
         return check(field, message, isNullOrEmpty);
@@ -91,6 +91,7 @@ public class Validator implements ValidationResult {
         }
     }
 
+    @Override
     public void printErrors(String message) {
         if (hasErrors()) {
             Logger.app.error("%s -- %s", message, Mappers.JSON.serialize(errors));
