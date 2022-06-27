@@ -12,37 +12,34 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class Paging {
 
-    public static Paging DEFAULT = new Paging(1, 50);
-    public static int DEFAULT_MAX_SIZE = 1000;
+    public static final int BASE_INDEX = 1;
+    private static final int DEFAULT_FETCH_SIZE = 50;
+    public static final Paging DEFAULT = new Paging(BASE_INDEX, DEFAULT_FETCH_SIZE);
+    public static final int DEFAULT_MAX_SIZE = 1000;
     @Schema(defaultValue = "1", nullable = true)
     @Parameter(in= ParameterIn.QUERY)
     private int page;
 
     @Schema(defaultValue = "50", nullable = true)
-    private int size = 50;
+    private int size = DEFAULT_FETCH_SIZE;
 
     @Schema(nullable = true)
     private String sort;
 
     public Paging(int page, int size) {
-        if (page < 1) {
-            page = 1;
+        if (page < BASE_INDEX) {
+            page = BASE_INDEX;
         }
         this.page = page;
         this.size = size;
     }
 
-
-    public void setPage(int page) {
-        if (page < 1) {
-            page = 1;
-        }
-        this.page = page;
-    }
-
     public Paging cap() {
         if (size > DEFAULT_MAX_SIZE) {
             size = DEFAULT_MAX_SIZE;
+        }
+        if (size < BASE_INDEX) {
+            size = BASE_INDEX;
         }
         return this;
     }
@@ -59,8 +56,8 @@ public class Paging {
         if (p.sort == null) {
             p.sort = defautlSort;
         }
-        if (p.page < 1) {
-            p.page = 1;
+        if (p.page < BASE_INDEX) {
+            p.page = BASE_INDEX;
         }
         return p;
     }
