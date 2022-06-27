@@ -7,8 +7,12 @@ import dev.soffa.foundation.commons.Logger;
 import dev.soffa.foundation.commons.TextUtil;
 import dev.soffa.foundation.error.ConfigurationException;
 import lombok.Getter;
+import lombok.SneakyThrows;
 import org.apache.commons.lang3.reflect.FieldUtils;
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
+import javax.persistence.Column;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.Transient;
@@ -34,9 +38,11 @@ public class EntityInfo<T> {
     private static final Logger LOG = Logger.get(EntityInfo.class);
 
     public EntityInfo(Class<T> entityClass, String tablePrefix) {
+        this(entityClass, tablePrefix, true);
+    }
+    public EntityInfo(Class<T> entityClass, String tablePrefix, boolean checkTable) {
         this.entityClass = entityClass;
-
-        tableName = getTableName(entityClass);
+        tableName = getTableName(entityClass, checkTable);
         if (TextUtil.isNotEmpty(tablePrefix)) {
             tableName = tablePrefix + tableName;
         }
@@ -44,7 +50,15 @@ public class EntityInfo<T> {
     }
 
     public static <T> void register(Class<T> entityClass, String tablePrefix) {
-        EntityInfo<T> info = new EntityInfo<>(entityClass, tablePrefix);
+        REGISTRY.put(entityClass.getName(), create(entityClass, tablePrefix, true));
+    }
+
+    public static <T> EntityInfo<T> create(@NonNull Class<T> entityClass, @Nullable String tablePrefix) {
+        return create(entityClass, tablePrefix, true);
+    }
+
+    public static <T> EntityInfo<T> create(@NonNull Class<T> entityClass, @Nullable String tablePrefix, boolean checkTable) {
+        EntityInfo<T> info = new EntityInfo<>(entityClass, tablePrefix, checkTable);
         // Support
         Field[] fields = FieldUtils.getAllFields(entityClass);
 
@@ -75,7 +89,7 @@ public class EntityInfo<T> {
 
         info.afterPropertiesSet();
 
-        REGISTRY.put(entityClass.getName(), info);
+        return info;
     }
 
     // -----------------------------------------------------------------------------------------------------------------
@@ -107,11 +121,20 @@ public class EntityInfo<T> {
         return TextUtil.format("%s", value);
     }*/
 
+    @SneakyThrows
     public void addProperty(String property, Class<?> type) {
         if (propertiesToColumnsMapping.containsKey(property)) {
             return;
         }
-        String column = TextUtil.snakeCase(property);
+        String column = null;
+
+        Field field = entityClass.getDeclaredField(property);
+        if (field.isAnnotationPresent(Column.class)) {
+            column = field.getAnnotation(Column.class).name();
+        }
+        if (TextUtil.isEmpty(column)) {
+            column = TextUtil.snakeCase(property);
+        }
         columns.add(property);
         propertiesToColumnsMapping.put(property, column);
         columnsEscaped.add(escapeColumnName(column));
@@ -148,7 +171,7 @@ public class EntityInfo<T> {
         return propertiesTypes.get(key);
     }
 
-    private String getTableName(Class<?> entityClass) {
+    private String getTableName(Class<?> entityClass, boolean checkTable) {
         String tableName = null;
         Store store = entityClass.getAnnotation(Store.class);
         if (store != null) {
@@ -167,8 +190,10 @@ public class EntityInfo<T> {
         if (!CUSTOM_TABLES.isEmpty() && CUSTOM_TABLES.containsKey(entityClass.getName())) {
             return CUSTOM_TABLES.get(entityClass.getName());
         }
-
-        throw new ConfigurationException("No table name specified for %s, use @Store or @Entity", entityClass.getName());
+        if (checkTable) {
+            throw new ConfigurationException("No table name specified for %s, use @Store or @Entity", entityClass.getName());
+        }
+        return null;
     }
 
 

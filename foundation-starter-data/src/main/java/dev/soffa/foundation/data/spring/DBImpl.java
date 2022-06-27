@@ -139,7 +139,7 @@ public final class DBImpl extends AbstractDataSource implements ApplicationListe
     private void register(String id, DataSourceConfig config, boolean migrate) {
         String sourceId = id.toLowerCase();
         if (registry.containsKey(sourceId)) {
-            LOG.warn("Datasource with id %s is already registered", id);
+            LOG.debug("Datasource with id %s is already registered", id);
             return;
         }
         String url = config.getUrl().replace(TENANT_PLACEHOLDER, id).replace(TENANT_PLACEHOLDER.toUpperCase(), id);

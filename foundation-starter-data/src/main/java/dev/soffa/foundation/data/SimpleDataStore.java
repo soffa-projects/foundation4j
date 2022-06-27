@@ -3,7 +3,6 @@ package dev.soffa.foundation.data;
 import com.google.common.base.Preconditions;
 import com.zaxxer.hikari.HikariDataSource;
 import dev.soffa.foundation.commons.Logger;
-import dev.soffa.foundation.commons.Mappers;
 import dev.soffa.foundation.commons.TextUtil;
 import dev.soffa.foundation.data.config.DataSourceProperties;
 import dev.soffa.foundation.data.jdbi.BeanMapper;
@@ -185,7 +184,8 @@ public class SimpleDataStore implements DataStore {
     @Override
     public <T> List<T> query(String query, Class<T> resultClass) {
         Jdbi ds = getLink(null);
-        return ds.withHandle(handle -> handle.createQuery(query).mapToMap().map(record -> Mappers.JSON_FULLACCESS_SNAKE.convert(record, resultClass)).list());
+        EntityInfo<T> info = EntityInfo.create(resultClass, null, false);
+        return ds.withHandle(handle -> handle.createQuery(query).map(BeanMapper.of(info)).collect(Collectors.toList()));
     }
 
     @Override
