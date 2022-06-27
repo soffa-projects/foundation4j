@@ -43,10 +43,6 @@ public interface DB {
         // Implementation not required
     }
 
-    default void configureTenantsAsync() {
-        // Implementation not required
-    }
-
     default void register(String[] names, boolean migrate) {
         // Implementation not required
     }

@@ -1,17 +1,10 @@
 package dev.soffa.foundation.data.spring;
 
-import dev.soffa.foundation.commons.CollectionUtil;
-import dev.soffa.foundation.commons.EventBus;
-import dev.soffa.foundation.commons.Logger;
-import dev.soffa.foundation.commons.TextUtil;
+import dev.soffa.foundation.commons.*;
 import dev.soffa.foundation.config.AppConfig;
 import dev.soffa.foundation.data.*;
 import dev.soffa.foundation.data.config.DataSourceProperties;
-import dev.soffa.foundation.error.ConfigurationException;
-import dev.soffa.foundation.error.InvalidTenantException;
-import dev.soffa.foundation.error.NotImplementedException;
-import dev.soffa.foundation.error.TechnicalException;
-import dev.soffa.foundation.events.DatabaseReadyEvent;
+import dev.soffa.foundation.error.*;
 import dev.soffa.foundation.model.TenantId;
 import dev.soffa.foundation.multitenancy.TenantHolder;
 import dev.soffa.foundation.multitenancy.TenantsLoader;
@@ -53,7 +46,6 @@ public final class DBImpl extends AbstractDataSource implements ApplicationListe
     private String tenanstListQuery;
     private LockProvider lockProvider;
     private MigrationDelegate migrationDelegate;
-
 
 
     @SneakyThrows
@@ -157,10 +149,19 @@ public final class DBImpl extends AbstractDataSource implements ApplicationListe
             DataSource ds = DBHelper.createDataSource(config.getName(), DataSourceProperties.create(appConfig.getName(), id, url));
             // config.setName(appConfig.getName());
             DatasourceInfo di = new DatasourceInfo(id, config, ds);
+
             registry.put(sourceId, di);
             if (migrate) {
-                applyMigrations(id);
+                try {
+                    applyMigrations(id);
+                } catch (Exception e) {
+                    registry.remove(id);
+                    LOG.error("Error applying migrations for datasource %s, skipping registration", id);
+                    LOG.error(ErrorUtil.loookupOriginalMessage(e));
+                    Sentry.get().captureException(e);
+                }
             }
+
         }
     }
 
@@ -208,8 +209,7 @@ public final class DBImpl extends AbstractDataSource implements ApplicationListe
 
     @Override
     public void onApplicationEvent(@NonNull ContextRefreshedEvent event) {
-        configureTenantsAsync();
-        EventBus.post(new DatabaseReadyEvent());
+        this.configureTenants();
     }
 
     @Override
@@ -302,6 +302,10 @@ public final class DBImpl extends AbstractDataSource implements ApplicationListe
 
     @Override
     public void configureTenants() {
+        ExecutorHelper.execute(this::configureTenantsBlocking);
+    }
+
+    private void configureTenantsBlocking() {
         DataSource defaultDs = getDefaultDataSource();
 
         if (!registry.containsKey(TENANT_PLACEHOLDER)) {
@@ -319,19 +323,18 @@ public final class DBImpl extends AbstractDataSource implements ApplicationListe
                     tenants.addAll(results);
                 }
             });
-        } else {
-            LOG.info("Loading tenants with TenantsLoader");
-            try {
-                TenantsLoader tenantsLoader = context.getBean(TenantsLoader.class);
-                Set<String> tenantList = tenantsLoader.getTenantList();
-                if (tenantList != null) {
-                    tenants.addAll(tenantsLoader.getTenantList());
-                }
-            } catch (NoSuchBeanDefinitionException e) {
-                LOG.error("No TenantsLoader defined");
-            } catch (Exception e) {
-                LOG.error("Error loading tenants", e);
+        }
+        LOG.info("Loading tenants with TenantsLoader");
+        try {
+            TenantsLoader tenantsLoader = context.getBean(TenantsLoader.class);
+            Set<String> tenantList = tenantsLoader.getTenantList();
+            if (tenantList != null && !tenantList.isEmpty()) {
+                tenants.addAll(tenantList);
             }
+        } catch (NoSuchBeanDefinitionException e) {
+            LOG.error("No TenantsLoader defined");
+        } catch (Exception e) {
+            LOG.error("Error loading tenants", e);
         }
 
         LOG.info("Tenants loaded: %d", tenants.size());
@@ -342,8 +345,4 @@ public final class DBImpl extends AbstractDataSource implements ApplicationListe
         LOG.info("Database is now configured");
     }
 
-    @Override
-    public void configureTenantsAsync() {
-        new Thread(this::configureTenants).start();
-    }
 }

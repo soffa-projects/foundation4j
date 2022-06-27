@@ -23,6 +23,22 @@ public final class ResponseEntity<T> {
         return of(ResponseStatus.OK, data);
     }
 
+    public static <T> ResponseEntity<T> notFound() {
+        return of(ResponseStatus.NOT_FOUND, null);
+    }
+
+    public static <T> ResponseEntity<T> noContent() {
+        return of(ResponseStatus.NO_CONTENT, null);
+    }
+
+    public static <T> ResponseEntity<T> notModified(T data) {
+        return of(ResponseStatus.NOT_MODIFIED, data);
+    }
+
+    public static <T> ResponseEntity<T> notModified() {
+        return notModified(null);
+    }
+
     public static <T> ResponseEntity<T> created(T data) {
         return of(ResponseStatus.CREATED, data);
     }

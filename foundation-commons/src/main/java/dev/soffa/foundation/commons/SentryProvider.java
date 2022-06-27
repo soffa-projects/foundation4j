@@ -76,6 +76,7 @@ public interface SentryProvider {
 
     default void captureError(Context context, String message) {
         captureEvent(context, message, EventLevel.ERROR);
+        Logger.app.error(message);
     }
 
     default void captureEvent(Context context, String message) {
