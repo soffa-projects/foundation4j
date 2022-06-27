@@ -51,7 +51,7 @@ public class SimpleDataStore implements DataStore {
     private static final String BINDING = "binding";
     private static final String COLUMNS = "columns";
     private static final String VALUES = "values";
-    private static final Map<String, Jdbi> LINKS_CACHE = new ConcurrentHashMap<>();
+    private final Map<String, Jdbi> cache = new ConcurrentHashMap<>();
     private DB db;
     private Jdbi dbi;
 
@@ -184,7 +184,7 @@ public class SimpleDataStore implements DataStore {
 
     @Override
     public <T> List<T> query(String query, Class<T> resultClass) {
-        Jdbi ds = getDataSource(null);
+        Jdbi ds = getLink(null);
         return ds.withHandle(handle -> handle.createQuery(query).mapToMap().map(record -> Mappers.JSON_FULLACCESS_SNAKE.convert(record, resultClass)).list());
     }
 
@@ -340,6 +340,9 @@ public class SimpleDataStore implements DataStore {
     }
 
     private Jdbi getLink(TenantId tenant) {
+        if (dbi != null) {
+            return dbi;
+        }
         String lTenant = TenantId.DEFAULT_VALUE;
         if (tenant != null) {
             lTenant = tenant.getValue();
@@ -348,11 +351,11 @@ public class SimpleDataStore implements DataStore {
             }
         }
         Preconditions.checkNotNull(lTenant, "Null tenant received while fetching database link");
-        if (LINKS_CACHE.containsKey(lTenant)) {
-            return LINKS_CACHE.get(lTenant);
+        if (cache.containsKey(lTenant)) {
+            return cache.get(lTenant);
         }
         Jdbi jdbi = getDataSource(lTenant);
-        LINKS_CACHE.put(lTenant, jdbi);
+        cache.put(lTenant, jdbi);
         return jdbi;
     }
 
