@@ -62,10 +62,10 @@ public class OperationDispatcher implements Dispatcher, Resource {
         } else {
             TenantId tenant = ctx.getTenant();
             TenantId override = operation.getTenant(input, ctx);
-            if (override == null || override == TenantId.CONTEXT) {
+            if (override == null || TenantId.CONTEXT.equals(override)) {
                 override = operation.getTenant(ctx);
             }
-            if (override != TenantId.CONTEXT && override!=null) {
+            if (!TenantId.CONTEXT.equals(override) && override != null) {
                 tenant = override;
                 Logger.platform.info("Token overriden for operation %s: %s", className, tenant);
             }
@@ -84,6 +84,15 @@ public class OperationDispatcher implements Dispatcher, Resource {
         if (operation instanceof Recorded) {
             activities.record(ctx, operationName, input);
         }
+
+        /*
+        if (res instanceof OperationEntity) {
+            OperationEntity<?> oe = (OperationEntity<?>) res;
+            List<DataPoint> points = oe.getDataPoints();
+            List<Event> events = oe.getEvents();
+            List<HookEntry> hooks = oe.getHooks();
+        }
+        */
 
         if (operation instanceof Broadcast) {
             Sentry.get().watch("Operation success broadcast: " + operationName, () -> {
