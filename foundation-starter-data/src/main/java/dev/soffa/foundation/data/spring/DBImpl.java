@@ -28,7 +28,6 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -38,7 +37,6 @@ public final class DBImpl extends AbstractDataSource implements ApplicationListe
     public static final String AUTO_MIGRATE = "auto";
     private static final Logger LOG = Logger.get(DBImpl.class);
     private static final String TENANT_PLACEHOLDER = "__tenant__";
-    private static final AtomicReference<String> LOCK = new AtomicReference<>("DB_LOCK");
     private final AppConfig appConfig;
     private final ApplicationContext context;
     private final Map<String, DatasourceInfo> registry = new ConcurrentHashMap<>();
@@ -242,31 +240,29 @@ public final class DBImpl extends AbstractDataSource implements ApplicationListe
         if (info.isMigrated()) {
             return;
         }
-        synchronized (LOCK) {
-            withLock("db-migration-" + linkId, 60, 30, () -> {
-                if (migrationDelegate == null) {
-                    Map<String, MigrationDelegate> beans = context.getBeansOfType(MigrationDelegate.class);
-                    if (beans.size() > 0) {
-                        migrationDelegate = beans.values().iterator().next();
-                    } else {
-                        migrationDelegate = new NoMigrationDelegate();
-                    }
+        withLock("db-migration-" + linkId, 60, 30, () -> {
+            if (migrationDelegate == null) {
+                Map<String, MigrationDelegate> beans = context.getBeansOfType(MigrationDelegate.class);
+                if (beans.size() > 0) {
+                    migrationDelegate = beans.values().iterator().next();
+                } else {
+                    migrationDelegate = new NoMigrationDelegate();
                 }
-                String lMigrationName = AUTO_MIGRATE;
-                if (migrationDelegate != null && !TenantId.DEFAULT_VALUE.equals(datasource)) {
-                    lMigrationName = migrationDelegate.getMigrationName(datasource);
-                }
-                if (AUTO_MIGRATE.equalsIgnoreCase(lMigrationName)) {
-                    lMigrationName = info.getConfig().getMigration();
-                }
-                String changelogPath = DBHelper.findChangeLogPath(appConfig.getName(), lMigrationName);
-                if (TextUtil.isNotEmpty(changelogPath)) {
-                    DBHelper.applyMigrations(info, changelogPath, tablesPrefix, appConfig.getName());
-                }
-                info.setMigrated(true);
-                LOG.info("Migrations [%s] applied for [%s]", lMigrationName, linkId);
-            });
-        }
+            }
+            String lMigrationName = AUTO_MIGRATE;
+            if (migrationDelegate != null && !TenantId.DEFAULT_VALUE.equals(datasource)) {
+                lMigrationName = migrationDelegate.getMigrationName(datasource);
+            }
+            if (AUTO_MIGRATE.equalsIgnoreCase(lMigrationName)) {
+                lMigrationName = info.getConfig().getMigration();
+            }
+            String changelogPath = DBHelper.findChangeLogPath(appConfig.getName(), lMigrationName);
+            if (TextUtil.isNotEmpty(changelogPath)) {
+                DBHelper.applyMigrations(info, changelogPath, tablesPrefix, appConfig.getName());
+            }
+            info.setMigrated(true);
+            LOG.info("Migrations [%s] applied for [%s]", lMigrationName, linkId);
+        });
     }
 
     @Override

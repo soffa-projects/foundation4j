@@ -211,6 +211,7 @@ public final class DBHelper {
         return changelogPath;
     }
 
+
     @SneakyThrows
     public static LockProvider createLockTable(DataSource ds, String tablePrefix) {
 
@@ -225,6 +226,7 @@ public final class DBHelper {
             .withTableName(tablePrefix + "f_shedlock")
             .withTimeZone(TimeZone.getTimeZone("UTC"))
             .build());
+
         try {
             Jdbi.create(ds).useTransaction(handle -> {
                 // EL

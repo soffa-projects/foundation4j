@@ -2,6 +2,7 @@ package dev.soffa.foundation.spring.service;
 
 import dev.soffa.foundation.activity.ActivityService;
 import dev.soffa.foundation.annotation.DefaultTenant;
+import dev.soffa.foundation.commons.Logger;
 import dev.soffa.foundation.commons.Sentry;
 import dev.soffa.foundation.commons.TextUtil;
 import dev.soffa.foundation.config.OperationsMapping;
@@ -13,6 +14,7 @@ import dev.soffa.foundation.core.Operation;
 import dev.soffa.foundation.core.Recorded;
 import dev.soffa.foundation.message.MessageFactory;
 import dev.soffa.foundation.message.pubsub.PubSubClient;
+import dev.soffa.foundation.model.TenantId;
 import dev.soffa.foundation.multitenancy.TenantHolder;
 import dev.soffa.foundation.resource.Resource;
 import lombok.AllArgsConstructor;
@@ -31,7 +33,7 @@ public class OperationDispatcher implements Dispatcher, Resource {
     private final OperationsMapping operations;
     private final ActivityService activities;
     private final PubSubClient pubSubClient;
-    private static final Map<String, Boolean> DEFAULTS = new ConcurrentHashMap<>();
+    private static final Map<String, Boolean> DEFAULT_TENANT = new ConcurrentHashMap<>();
 
 
     @Override
@@ -52,13 +54,22 @@ public class OperationDispatcher implements Dispatcher, Resource {
 
         String className = operation.getClass().getSimpleName();
 
-        if (!DEFAULTS.containsKey(className)) {
-            DEFAULTS.put(className, AnnotationUtils.findAnnotation(operation.getClass(), DefaultTenant.class) != null);
+        if (!DEFAULT_TENANT.containsKey(className)) {
+            DEFAULT_TENANT.put(className, AnnotationUtils.findAnnotation(operation.getClass(), DefaultTenant.class) != null);
         }
-        if (DEFAULTS.get(className)) {
+        if (DEFAULT_TENANT.get(className)) {
             return TenantHolder.useDefault(() -> apply(operation, input, ctx));
         } else {
-            return TenantHolder.use(ctx.getTenant(), () -> apply(operation, input, ctx));
+            TenantId tenant = ctx.getTenant();
+            TenantId override = operation.getTenant(input, ctx);
+            if (override == null || override == TenantId.CONTEXT) {
+                override = operation.getTenant(ctx);
+            }
+            if (override != TenantId.CONTEXT && override!=null) {
+                tenant = override;
+                Logger.platform.info("Token overriden for operation %s: %s", className, tenant);
+            }
+            return TenantHolder.use(tenant, () -> apply(operation, input, ctx));
         }
     }
 

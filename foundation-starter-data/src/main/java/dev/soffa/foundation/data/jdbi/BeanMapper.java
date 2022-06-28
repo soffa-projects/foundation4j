@@ -30,19 +30,21 @@ public final class BeanMapper<T> implements RowMapper<T> {
         for (Map.Entry<String, String> e : entityInfo.getPropertiesToColumnsMapping().entrySet()) {
             String col = e.getValue();
             Object value = rs.getObject(col);
+            String prop = e.getKey();
 
             if (value == null) {
                 values.put(col, null);
+                values.put(prop, null);
                 continue;
             }
 
-            String prop = e.getKey();
             Class<?> target = entityInfo.getPropertyType(prop);
             if (value instanceof Clob) {
                 value = rs.getString(col);
             }
             if (target.isInstance(value)) {
                 values.put(col, value);
+                values.put(prop, value);
                 continue;
             }
             boolean convertToMap = entityInfo.isCustomTypeOrMap(prop) && value instanceof String;
@@ -54,6 +56,7 @@ public final class BeanMapper<T> implements RowMapper<T> {
                 }
             }
             values.put(col, value);
+            values.put(prop, value);
         }
         return Mappers.JSON_FULLACCESS_SNAKE.convert(values, entityInfo.getEntityClass());
     }
