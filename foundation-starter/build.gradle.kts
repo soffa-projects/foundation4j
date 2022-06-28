@@ -18,6 +18,7 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-security")
     implementation("org.springframework.boot:spring-boot-starter-aop")
     implementation("org.springframework:spring-tx")
+    implementation("org.springframework.cloud:spring-cloud-starter-sleuth")
     implementation("net.logstash.logback:logstash-logback-encoder:7.2")
     implementation("org.springframework.cloud:spring-cloud-starter-consul-discovery")
     implementation("com.hazelcast:hazelcast-all:4.2.5")

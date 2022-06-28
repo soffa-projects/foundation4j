@@ -11,7 +11,6 @@ include(":foundation-starter-test")
 include(":foundation-starter-data")
 include(":foundation-starter-pubsub")
 include(":foundation-starter-storage")
-include(":foundation-starter-tracing")
 
 // include(":samples:starter")
 // include(":samples:starter-data")
