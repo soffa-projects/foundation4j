@@ -1,12 +1,16 @@
 package dev.soffa.foundation.model;
 
-import lombok.Value;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.Map;
 
-@Value
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class HookEntry {
-    String id;
-    String subject;
-    Map<String, Object> data;
+    private String id;
+    private String subject;
+    private Map<String, Object> data;
 }

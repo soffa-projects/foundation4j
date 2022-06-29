@@ -1,9 +1,9 @@
 package dev.soffa.foundation.spring.handler;
 
-import dev.soffa.foundation.context.Context;
-import dev.soffa.foundation.hooks.HookService;
-import dev.soffa.foundation.hooks.action.ProcessHookItem;
-import dev.soffa.foundation.hooks.model.ProcessHookItemInput;
+import dev.soffa.foundation.context.OperationContext;
+import dev.soffa.foundation.core.HookService;
+import dev.soffa.foundation.core.action.ProcessHookItem;
+import dev.soffa.foundation.core.model.ProcessHookItemInput;
 import lombok.AllArgsConstructor;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.springframework.stereotype.Component;
@@ -14,8 +14,8 @@ public class DoProcessHookItem implements ProcessHookItem {
 
     private HookService hooks;
     @Override
-    public Void handle(ProcessHookItemInput input, @NonNull Context ctx) {
-        hooks.process(ctx, input);
+    public Void handle(ProcessHookItemInput input, @NonNull OperationContext ctx) {
+        hooks.process(ctx.getInternal(), input);
         return null;
     }
 }

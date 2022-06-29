@@ -6,6 +6,7 @@ import dev.soffa.foundation.context.Context;
 import dev.soffa.foundation.context.ContextHolder;
 import lombok.SneakyThrows;
 
+import java.lang.reflect.Type;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
@@ -25,6 +26,13 @@ public final class MessageFactory {
 
     @SneakyThrows
     public static <T> T getPayload(final Message message, Class<T> type) {
+        if (type == Void.class) {
+            return null;
+        }
+        return Mappers.JSON.deserialize(message.getPayload(), type);
+    }
+  @SneakyThrows
+    public static <T> T getPayload(final Message message, Type type) {
         if (type == Void.class) {
             return null;
         }

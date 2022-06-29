@@ -3,6 +3,8 @@ package dev.soffa.foundation;
 import dev.soffa.foundation.commons.ClassUtil;
 import org.junit.jupiter.api.Test;
 
+import java.lang.reflect.Type;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
@@ -25,7 +27,7 @@ public class ClassUtilTest {
 
     @Test
     public void testGeneric() {
-        Class<?>[] generics = ClassUtil.lookupGeneric(RepoAdapter.class, SimpleRepository.class);
+        Type[] generics = ClassUtil.lookupGeneric(RepoAdapter.class, SimpleRepository.class);
         assertNotNull(generics);
         assertEquals(2, generics.length);
         assertEquals(Entity.class, generics[0]);

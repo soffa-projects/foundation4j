@@ -1,12 +1,14 @@
 package dev.soffa.foundation.config;
 
 import dev.soffa.foundation.annotation.Handle;
+import dev.soffa.foundation.commons.ClassUtil;
 import dev.soffa.foundation.commons.TextUtil;
-import dev.soffa.foundation.context.Context;
+import dev.soffa.foundation.context.DefaultOperationContext;
 import dev.soffa.foundation.core.Command;
 import dev.soffa.foundation.core.EventHandler;
 import dev.soffa.foundation.core.Operation;
 import dev.soffa.foundation.core.Query;
+import dev.soffa.foundation.error.ConfigurationException;
 import dev.soffa.foundation.error.TechnicalException;
 import lombok.Getter;
 import lombok.SneakyThrows;
@@ -14,7 +16,7 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 import org.springframework.aop.framework.Advised;
 import org.springframework.aop.support.AopUtils;
 
-import java.lang.reflect.Method;
+import java.lang.reflect.Type;
 import java.util.*;
 
 @Getter
@@ -23,7 +25,7 @@ public class OperationsMapping {
     private final Set<Operation<?, ?>> registry;
     private final Map<String, Object> internal = new HashMap<>();
     private final Map<String, String> operationNames = new HashMap<>();
-    private final Map<String, Class<?>> inputTypes = new HashMap<>();
+    private final Map<String, Type> inputTypes = new HashMap<>();
 
     public OperationsMapping(Set<Operation<?, ?>> registry) {
         this.registry = registry;
@@ -40,11 +42,13 @@ public class OperationsMapping {
 
     @SuppressWarnings("unchecked")
     public <I, O, T extends Operation<I, O>> T invoke(String name) {
-        return (T) require(name).handle(null, Context.create());
+        Operation<I,O> op = require(name);
+        return (T) op.handle(null, DefaultOperationContext.create(op.getClass()));
     }
 
     public void send(String name) {
-        require(name).handle(null, Context.create());
+        Operation<?,?> op = require(name);
+        op.handle(null, DefaultOperationContext.create(op.getClass()));
     }
 
     @SuppressWarnings("unchecked")
@@ -87,13 +91,10 @@ public class OperationsMapping {
 
             for (Class<?> intf : targetClass.getInterfaces()) {
                 if (Operation.class.isAssignableFrom(intf)) {
-                    Method method = Arrays.stream(operation.getClass().getMethods())
-                        .filter(m -> "handle".equals(m.getName()) && 2 == m.getParameterCount() && m.getParameterTypes()[1] == Context.class)
-                        .findFirst().orElseThrow(() -> new TechnicalException("Invalid operation definition"));
 
-                    register(targetClass, operation, method, bindingName);
+                    register(targetClass, operation, bindingName);
                     if (intf != Operation.class && intf != EventHandler.class && intf != Command.class && intf != Query.class) {
-                        register(intf, operation, method, bindingName);
+                        register(intf, operation, bindingName);
                         operationNames.put(targetClass.getName(), intf.getSimpleName());
                         operationNames.put(targetClass.getSimpleName(), intf.getSimpleName());
                     }
@@ -103,12 +104,20 @@ public class OperationsMapping {
         }
     }
 
-    private void register(Class<?> target, Object operation, Method method, String bindingName) {
+    private void register(Class<?> target, Object operation, String bindingName) {
         internal.put(target.getSimpleName(), operation);
         internal.put(target.getName(), operation);
 
+        Class<?> resolvedClass = resolveClass(operation);
+        Type[] signature = ClassUtil.lookupGeneric(resolvedClass, Operation.class);
 
-        Class<?> inputType = resolveClass(method.getParameterTypes()[0]);
+        if (signature==null || signature.length == 0) {
+            throw new ConfigurationException("%s is not a valid operation definition", operation.getClass().getName());
+        }
+        Type inputType = signature[0];
+        if (inputType == Object.class) {
+            throw new ConfigurationException("Operation %s has an invalid input type (Object)", operation.getClass().getName());
+        }
         inputTypes.put(target.getSimpleName(), inputType);
         inputTypes.put(target.getName(), inputType);
 

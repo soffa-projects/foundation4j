@@ -6,7 +6,7 @@ import dev.soffa.foundation.data.analytics.InfluxDataProvider;
 import dev.soffa.foundation.data.analytics.QuestDBProviderFactory;
 import dev.soffa.foundation.data.app.model.PaymentMetric;
 import dev.soffa.foundation.helper.ID;
-import dev.soffa.foundation.timeseries.DataPoint;
+import dev.soffa.foundation.model.DataPoint;
 import dev.soffa.foundation.timeseries.TSFieldType;
 import dev.soffa.foundation.timeseries.TSTable;
 import dev.soffa.foundation.timeseries.TimeSeriesProvider;

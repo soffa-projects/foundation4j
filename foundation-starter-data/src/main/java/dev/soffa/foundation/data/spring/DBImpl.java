@@ -59,6 +59,7 @@ public final class DBImpl extends AbstractDataSource implements ApplicationListe
             this.tablesPrefix = appConfig.getDb().getTablesPrefix();
             createDatasources(appConfig.getDb().getDatasources());
             this.lockProvider = DBHelper.createLockTable(getDefaultDataSource(), this.tablesPrefix);
+            DBHelper.createPendingJobTable(getDefaultDataSource(), this.tablesPrefix);
             applyMigrations();
         }
     }

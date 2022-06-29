@@ -1,18 +1,17 @@
 package dev.soffa.foundation.activity;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class Activity {
 
     private String event;
     private String subject;
     private String data;
-
-    public Activity(String event, String data) {
-        this.event = event;
-        this.data = data;
-    }
 
 
 }

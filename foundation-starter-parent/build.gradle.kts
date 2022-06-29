@@ -6,7 +6,6 @@ plugins {
 
 dependencies {
     api(project(":foundation-core"))
-    implementation(project(":foundation-starter-tracing"))
     implementation(project(":foundation-starter-config"))
 
     api("org.springframework.cloud:spring-cloud-starter-consul-discovery")

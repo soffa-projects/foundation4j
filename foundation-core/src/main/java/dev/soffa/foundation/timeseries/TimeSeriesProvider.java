@@ -1,6 +1,7 @@
 package dev.soffa.foundation.timeseries;
 
 import dev.soffa.foundation.error.TodoException;
+import dev.soffa.foundation.model.DataPoint;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
 import java.io.Closeable;

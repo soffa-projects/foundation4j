@@ -1,4 +1,4 @@
-package dev.soffa.foundation.hooks.model;
+package dev.soffa.foundation.core.model;
 
 import dev.soffa.foundation.commons.Mappers;
 import lombok.AllArgsConstructor;

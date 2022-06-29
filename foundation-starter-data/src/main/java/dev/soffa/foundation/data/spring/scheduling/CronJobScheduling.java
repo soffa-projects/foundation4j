@@ -4,7 +4,7 @@ import dev.soffa.foundation.annotation.Cron;
 import dev.soffa.foundation.commons.Logger;
 import dev.soffa.foundation.config.OperationsMapping;
 import dev.soffa.foundation.context.ApplicationLifecycle;
-import dev.soffa.foundation.scheduling.Scheduler;
+import dev.soffa.foundation.scheduling.OperationScheduler;
 import dev.soffa.foundation.scheduling.ServiceWorker;
 import lombok.AllArgsConstructor;
 import org.springframework.context.ApplicationContext;
@@ -16,7 +16,7 @@ import java.util.Map;
 @AllArgsConstructor
 class CronJobScheduling implements ApplicationLifecycle {
 
-    private final Scheduler scheduler;
+    private final OperationScheduler scheduler;
     private final ApplicationContext context;
 
     @Override

@@ -8,6 +8,7 @@ import dev.soffa.foundation.context.Context;
 import dev.soffa.foundation.context.ContextHolder;
 import dev.soffa.foundation.core.Dispatcher;
 import dev.soffa.foundation.core.Operation;
+import dev.soffa.foundation.error.NotImplementedException;
 import dev.soffa.foundation.message.DispatchMessageHandler;
 import dev.soffa.foundation.message.Message;
 import dev.soffa.foundation.message.MessageFactory;
@@ -18,6 +19,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
+import java.lang.reflect.Type;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -26,10 +28,18 @@ import java.util.concurrent.atomic.AtomicReference;
 public class OperationDispatchMessageHandler implements DispatchMessageHandler {
 
     private static final Logger LOG = Logger.get(OperationDispatchMessageHandler.class);
-    private final OperationsMapping mapping;
+    //private final OperationsMapping mapping;
     private final PlatformAuthManager authManager;
     private final ApplicationContext context;
     private final AtomicReference<Dispatcher> dispatcher = new AtomicReference<>();
+    private final AtomicReference<OperationsMapping> operationsMapping = new AtomicReference<>(null);
+
+    private OperationsMapping getOperations() {
+        if (operationsMapping.get() == null) {
+            operationsMapping.set(context.getBean(OperationsMapping.class));
+        }
+        return operationsMapping.get();
+    }
 
     @Override
     @SuppressWarnings("PMD.CyclomaticComplexity")
@@ -50,7 +60,7 @@ public class OperationDispatchMessageHandler implements DispatchMessageHandler {
         }
 
 
-        Object operation = mapping.getInternal().get(message.getOperation());
+        Object operation = getOperations().getInternal().get(message.getOperation());
         if (operation == null) {
             LOG.debug("Message %s skipped, no local handler registered", message.getOperation());
             return Optional.empty();
@@ -71,7 +81,7 @@ public class OperationDispatchMessageHandler implements DispatchMessageHandler {
             return Optional.empty();
         }
 
-        Class<?> inputType = mapping.getInputTypes().get(message.getOperation());
+        Type inputType = getOperations().getInputTypes().get(message.getOperation());
         if (inputType == null) {
             Logger.app.error("[pubsub] Unable to find input type for operation %s", message.getOperation());
             return Optional.empty();
@@ -89,8 +99,12 @@ public class OperationDispatchMessageHandler implements DispatchMessageHandler {
                 }
             }
             if (payload.get() == null) {
-                LOG.debug("Deserializing message content into %s", inputType.getName());
-                payload.set(MessageFactory.getPayload(message, inputType));
+                LOG.debug("Deserializing message content into %s", inputType.getTypeName());
+                if (inputType instanceof Class<?>) {
+                    payload.set(MessageFactory.getPayload(message, (Class<?>)inputType));
+                }else {
+                    throw new NotImplementedException("TYPE_NOT_IMEPLEMENTED: Please contact the developer");
+                }
             }
         }
 

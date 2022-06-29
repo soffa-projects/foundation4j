@@ -3,7 +3,7 @@ package dev.soffa.foundation.data.analytics;
 import dev.soffa.foundation.commons.DateUtil;
 import dev.soffa.foundation.commons.UrlInfo;
 import dev.soffa.foundation.error.TechnicalException;
-import dev.soffa.foundation.timeseries.DataPoint;
+import dev.soffa.foundation.model.DataPoint;
 import dev.soffa.foundation.timeseries.TimeSeriesProvider;
 import io.questdb.cutlass.line.AbstractLineSender;
 import io.questdb.cutlass.line.LineTcpSender;

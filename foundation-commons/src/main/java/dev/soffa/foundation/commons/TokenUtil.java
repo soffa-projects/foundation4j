@@ -42,13 +42,13 @@ public final class TokenUtil {
     @SneakyThrows
     public static String createJwt(final String issuer, final String secretKey,
                                    final String subject, final Map<String, Object> claims,
-                                   final int timeToLiveInMinutes) {
+                                   final Duration duration) {
         Algorithm algorithm = Algorithm.HMAC256(secretKey);
         final Date issuedAt = new Date();
         JWTCreator.Builder builder = JWT.create()
             .withIssuedAt(issuedAt)
             .withSubject(subject)
-            .withExpiresAt(DateUtil.plusMinutes(issuedAt, timeToLiveInMinutes))
+            .withExpiresAt(DateUtil.plusMinutes(issuedAt, (int)duration.toMinutes()))
             .withIssuer(issuer);
         if (claims != null) {
             for (Map.Entry<String, Object> claim : claims.entrySet()) {

@@ -12,7 +12,7 @@ public class DefaultActivityService implements ActivityService {
     private final Logger logger = Logger.get(DefaultActivityService.class);
 
     @Override
-    public void record(Context context, Activity activity) {
+    public void record(Activity activity, Context context) {
         queue.add(activity);
         logger.info("New activity record: %s -- %s", activity.getEvent(), activity.getData());
     }

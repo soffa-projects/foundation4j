@@ -1,10 +1,9 @@
 package dev.soffa.foundation.extra.jobs;
 
-import dev.soffa.foundation.annotation.Store;
-import dev.soffa.foundation.data.EntityModel;
 import lombok.*;
 
 import java.util.Date;
+import java.util.Map;
 
 @Getter
 @Setter
@@ -12,13 +11,13 @@ import java.util.Date;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Store("f_pending_jobs")
-public class PendingJob implements EntityModel {
+public class PendingJob {
 
-    private String id;
+    private PendingJobId id;
     private String operation;
     private String subject;
     private String data;
+    private Map<String, Object> metas;
     private Date created;
     private String lastError;
     private int errorsCount;

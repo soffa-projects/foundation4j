@@ -7,7 +7,7 @@ import com.influxdb.client.domain.WritePrecision;
 import com.influxdb.client.write.Point;
 import dev.soffa.foundation.commons.DateUtil;
 import dev.soffa.foundation.commons.UrlInfo;
-import dev.soffa.foundation.timeseries.DataPoint;
+import dev.soffa.foundation.model.DataPoint;
 import dev.soffa.foundation.timeseries.TimeSeriesProvider;
 import lombok.AllArgsConstructor;
 import org.checkerframework.checker.nullness.qual.NonNull;

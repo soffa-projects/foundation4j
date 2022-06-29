@@ -1,14 +1,16 @@
 package dev.soffa.foundation.core;
 
 import dev.soffa.foundation.context.Context;
-import dev.soffa.foundation.resource.Resource;
+import dev.soffa.foundation.core.model.Serialized;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
-public interface Dispatcher extends Resource {
+public interface Dispatcher extends BaseDispatcher {
+
+    <I, O> O dispatch(String operationName, Serialized input, String serializedContext);
 
     <I, O, T extends Operation<I, O>> O dispatch(Class<T> operationClass, I input, Context ctx);
 
-    <I, O, T extends Operation<I, O>> O dispatch(Class<T> operationClass, I input);
+
 
     <I, O, T extends Operation<I, O>> O invoke(T operation, I input, Context ctx);
 

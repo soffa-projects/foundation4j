@@ -15,7 +15,7 @@ import java.util.Optional;
 @Getter
 @Setter
 @SuppressWarnings("PMD.GodClass")
-public class Context {
+public class Context implements BaseContext {
 
     private static boolean production = true;
 
@@ -51,6 +51,7 @@ public class Context {
         Context.production = production;
     }
 
+    @Override
     public boolean isProduction() {
         return Context.production;
     }
@@ -117,18 +118,22 @@ public class Context {
         return value;
     }
 
+    @Override
     public boolean hasAuthorization() {
         return isNotEmpty(authorization);
     }
 
+    @Override
     public String getSender() {
         return sender;
     }
 
+    @Override
     public String getServiceName() {
         return sender;
     }
 
+    @Override
     public TenantId getTenant() {
         return TenantId.of(getTenantId());
     }
@@ -147,28 +152,39 @@ public class Context {
         return this;
     }
 
+    @Override
     public String getTenantId() {
         return trimToNull(tenantId);
     }
 
+    @Override
     public boolean hasTenant() {
         return isNotEmpty(tenantId);
     }
 
+    @Override
     public boolean hasApplicationId() {
         return isNotEmpty(applicationId);
     }
 
+    @Override
     public boolean hasAccountId() {
         return isNotEmpty(accountId);
     }
 
+    @Override
     public boolean hasIpAddress() {
         return isNotEmpty(ipAddress);
     }
 
+    @Override
     public boolean isAuthenticated() {
         return authentication != null;
+    }
+
+    @Override
+    public Authentication getAuthentication() {
+        return authentication;
     }
 
     public void setAuthentication(Authentication auth) {
@@ -189,6 +205,7 @@ public class Context {
         accountName = auth.getAccountName();
     }
 
+    @Override
     public Optional<String> getUsername() {
         if (authentication != null) {
             return Optional.ofNullable(authentication.getUsername());
@@ -201,6 +218,7 @@ public class Context {
     }
 
     @SneakyThrows
+    @JsonIgnore
     public Map<String, String> getContextMap() {
         Map<String, String> contextMap = new HashMap<>();
         contextMap.put("account_id", getAccountId());
@@ -223,6 +241,7 @@ public class Context {
     }
 
     @SneakyThrows
+    @JsonIgnore
     public Map<String, String> getHeaders() {
         Map<String, String> headers = new HashMap<>();
 

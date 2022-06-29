@@ -53,39 +53,47 @@ public class ClassUtil {
         return resources;
     }
 
-    @NonNull
-    public static Class<?>[] lookupGeneric(Class<?> type, @NonNull Class<?> genericClass) {
-        if (type==null || type == Object.class) {
+
+    public static Type[] lookupGeneric(Class<?> type, @NonNull Class<?> genericClass) {
+        if (type == null || type == Object.class) {
             return null;
         }
+
+        Type[] result = null;
+
         final List<Type> candidates = new ArrayList<>();
         Optional.of(type.getGenericInterfaces()).ifPresent(types -> candidates.addAll(Arrays.asList(types)));
         Optional.ofNullable(type.getGenericSuperclass()).ifPresent(candidates::add);
 
         for (Type candidate : candidates) {
-            if (candidate == null) {
-                continue;
+            if (candidate instanceof ParameterizedType) {
+                ParameterizedType ptype = (ParameterizedType) candidate;
+                result = lookupGeneric(ptype, genericClass);
+            } else if (candidate instanceof Class<?>) {
+                result = lookupGeneric((Class<?>)candidate, genericClass);
+            } else {
+                throw new TechnicalException("Unsupported type: " + candidate);
             }
-            boolean matches = candidate instanceof ParameterizedType && ((ParameterizedType)candidate).getRawType() == genericClass;
-            if (matches) {
-                return Arrays.stream(((ParameterizedType) candidate).getActualTypeArguments()).map(t -> {
-                    //EL
-                    return (Class<?>) t;
-                }).toArray(Class<?>[]::new);
-            }
-        }
-
-        Class<?>[] result = lookupGeneric(type.getSuperclass(), genericClass);
-        if (result == null) {
-            for (Class<?> anInterface : type.getInterfaces()) {
-                result = lookupGeneric(anInterface, genericClass);
-                if (result==null) {
-                    break;
-                }
+            if (result != null) {
+                break;
             }
         }
 
         return result;
+    }
+
+    public static Type[] lookupGeneric(ParameterizedType candidate, @NonNull Type genericClass) {
+        boolean matches = genericClass == candidate.getRawType();
+        if (matches) {
+            return candidate.getActualTypeArguments();
+        }
+        if (candidate.getRawType() instanceof Class<?>) {
+            Class<?> rawType = (Class<?>) candidate.getRawType();
+            if (((Class<?>)genericClass).isAssignableFrom(rawType)) {
+                return new Type[]{candidate};
+            }
+        }
+        return null;
     }
 
 

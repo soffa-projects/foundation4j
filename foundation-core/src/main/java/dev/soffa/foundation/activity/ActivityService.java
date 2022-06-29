@@ -7,14 +7,14 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 
 public interface ActivityService {
 
-    void record(Context context, Activity activity);
+    void record(Activity activity, Context context);
 
-    default void record(Context context, @NonNull String event, @Nullable Object data) {
-        record(context, new Activity(event, Mappers.JSON.serialize(data)));
+    default void record( @NonNull String event, @Nullable Object data, Context context) {
+        record(new Activity(event, null, Mappers.JSON.serialize(data)), context);
     }
 
-    default void record(Context context, @NonNull Class<?> event, @Nullable Object data) {
-        record(context, event.getSimpleName(), data);
+    default void record(@NonNull Class<?> event, @Nullable Object data, Context context) {
+        record(event.getSimpleName(), data, context);
     }
 
     long count(String event);

@@ -77,6 +77,7 @@ public class JacksonMapper implements Mapper {
         return mapper.readValue(data, type);
     }
 
+
     @SneakyThrows
     @Override
     public <T> T deserialize(byte[] data, Class<T> type) {

@@ -3,7 +3,7 @@ package dev.soffa.foundation.data;
 import dev.soffa.foundation.data.app.action.JobAction1;
 import dev.soffa.foundation.data.app.action.JobAction1Handler;
 import dev.soffa.foundation.data.app.worker.SimpleJobHandler;
-import dev.soffa.foundation.scheduling.Scheduler;
+import dev.soffa.foundation.scheduling.OperationScheduler;
 import org.awaitility.Awaitility;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -19,7 +19,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 public class SchedulingTest {
 
     @Inject
-    private Scheduler scheduler;
+    private OperationScheduler scheduler;
 
     @Test
     public void testScheduler() {

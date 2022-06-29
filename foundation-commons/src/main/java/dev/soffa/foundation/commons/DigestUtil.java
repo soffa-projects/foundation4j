@@ -10,6 +10,9 @@ public final class DigestUtil {
     }
 
     public static UUID makeUUID(String raw) {
+        if (TextUtil.isEmpty(raw)) {
+            return UUID.randomUUID();
+        }
         try {
             return UUID.fromString(raw);
         }catch (Exception e) {

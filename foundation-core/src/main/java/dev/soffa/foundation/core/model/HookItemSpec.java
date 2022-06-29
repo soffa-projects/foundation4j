@@ -1,11 +1,11 @@
-package dev.soffa.foundation.hooks.model;
+package dev.soffa.foundation.core.model;
 
 import lombok.Data;
 
 import java.util.Map;
 
 @Data
-public class HookItem {
+public class HookItemSpec {
 
     private String name;
     private String type;

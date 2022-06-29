@@ -2,6 +2,7 @@ package dev.soffa.foundation.message.pubsub;
 
 
 import dev.soffa.foundation.core.Operation;
+import dev.soffa.foundation.core.RemoteOperation;
 import dev.soffa.foundation.error.TodoException;
 import dev.soffa.foundation.message.Message;
 import dev.soffa.foundation.message.MessageFactory;
@@ -57,7 +58,7 @@ public interface PubSubClient {
 
     void addBroadcastChannel(String value);
 
-    default <I, O, T extends Operation<I, O>> T createOperationCaller(@NotNull Class<T> operationClass, @NonNull String channel) {
+    default <I, O, T extends Operation<I, O>> RemoteOperation<I,O> createOperationCaller(@NotNull Class<T> operationClass, @NonNull String channel) {
         return PubSubClientFactory.of(this, operationClass, channel);
     }
 

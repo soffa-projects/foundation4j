@@ -81,11 +81,11 @@ public class DefaultTokenProvider implements TokenProvider, ClaimsExtractor {
 
     @Override
     public Token create(TokenType type, String subjet, Map<String, Object> claims) {
-        return create(type, subjet, claims, config.getDefaultTtl());
+        return create(type, subjet, claims, Duration.ofMinutes(config.getDefaultTtl()));
     }
 
     @Override
-    public Token create(TokenType type, String subjet, Map<String, Object> claims, int ttlInMinutes) {
+    public Token create(TokenType type, String subjet, Map<String, Object> claims, Duration duration) {
         String token;
         if (type == TokenType.JWT) {
             if (privateJwks != null) {
@@ -94,7 +94,7 @@ public class DefaultTokenProvider implements TokenProvider, ClaimsExtractor {
                     config.getIssuer(),
                     subjet,
                     claims,
-                    Duration.ofMinutes(ttlInMinutes)
+                    duration
                 );
             } else if (TextUtil.isNotEmpty(config.getSecret())) {
                 token = TokenUtil.createJwt(
@@ -102,7 +102,7 @@ public class DefaultTokenProvider implements TokenProvider, ClaimsExtractor {
                     config.getSecret(),
                     subjet,
                     claims,
-                    ttlInMinutes
+                    duration
                 );
             } else {
                 throw new ConfigurationException("No secret or private jwks configured");
@@ -110,7 +110,7 @@ public class DefaultTokenProvider implements TokenProvider, ClaimsExtractor {
         } else {
             throw new NotImplementedException("Token type not supported yet: %s", type.name());
         }
-        return new Token(token, subjet, claims, ttlInMinutes);
+        return new Token(token, subjet, claims, (int)duration.toMinutes());
     }
 
     @Override

@@ -4,7 +4,7 @@ import lombok.Value;
 
 @Value
 public class Event {
-    String name;
+    String operation;
     String target = "*";
-    Object payload;
+    String payload;
 }

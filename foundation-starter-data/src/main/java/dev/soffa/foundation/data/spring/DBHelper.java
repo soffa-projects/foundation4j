@@ -22,9 +22,7 @@ import org.springframework.core.io.ResourceLoader;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 import javax.sql.DataSource;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.TimeZone;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 public final class DBHelper {
@@ -167,7 +165,6 @@ public final class DBHelper {
         lqb.setChangeLogParameters(changeLogParams);
         try {
             lqb.setDataSource(ds);
-
             lqb.afterPropertiesSet(); // Run migrations
             LOG.info("[datasource:%s] migration '%s' successfully applied", dsInfo.getName(), lqb.getChangeLog());
         } catch (Exception e) {
@@ -215,12 +212,6 @@ public final class DBHelper {
     @SneakyThrows
     public static LockProvider createLockTable(DataSource ds, String tablePrefix) {
 
-        if (ds instanceof HikariDataSource) {
-            LOG.info("Creating lock table in datasource: %s", ((HikariDataSource) ds).getSchema());
-        } else if (ds instanceof HikariDS) {
-            LOG.info("Creating lock table in datasource: %s", ((HikariDS) ds).getSchema());
-        }
-
         LockProvider lockProvider = new JdbcTemplateLockProvider(JdbcTemplateLockProvider.Configuration.builder()
             .withJdbcTemplate(new JdbcTemplate(ds))
             .withTableName(tablePrefix + "f_shedlock")
@@ -235,11 +226,41 @@ public final class DBHelper {
                     .execute();
             });
         } catch (Exception e) {
-            // Will ignore because the table might have been created by another instance of the service
             LOG.warn(e.getMessage());
-            throw new TechnicalException(e);
+            throw new DatabaseException(e);
         }
         return lockProvider;
+    }
+
+    @SneakyThrows
+    public static void createPendingJobTable(DataSource ds, String tablePrefix) {
+        try {
+            Jdbi.create(ds).useTransaction(handle -> {
+                // EL
+                List<String> commands = new ArrayList<>();
+                commands.add("CREATE TABLE IF NOT EXISTS <table>(" +
+                    "id VARCHAR NOT NULL," +
+                    "operation VARCHAR NOT NULL," +
+                    "subject VARCHAR NOT NULL," +
+                    "data TEXT," +
+                    "metas TEXT," +
+                    "last_error TEXT," +
+                    "errors_count TEXT," +
+                    "created TIMESTAMP NOT NULL," +
+                    "PRIMARY KEY (id))");
+                commands.add("CREATE INDEX IF NOT EXISTS <table>__created__idx ON <table>(created)");
+                commands.add("CREATE INDEX IF NOT EXISTS <table>__subject__idx ON <table>(subject)");
+                commands.add("CREATE INDEX IF NOT EXISTS <table>__operation__idx ON <table>(operation)");
+                for (String command : commands) {
+                    handle.createUpdate(command)
+                        .define("table", TextUtil.trimToEmpty(tablePrefix) + "f_pending_jobs")
+                        .execute();
+                }
+            });
+        } catch (Exception e) {
+            LOG.warn(e.getMessage());
+            throw new DatabaseException(e);
+        }
     }
 
 }

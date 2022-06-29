@@ -6,6 +6,7 @@ import dev.soffa.foundation.commons.TextUtil;
 import dev.soffa.foundation.model.Paging;
 import dev.soffa.foundation.model.TenantId;
 
+import java.lang.reflect.Type;
 import java.util.List;
 import java.util.Optional;
 
@@ -45,7 +46,7 @@ public class SimpleRepository<E, I> implements EntityRepository<E, I> {
     @SuppressWarnings("unchecked")
     public SimpleRepository(DB db, String tableName, String tenant) {
         this.ds = new SimpleDataStore(db);
-        Class<?>[] generics = ClassUtil.lookupGeneric(this.getClass(), SimpleRepository.class);
+        Type[] generics = ClassUtil.lookupGeneric(this.getClass(), SimpleRepository.class);
         Preconditions.checkNotNull(generics, "No EntityRepository found in class hierarchy");
         this.entityClass = (Class<E>)generics[0];
         if (TextUtil.isNotEmpty(tableName)) {

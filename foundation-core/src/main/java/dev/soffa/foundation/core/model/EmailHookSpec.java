@@ -1,9 +1,9 @@
-package dev.soffa.foundation.hooks.model;
+package dev.soffa.foundation.core.model;
 
 import lombok.Data;
 
 @Data
-public class EmailHook {
+public class EmailHookSpec {
 
     public static final String TYPE = "email";
 

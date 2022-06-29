@@ -16,6 +16,10 @@ public class Token {
     private String value;
     private String subject;
     private Map<String, Object> claims;
+
+    /**
+     * Duration in minutes
+     */
     private int expiresIn;
 
     public Token(String value) {

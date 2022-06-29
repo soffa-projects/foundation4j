@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableMap;
 import dev.soffa.foundation.commons.RandomUtil;
 import dev.soffa.foundation.data.app.MessageDao;
 import dev.soffa.foundation.data.app.model.Message;
+import dev.soffa.foundation.extra.jobs.PendingJobRepo;
 import dev.soffa.foundation.model.Paging;
 import dev.soffa.foundation.test.BaseTest;
 import org.junit.jupiter.api.Test;
@@ -15,10 +16,16 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 public class EntityRepositoryTest extends BaseTest {
 
-
     @Inject
     private MessageDao messages;
 
+    @Inject
+    private PendingJobRepo pendingJobs;
+
+    @Test
+    public void testPendingJobs() {
+        assertEquals(0, pendingJobs.count());
+    }
 
     @Test
     public void testPaging() {

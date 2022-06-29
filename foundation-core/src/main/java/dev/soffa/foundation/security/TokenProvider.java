@@ -5,6 +5,7 @@ import dev.soffa.foundation.model.Authentication;
 import dev.soffa.foundation.model.Token;
 import dev.soffa.foundation.model.TokenType;
 
+import java.time.Duration;
 import java.util.Map;
 
 public interface TokenProvider {
@@ -14,8 +15,11 @@ public interface TokenProvider {
     }
 
     Token create(TokenType type, String subject, Map<String, Object> claims);
+    default Token createJwt(String subject, Map<String, Object> claims, Duration duration) {
+        return create(TokenType.JWT, subject, claims, duration);
+    }
 
-    Token create(TokenType type, String subject, Map<String, Object> claims, int ttlInMinutes);
+    Token create(TokenType type, String subject, Map<String, Object> claims, Duration duration);
 
     Authentication decode(String token, ClaimsExtractor extractor);
 

@@ -1,10 +1,11 @@
 package dev.soffa.foundation.spring.service;
 
 import dev.soffa.foundation.commons.Logger;
+import dev.soffa.foundation.commons.Mappers;
 import dev.soffa.foundation.context.Context;
 import dev.soffa.foundation.core.Dispatcher;
-import dev.soffa.foundation.core.Operation;
-import dev.soffa.foundation.scheduling.Scheduler;
+import dev.soffa.foundation.core.model.Serialized;
+import dev.soffa.foundation.scheduling.OperationScheduler;
 import dev.soffa.foundation.scheduling.ServiceWorker;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.ApplicationContext;
@@ -15,25 +16,39 @@ import java.util.UUID;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicLong;
 
 @Component
 @ConditionalOnProperty(value = "app.scheduler.provider", havingValue = "simple")
-public class SimpleExecutorScheduler implements Scheduler {
+public class SimpleExecutorOperationScheduler implements OperationScheduler {
 
     private final ApplicationContext context;
     private final ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
+    private Dispatcher dispatcher;
 
-    public SimpleExecutorScheduler(ApplicationContext context) {
+    public static final AtomicLong COUNTER = new AtomicLong(0);
+
+    public SimpleExecutorOperationScheduler(ApplicationContext context) {
         this.context = context;
         Logger.platform.info("SimpleExecutorScheduler initialized");
     }
 
     @Override
-    public <I, O, T extends Operation<I, O>> void enqueue(UUID uuid, Class<T> operationClass, I input, Context ctx) {
-        Logger.platform.info("Operation scheduled: %s", operationClass.getName());
-        final Dispatcher dispatcher = context.getBean(Dispatcher.class);
+    public void enqueue(UUID uuid, String operationName, Serialized input, Context ctx) {
+        COUNTER.incrementAndGet();
+        Logger.platform.info("Operation scheduled: %s", operationName);
+        if (dispatcher == null) {
+            dispatcher = context.getBeansOfType(Dispatcher.class).values().iterator().next();
+        }
+        final String serializedContext = Mappers.JSON_FULLACCESS.serialize(ctx);
         executorService.schedule(() -> {
-            dispatcher.dispatch(operationClass, input, ctx);
+            Logger.platform.info("Processing scheduled operation: %s", operationName);
+            COUNTER.decrementAndGet();
+            try {
+                dispatcher.dispatch(operationName, input, serializedContext);
+            }catch (Exception e) {
+                Logger.platform.error(e);
+            }
         }, 500, TimeUnit.MILLISECONDS);
     }
 

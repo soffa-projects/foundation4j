@@ -1,10 +1,10 @@
 package dev.soffa.foundation.starter.test;
 
 import dev.soffa.foundation.context.Context;
+import dev.soffa.foundation.core.HookService;
+import dev.soffa.foundation.core.model.HookSpec;
+import dev.soffa.foundation.core.model.ProcessHookInput;
 import dev.soffa.foundation.extra.notifications.NoopNotificationAgent;
-import dev.soffa.foundation.hooks.HookService;
-import dev.soffa.foundation.hooks.model.Hook;
-import dev.soffa.foundation.hooks.model.ProcessHookInput;
 import org.checkerframework.com.google.common.collect.ImmutableMap;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,9 +26,9 @@ public class HookServiceTest {
 
     @Test
     public void testHooks() {
-        Hook hook1 = hookService.getHook(CREATED_ACCOUNT);
+        HookSpec hook1 = hookService.getHook(CREATED_ACCOUNT);
         assertNotNull(hook1);
-        Hook hook2 = hookService.getHook(CREATED_ACCOUNT);
+        HookSpec hook2 = hookService.getHook(CREATED_ACCOUNT);
         assertNotNull(hook2);
         assertEquals(hook1, hook2);
     }
