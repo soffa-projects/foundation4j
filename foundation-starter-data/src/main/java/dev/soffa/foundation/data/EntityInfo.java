@@ -36,6 +36,7 @@ public class EntityInfo<T> {
     private String idProperty;
     private List<String> updatePairs;
     private static final Logger LOG = Logger.get(EntityInfo.class);
+    private static final Map<String, EntityInfo<?>> cache = new HashMap<>();
 
     public EntityInfo(Class<T> entityClass, String tablePrefix) {
         this(entityClass, tablePrefix, true);
@@ -50,14 +51,24 @@ public class EntityInfo<T> {
     }
 
     public static <T> void register(Class<T> entityClass, String tablePrefix) {
-        REGISTRY.put(entityClass.getName(), create(entityClass, tablePrefix, true));
+        REGISTRY.put(entityClass.getName(), of(entityClass, tablePrefix, true));
     }
 
-    public static <T> EntityInfo<T> create(@NonNull Class<T> entityClass, @Nullable String tablePrefix) {
-        return create(entityClass, tablePrefix, true);
+    public static <T> EntityInfo<T> of(@NonNull Class<T> entityClass, @Nullable String tablePrefix) {
+        return of(entityClass, tablePrefix, true);
     }
 
-    public static <T> EntityInfo<T> create(@NonNull Class<T> entityClass, @Nullable String tablePrefix, boolean checkTable) {
+    public static <T> EntityInfo<T> of(@NonNull Class<T> entityClass) {
+        return of(entityClass, null, true);
+    }
+
+    public static <T> EntityInfo<T> of(@NonNull Class<T> entityClass, @Nullable String tablePrefix, boolean checkTable) {
+
+        if (cache.containsKey(entityClass.getName())) {
+            //noinspection unchecked
+            return (EntityInfo<T>) cache.get(entityClass.getName());
+        }
+
         EntityInfo<T> info = new EntityInfo<>(entityClass, tablePrefix, checkTable);
         // Support
         Field[] fields = FieldUtils.getAllFields(entityClass);
@@ -88,6 +99,7 @@ public class EntityInfo<T> {
         }
 
         info.afterPropertiesSet();
+        cache.put(entityClass.getName(), info);
 
         return info;
     }
