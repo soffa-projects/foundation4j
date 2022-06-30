@@ -54,7 +54,7 @@ public class HateosEntityControllerAdvice implements ResponseBodyAdvice<Object> 
             "self", new HateosLink(rewriteInternalLink(request.getURI()))
         );
         Map<String, Object> transformed = JacksonMapper.toMap(mapper, body, Object.class);
-        transformed.put("_links", links);
+        transformed.put("links", links);
         return transformed;
     }
 

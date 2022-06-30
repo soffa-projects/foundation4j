@@ -10,6 +10,7 @@ import dev.soffa.foundation.data.jdbi.HandleProvider;
 import dev.soffa.foundation.error.DatabaseException;
 import dev.soffa.foundation.error.TechnicalException;
 import dev.soffa.foundation.helper.ID;
+import dev.soffa.foundation.model.PagedList;
 import dev.soffa.foundation.model.Paging;
 import dev.soffa.foundation.model.TenantId;
 import dev.soffa.foundation.multitenancy.TenantHolder;
@@ -200,21 +201,25 @@ public class SimpleDataStore implements DataStore {
     }
 
     @Override
-    public <E> List<E> findAll(TenantId tenant, Class<E> entityClass, Paging paging) {
+    public <E> PagedList<E> findAll(TenantId tenant, Class<E> entityClass, Paging paging) {
         return withHandle(tenant, entityClass, (handle, info) -> {
             // EL
-            return buildQuery(handle, entityClass, null, paging)
+            List<E> items = buildQuery(handle, entityClass, null, paging)
                 .map(BeanMapper.of(info)).collect(Collectors.toList());
+            long total = count(tenant, entityClass, null);
+            return PagedList.of(items, total, paging);
         });
     }
 
     @Override
-    public <E> List<E> find(TenantId tenant, Class<E> entityClass, Criteria criteria, Paging paging) {
+    public <E> PagedList<E> find(TenantId tenant, Class<E> entityClass, Criteria criteria, Paging paging) {
         return withHandle(tenant, entityClass, (handle, info) -> {
             //EL
-            return buildQuery(handle, entityClass, criteria, paging)
+            List<E> items = buildQuery(handle, entityClass, criteria, paging)
                 .setMaxRows(paging.getSize())
                 .map(BeanMapper.of(info)).collect(Collectors.toList());
+            long total = count(tenant, entityClass, criteria);
+            return PagedList.of(items, total, paging);
         });
     }
 
@@ -339,7 +344,6 @@ public class SimpleDataStore implements DataStore {
             throw new DatabaseException(e);
         }
     }
-
 
 
 }

@@ -3,11 +3,16 @@ package dev.soffa.foundation.spring.aop;
 import dev.soffa.foundation.commons.Logger;
 import dev.soffa.foundation.commons.TextUtil;
 import dev.soffa.foundation.context.Context;
+import dev.soffa.foundation.context.ContextHolder;
+import dev.soffa.foundation.error.ForbiddenException;
 import dev.soffa.foundation.error.UnauthorizedException;
 import dev.soffa.foundation.error.ValidationException;
+import dev.soffa.foundation.model.TenantId;
 import dev.soffa.foundation.multitenancy.TenantHolder;
 import lombok.SneakyThrows;
 import org.aspectj.lang.JoinPoint;
+import org.aspectj.lang.ProceedingJoinPoint;
+import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
@@ -16,7 +21,9 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
 import java.util.Optional;
+import java.util.function.Supplier;
 
+@SuppressWarnings("Convert2Lambda")
 @Aspect
 @Component
 public class SecurityAspect {
@@ -56,6 +63,24 @@ public class SecurityAspect {
             LOG.warn("Access denied to [%s.%s], current context does not contain a valid tenant", point.getSignature().getDeclaringTypeName(), point.getSignature().getName());
             throw ERR_TENANT_REQUIRED;
         }
+    }
+
+    @SneakyThrows
+    @Around("@within(dev.soffa.foundation.annotation.ApplicationTenant) || @annotation(dev.soffa.foundation.annotation.ApplicationTenant)")
+    public Object setApplicationTenant(ProceedingJoinPoint point) {
+        String applicationId = ContextHolder.require().getApplicationId();
+        if (TextUtil.isEmpty(applicationId)) {
+            throw new ForbiddenException("ApplicationId is required to access this resource.");
+        }
+        TenantId tenant = TenantId.of(applicationId);
+        return TenantHolder.use(tenant, new Supplier<Object>() {
+            @SneakyThrows
+            @Override
+            public Object get() {
+                return point.proceed();
+            }
+        });
+
     }
 
     private Optional<Context> getRequestContext() {

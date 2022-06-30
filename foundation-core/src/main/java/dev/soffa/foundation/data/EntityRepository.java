@@ -2,10 +2,10 @@ package dev.soffa.foundation.data;
 
 import com.google.common.collect.ImmutableMap;
 import dev.soffa.foundation.error.ResourceNotFoundException;
+import dev.soffa.foundation.model.PagedList;
 import dev.soffa.foundation.model.Paging;
 import dev.soffa.foundation.model.TenantId;
 
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Consumer;
@@ -25,40 +25,40 @@ public interface EntityRepository<E, I> {
 
     long count(TenantId tennant, Criteria criteria);
 
-    default List<E> findAll() {
+    default PagedList<E> findAll() {
         return findAll(Paging.DEFAULT);
     }
 
-    default List<E> findAll(Paging paging) {
+    default PagedList<E> findAll(Paging paging) {
         return findAll(TenantId.CONTEXT, paging);
     }
 
-    List<E> findAll(TenantId tenantId, Paging paging);
+    PagedList<E> findAll(TenantId tenantId, Paging paging);
 
-    default List<E> find(TenantId tenant, Criteria criteria) {
+    default PagedList<E> find(TenantId tenant, Criteria criteria) {
         return find(tenant, criteria, Paging.DEFAULT);
     }
 
 
-    default List<E> findAll(TenantId tenantId) {
+    default PagedList<E> findAll(TenantId tenantId) {
         return findAll(tenantId, Paging.DEFAULT);
     }
 
-    List<E> find(TenantId tenant, Criteria criteria, Paging paging);
+    PagedList<E> find(TenantId tenant, Criteria criteria, Paging paging);
 
-    default List<E> find(Criteria criteria) {
+    default PagedList<E> find(Criteria criteria) {
         return find(criteria, Paging.DEFAULT);
     }
 
-    default List<E> find(Criteria criteria, Paging paging) {
+    default PagedList<E> find(Criteria criteria, Paging paging) {
         return find(TenantId.CONTEXT, criteria, paging);
     }
 
-    default List<E> find(Map<String, Object> filter) {
+    default PagedList<E> find(Map<String, Object> filter) {
         return find(filter, Paging.DEFAULT);
     }
 
-    default List<E> find(Map<String, Object> filter, Paging paging) {
+    default PagedList<E> find(Map<String, Object> filter, Paging paging) {
         return find(Criteria.of(filter), paging);
     }
 

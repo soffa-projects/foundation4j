@@ -4,11 +4,11 @@ import com.google.common.base.Preconditions;
 import dev.soffa.foundation.commons.ClassUtil;
 import dev.soffa.foundation.commons.TextUtil;
 import dev.soffa.foundation.data.jdbi.DBHandleProvider;
+import dev.soffa.foundation.model.PagedList;
 import dev.soffa.foundation.model.Paging;
 import dev.soffa.foundation.model.TenantId;
 
 import java.lang.reflect.Type;
-import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
 
@@ -84,12 +84,12 @@ public class SimpleRepository<E, I> implements EntityRepository<E, I> {
 
 
     @Override
-    public List<E> findAll(TenantId tenant, Paging paging) {
+    public PagedList<E> findAll(TenantId tenant, Paging paging) {
         return find(resolveTenant(tenant), null, paging);
     }
 
     @Override
-    public List<E> find(TenantId tenant, Criteria criteria, Paging paging) {
+    public PagedList<E> find(TenantId tenant, Criteria criteria, Paging paging) {
         return ds.find(resolveTenant(tenant), entityClass, criteria, paging);
     }
 

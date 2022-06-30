@@ -1,6 +1,7 @@
 package dev.soffa.foundation.data;
 
 
+import dev.soffa.foundation.model.PagedList;
 import dev.soffa.foundation.model.Paging;
 import dev.soffa.foundation.model.TenantId;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -67,13 +68,13 @@ public interface DataStore {
 
     <E> int delete(TenantId tenant, E entity);
 
-    default <E> List<E> find(Class<E> entityClass, Criteria criteria) {
+    default <E> PagedList<E> find(Class<E> entityClass, Criteria criteria) {
         return find(TenantId.CONTEXT, entityClass, criteria, Paging.DEFAULT);
     }
 
-    <E> List<E> find(TenantId tenant, Class<E> entityClass, Criteria criteria, Paging paging);
+    <E> PagedList<E> find(TenantId tenant, Class<E> entityClass, Criteria criteria, Paging paging);
 
-    default <E> List<E> find(Class<E> entityClass, Criteria criteria, Paging paging) {
+    default <E> PagedList<E> find(Class<E> entityClass, Criteria criteria, Paging paging) {
         return find(TenantId.CONTEXT, entityClass, criteria, paging);
     }
 
@@ -83,7 +84,7 @@ public interface DataStore {
 
     int execute(TenantId tenant, String command);
 
-    default <E> List<E> find(TenantId tenant, Class<E> entityClass, Criteria criteria) {
+    default <E> PagedList<E> find(TenantId tenant, Class<E> entityClass, Criteria criteria) {
         return find(tenant, entityClass, criteria, Paging.DEFAULT);
     }
 
@@ -93,15 +94,15 @@ public interface DataStore {
 
     <E> Optional<E> get(TenantId tenant, Class<E> entityClass, Criteria criteria);
 
-    default <E> List<E> findAll(Class<E> entityClass) {
+    default <E> PagedList<E> findAll(Class<E> entityClass) {
         return findAll(TenantId.CONTEXT, entityClass);
     }
 
-    default <E> List<E> findAll(TenantId tenant, Class<E> entityClass) {
+    default <E> PagedList<E> findAll(TenantId tenant, Class<E> entityClass) {
         return findAll(tenant, entityClass, Paging.DEFAULT);
     }
 
-    <E> List<E> findAll(TenantId tenant, Class<E> entityClass, Paging paging);
+    <E> PagedList<E> findAll(TenantId tenant, Class<E> entityClass, Paging paging);
 
     <T> List<T> query(String query, Class<T> resultClass);
 
