@@ -12,6 +12,7 @@ import java.io.Serializable;
 @AllArgsConstructor
 public class Serialized implements Serializable {
 
+    private static final long serialVersionUID = 1L;
     private String type;
     private String data;
 

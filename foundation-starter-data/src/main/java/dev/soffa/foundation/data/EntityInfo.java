@@ -36,7 +36,7 @@ public class EntityInfo<T> {
     private String idProperty;
     private List<String> updatePairs;
     private static final Logger LOG = Logger.get(EntityInfo.class);
-    private static final Map<String, EntityInfo<?>> cache = new HashMap<>();
+    private static final Map<String, EntityInfo<?>> CACHE = new HashMap<>();
 
     public EntityInfo(Class<T> entityClass, String tablePrefix) {
         this(entityClass, tablePrefix, true);
@@ -64,9 +64,9 @@ public class EntityInfo<T> {
 
     public static <T> EntityInfo<T> of(@NonNull Class<T> entityClass, @Nullable String tablePrefix, boolean checkTable) {
 
-        if (cache.containsKey(entityClass.getName())) {
+        if (CACHE.containsKey(entityClass.getName())) {
             //noinspection unchecked
-            return (EntityInfo<T>) cache.get(entityClass.getName());
+            return (EntityInfo<T>) CACHE.get(entityClass.getName());
         }
 
         EntityInfo<T> info = new EntityInfo<>(entityClass, tablePrefix, checkTable);
@@ -99,7 +99,7 @@ public class EntityInfo<T> {
         }
 
         info.afterPropertiesSet();
-        cache.put(entityClass.getName(), info);
+        CACHE.put(entityClass.getName(), info);
 
         return info;
     }

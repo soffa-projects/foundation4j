@@ -37,16 +37,16 @@ public class EntityRepositoryTest extends BaseTest {
         }
         assertEquals(generatedMessagesCount, messages.count());
 
-        assertEquals(Paging.DEFAULT.getSize(), messages.findAll().size());
-        assertEquals(10, messages.findAll(new Paging(1, 10)).size());
-        assertEquals(Paging.DEFAULT_MAX_SIZE, messages.findAll(new Paging(1, 10_000).cap()).size());
+        assertEquals(Paging.DEFAULT.getSize(), messages.findAll().getData().size());
+        assertEquals(10, messages.findAll(new Paging(1, 10)).getData().size());
+        assertEquals(Paging.DEFAULT_MAX_SIZE, messages.findAll(new Paging(1, 10_000).cap()).getData().size());
 
-        assertEquals(30, messages.findAll(new Paging(6, 194)).size());
+        assertEquals(30, messages.findAll(new Paging(6, 194)).getData().size());
 
         assertNotNull(messages.get(ImmutableMap.of("id", "msg_1")));
 
 
-        assertEquals(10, messages.findAll(new Paging(0, 10)).size());
-        assertEquals(10, messages.findAll(new Paging(-1, 10)).size());
+        assertEquals(10, messages.findAll(new Paging(0, 10)).getPaging().getCount());
+        assertEquals(10, messages.findAll(new Paging(-1, 10)).getPaging().getCount());
     }
 }

@@ -21,11 +21,12 @@ public class PagedList<T> {
         if (total % paging.getSize() > 0) {
             pages++;
         }
-        if (items==null) {
-            items = new ArrayList<>();
+        List<T> elements = items;
+        if (elements==null) {
+            elements = new ArrayList<>();
         }
-        Pagination p = new Pagination(hasMore, total, pages, paging.getSize(), paging.getPage(), items.size());
-        return new PagedList<>(items, p);
+        Pagination p = new Pagination(hasMore, total, pages, paging.getSize(), paging.getPage(), elements.size());
+        return new PagedList<>(elements, p);
     }
 
 

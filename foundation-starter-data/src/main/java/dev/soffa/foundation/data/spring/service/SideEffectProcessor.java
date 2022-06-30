@@ -72,7 +72,8 @@ public class SideEffectProcessor implements ProcessSideEffect {
         if (beans.isEmpty()) {
             return Optional.empty();
         }
-        if (beans.size() > 1) {
+        boolean hasMoreThanOne = beans.size() > 1;
+        if (hasMoreThanOne) {
             throw new IllegalStateException("More than one bean of type " + clazz + " found");
         }
         return Optional.of(beans.values().iterator().next());

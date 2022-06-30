@@ -1,5 +1,6 @@
 package dev.soffa.foundation.model;
 
+import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -23,7 +24,8 @@ public class Paging {
     @Schema(defaultValue = "25", nullable = true)
     private int size;
 
-    @Schema(nullable = true)
+    @Schema(nullable = true, hidden = true)
+    @Hidden
     private String sort;
 
     public Paging(int page, int size) {

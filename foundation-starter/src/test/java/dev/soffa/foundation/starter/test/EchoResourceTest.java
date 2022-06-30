@@ -27,7 +27,6 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 @AutoConfigureMockMvc
 public class EchoResourceTest {
 
-    @SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
     @Autowired
     private MockMvc mockMvc;
 
@@ -72,7 +71,7 @@ public class EchoResourceTest {
                 .expect().isOK().json(jsonExpect -> {
                     jsonExpect.eq("content", "Echo");
                     jsonExpect.exists("message_id");
-                    jsonExpect.exists("_links.self.href");
+                    jsonExpect.exists("links.self.href");
                 });
 
         client.patch("/v1/messages/123456")

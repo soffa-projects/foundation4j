@@ -74,7 +74,7 @@ public class ClassUtil {
             } else {
                 throw new TechnicalException("Unsupported type: " + candidate);
             }
-            if (result != null) {
+            if (result.length > 0) {
                 break;
             }
         }
@@ -83,7 +83,7 @@ public class ClassUtil {
     }
 
     public static Type[] lookupGeneric(ParameterizedType candidate, @NonNull Type genericClass) {
-        boolean matches = genericClass == candidate.getRawType();
+        boolean matches = genericClass.equals(candidate.getRawType());
         if (matches) {
             return candidate.getActualTypeArguments();
         }
@@ -93,7 +93,7 @@ public class ClassUtil {
                 return new Type[]{candidate};
             }
         }
-        return null;
+        return new Type[]{};
     }
 
 

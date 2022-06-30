@@ -8,6 +8,8 @@ import lombok.Value;
 
 @Value
 public class PendingJobId implements VO {
+
+    private static final long serialVersionUID = 1L;
     String value;
 
     @JsonCreator
@@ -16,6 +18,7 @@ public class PendingJobId implements VO {
     }
 
     @JsonValue
+    @Override
     public String toString() {
         return value;
     }
