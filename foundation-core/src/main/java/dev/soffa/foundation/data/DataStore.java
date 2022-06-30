@@ -7,6 +7,7 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Consumer;
 
 public interface DataStore {
 
@@ -71,6 +72,7 @@ public interface DataStore {
     }
 
     <E> List<E> find(TenantId tenant, Class<E> entityClass, Criteria criteria, Paging paging);
+
     default <E> List<E> find(Class<E> entityClass, Criteria criteria, Paging paging) {
         return find(TenantId.CONTEXT, entityClass, criteria, paging);
     }
@@ -81,7 +83,7 @@ public interface DataStore {
 
     int execute(TenantId tenant, String command);
 
-    default <E> List<E> find(TenantId tenant, Class<E> entityClass, Criteria criteria){
+    default <E> List<E> find(TenantId tenant, Class<E> entityClass, Criteria criteria) {
         return find(tenant, entityClass, criteria, Paging.DEFAULT);
     }
 
@@ -102,5 +104,7 @@ public interface DataStore {
     <E> List<E> findAll(TenantId tenant, Class<E> entityClass, Paging paging);
 
     <T> List<T> query(String query, Class<T> resultClass);
+
+    void useTransaction(TenantId tenant, Consumer<DataStore> consumer);
 
 }

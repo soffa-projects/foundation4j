@@ -8,6 +8,7 @@ import dev.soffa.foundation.model.TenantId;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.Consumer;
 
 @SuppressWarnings({"UnusedReturnValue", "unused"})
 public interface EntityRepository<E, I> {
@@ -21,6 +22,7 @@ public interface EntityRepository<E, I> {
     default long count(Criteria criteria) {
         return count(TenantId.CONTEXT, criteria);
     }
+
     long count(TenantId tennant, Criteria criteria);
 
     default List<E> findAll() {
@@ -55,6 +57,7 @@ public interface EntityRepository<E, I> {
     default List<E> find(Map<String, Object> filter) {
         return find(filter, Paging.DEFAULT);
     }
+
     default List<E> find(Map<String, Object> filter, Paging paging) {
         return find(Criteria.of(filter), paging);
     }
@@ -96,6 +99,12 @@ public interface EntityRepository<E, I> {
     }
 
     int delete(Criteria criteria);
+
+    default void useTransaction(Consumer<EntityRepository<E, I>> consumer) {
+        useTransaction(TenantId.CONTEXT, consumer);
+    }
+
+    void useTransaction(TenantId tenant, Consumer<EntityRepository<E, I>> consumer);
 
     default boolean exists(Map<String, Object> filter) {
         return exists(Criteria.of(filter));

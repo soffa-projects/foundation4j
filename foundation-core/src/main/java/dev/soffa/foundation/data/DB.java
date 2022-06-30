@@ -54,9 +54,9 @@ public interface DB {
 
     void withLock(String name, Duration atMost, Duration atLeast, Runnable runnable);
 
-    default DataStore newStore() {
+    /*default DataStore newStore() {
         throw new TodoException("Implement me");
-    }
+    }*/
 
     default <E, ID> EntityRepository<E, ID> newEntityRepository(Class<E> entityClass) {
         throw new TodoException("Implement me");

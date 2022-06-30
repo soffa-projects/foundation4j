@@ -15,7 +15,7 @@ public class QuestDBPgProvider implements TimeSeriesProvider {
     private final DataStore ds;
 
     public QuestDBPgProvider(@NonNull String url) {
-        this.ds = new SimpleDataStore(url);
+        this.ds = SimpleDataStore.create(url);
     }
 
     @AllArgsConstructor

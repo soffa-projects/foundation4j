@@ -1,14 +1,13 @@
 package dev.soffa.foundation.data;
 
-import com.google.common.base.Preconditions;
-import com.zaxxer.hikari.HikariDataSource;
 import dev.soffa.foundation.commons.Logger;
+import dev.soffa.foundation.commons.Mappers;
 import dev.soffa.foundation.commons.TextUtil;
 import dev.soffa.foundation.data.config.DataSourceProperties;
 import dev.soffa.foundation.data.jdbi.BeanMapper;
-import dev.soffa.foundation.data.jdbi.MapArgumentFactory;
-import dev.soffa.foundation.data.jdbi.ObjectArgumentFactory;
-import dev.soffa.foundation.data.jdbi.SerializableArgumentFactory;
+import dev.soffa.foundation.data.jdbi.DBIHandleProvider;
+import dev.soffa.foundation.data.jdbi.HandleHandleProvider;
+import dev.soffa.foundation.data.jdbi.HandleProvider;
 import dev.soffa.foundation.error.DatabaseException;
 import dev.soffa.foundation.error.TechnicalException;
 import dev.soffa.foundation.helper.ID;
@@ -20,19 +19,13 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 import org.jdbi.v3.core.Handle;
 import org.jdbi.v3.core.Jdbi;
 import org.jdbi.v3.core.statement.Query;
-import org.jdbi.v3.postgres.PostgresPlugin;
-import org.jdbi.v3.sqlobject.SqlObjectPlugin;
-import org.springframework.jdbc.datasource.TransactionAwareDataSourceProxy;
 
-import javax.sql.DataSource;
 import java.time.Instant;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.BiFunction;
-import java.util.function.Function;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 @SuppressWarnings("PMD.GodClass")
@@ -50,19 +43,32 @@ public class SimpleDataStore implements DataStore {
     private static final String BINDING = "binding";
     private static final String COLUMNS = "columns";
     private static final String VALUES = "values";
-    private final Map<String, Jdbi> cache = new ConcurrentHashMap<>();
-    private DB db;
-    private Jdbi dbi;
 
-    public SimpleDataStore(@NonNull DB db) {
+    // private DB db;
+    // private Jdbi dbi;
+    private final HandleProvider hp;
+    private final String tablesPrefix;
+
+    public SimpleDataStore(HandleProvider dataStoreHandle) {
+        this(dataStoreHandle, "");
+    }
+
+    public SimpleDataStore(HandleProvider dataStoreHandle, String tablesPrefix) {
+        this.hp = dataStoreHandle;
+        this.tablesPrefix = TextUtil.trimToEmpty(tablesPrefix);
+    }
+
+    /*public SimpleDataStore(@NonNull DB db) {
         this.db = db;
+        this.dataStoreHandle = new DataStoreHandle(this);
     }
 
-    public SimpleDataStore(@NonNull String dbUrl) {
+     */
+    public static SimpleDataStore create(@NonNull String dbUrl) {
         DataSourceProperties props = DataSourceProperties.create("default", "default", dbUrl);
-        this.dbi = Jdbi.create(props.getUrl(), props.getUsername(), props.getPassword());
+        Jdbi dbi = Jdbi.create(props.getUrl(), props.getUsername(), props.getPassword());
+        return new SimpleDataStore(new DBIHandleProvider(dbi));
     }
-
 
     @Override
     public <E> E insert(TenantId tenant, @NonNull E model) {
@@ -166,7 +172,7 @@ public class SimpleDataStore implements DataStore {
 
     @Override
     public int execute(TenantId tenant, String command) {
-        return inTransaction(tenant, (handle) -> handle.createUpdate(command).execute());
+        return hp.inTransaction(tenant, (handle) -> handle.createUpdate(command).execute());
     }
 
     @Override
@@ -183,9 +189,15 @@ public class SimpleDataStore implements DataStore {
 
     @Override
     public <T> List<T> query(String query, Class<T> resultClass) {
-        Jdbi ds = getLink(null);
-        EntityInfo<T> info = EntityInfo.create(resultClass, null, false);
-        return ds.withHandle(handle -> handle.createQuery(query).map(BeanMapper.of(info)).collect(Collectors.toList()));
+        return hp.withHandle(null, handle -> handle.createQuery(query).mapToMap().map(record -> Mappers.JSON_FULLACCESS_SNAKE.convert(record, resultClass)).list());
+    }
+
+    @Override
+    public void useTransaction(TenantId tenant, Consumer<DataStore> consumer) {
+        hp.inTransaction(tenant, (handle) -> {
+            consumer.accept(new SimpleDataStore(new HandleHandleProvider(handle)));
+            return null;
+        });
     }
 
     @Override
@@ -218,8 +230,7 @@ public class SimpleDataStore implements DataStore {
 
     @Override
     public boolean ping() {
-        Jdbi jdbi = getLink(null);
-        jdbi.withHandle(handle -> handle.createQuery("SELECT 1").mapToMap().findFirst());
+        hp.withHandle(null, handle -> handle.createQuery("SELECT 1").mapToMap().findFirst());
         return true;
     }
 
@@ -266,7 +277,7 @@ public class SimpleDataStore implements DataStore {
                                  String baseQuery,
                                  @Nullable Criteria criteria,
                                  @Nullable Paging paging) {
-        EntityInfo<E> info = EntityInfo.get(entityClass, getTablesPrefix());
+        EntityInfo<E> info = EntityInfo.get(entityClass, tablesPrefix);
         Query q = define(
             info,
             paging,
@@ -309,81 +320,27 @@ public class SimpleDataStore implements DataStore {
                                    Class<E> entityClass,
                                    BiFunction<Handle, EntityInfo<E>, T> consumer) {
         try {
-            EntityInfo<E> info = EntityInfo.get(entityClass, getTablesPrefix());
-            return getLink(tenant).inTransaction(handle -> consumer.apply(handle, info));
+            EntityInfo<E> info = EntityInfo.get(entityClass, tablesPrefix);
+            return hp.inTransaction(tenant, handle -> consumer.apply(handle, info));
         } catch (Exception e) {
             LOG.error("Current tenant is: %s", TenantHolder.get().orElse(TenantId.DEFAULT_VALUE));
             throw new DatabaseException(e);
         }
     }
 
-    private <T> T inTransaction(TenantId tenant,
-                                Function<Handle, T> consumer) {
-        try {
-            return getLink(tenant).inTransaction(consumer::apply);
-        } catch (Exception e) {
-            LOG.error("Current tenant is: %s", TenantHolder.get().orElse(TenantId.DEFAULT_VALUE));
-            throw new DatabaseException(e);
-        }
-    }
 
     private <T, E> T withHandle(TenantId tenant,
                                 Class<E> entityClass,
                                 BiFunction<Handle, EntityInfo<E>, T> consumer) {
         try {
-            EntityInfo<E> info = EntityInfo.get(entityClass, getTablesPrefix());
-            return getLink(tenant).withHandle(handle -> consumer.apply(handle, info));
+            EntityInfo<E> info = EntityInfo.get(entityClass, tablesPrefix);
+            return hp.withHandle(tenant, handle -> consumer.apply(handle, info));
         } catch (Exception e) {
             LOG.error("Current tenant is: %s", TenantHolder.get().orElse(TenantId.DEFAULT_VALUE));
             throw new DatabaseException(e);
         }
     }
 
-    private Jdbi getLink(TenantId tenant) {
-        if (dbi != null) {
-            return dbi;
-        }
-        String lTenant = TenantId.DEFAULT_VALUE;
-        if (tenant != null) {
-            lTenant = tenant.getValue();
-            if (tenant.equals(TenantId.CONTEXT)) {
-                lTenant = TenantHolder.get().orElse(TenantId.DEFAULT_VALUE);
-            }
-        }
-        Preconditions.checkNotNull(lTenant, "Null tenant received while fetching database link");
-        if (cache.containsKey(lTenant)) {
-            return cache.get(lTenant);
-        }
-        Jdbi jdbi = getDataSource(lTenant);
-        cache.put(lTenant, jdbi);
-        return jdbi;
-    }
-
-    private String getTablesPrefix() {
-        if (db == null) {
-            return "";
-        }
-        return db.getTablesPrefix();
-    }
-
-    private Jdbi getDataSource(String lTenant) {
-        if (dbi != null) {
-            return dbi;
-        }
-        DataSource dataSource = db.determineTargetDataSource(lTenant);
-        Jdbi jdbi = Jdbi.create(new TransactionAwareDataSourceProxy(dataSource))
-            .installPlugin(new SqlObjectPlugin());
-        if (dataSource instanceof HikariDataSource) {
-            String url = ((HikariDataSource) dataSource).getJdbcUrl();
-            if (url.startsWith("jdbc:postgres")) {
-                jdbi.installPlugin(new PostgresPlugin());
-            }
-        }
-        jdbi.registerArgument(new SerializableArgumentFactory());
-        jdbi.registerArgument(new MapArgumentFactory());
-        jdbi.registerArgument(new ObjectArgumentFactory());
-        return jdbi;
-    }
 
 
 }

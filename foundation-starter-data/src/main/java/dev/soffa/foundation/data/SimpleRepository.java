@@ -3,18 +3,22 @@ package dev.soffa.foundation.data;
 import com.google.common.base.Preconditions;
 import dev.soffa.foundation.commons.ClassUtil;
 import dev.soffa.foundation.commons.TextUtil;
+import dev.soffa.foundation.data.jdbi.DBHandleProvider;
 import dev.soffa.foundation.model.Paging;
 import dev.soffa.foundation.model.TenantId;
 
 import java.lang.reflect.Type;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Consumer;
 
 public class SimpleRepository<E, I> implements EntityRepository<E, I> {
 
     private final DataStore ds;
     private final Class<E> entityClass;
     private TenantId lockedTenant = TenantId.CONTEXT;
+
+    private String tableName;
 
     public SimpleRepository(DataStore ds, Class<E> entityClass) {
         this(ds, entityClass, null);
@@ -27,6 +31,7 @@ public class SimpleRepository<E, I> implements EntityRepository<E, I> {
     public SimpleRepository(DataStore ds, Class<E> entityClass, String tableName, String tenant) {
         this.ds = ds;
         this.entityClass = entityClass;
+        this.tableName = tableName;
         if (TextUtil.isNotEmpty(tableName)) {
             EntityInfo.registerTable(entityClass, tableName);
         }
@@ -34,8 +39,10 @@ public class SimpleRepository<E, I> implements EntityRepository<E, I> {
             lockedTenant = TenantId.of(tenant);
         }
     }
+
+
     public SimpleRepository(DB db, Class<E> entityClass, String tableName, String tenant) {
-        this(new SimpleDataStore(db), entityClass, tableName, tenant);
+        this(new SimpleDataStore(new DBHandleProvider(db), db.getTablesPrefix()), entityClass, tableName, tenant);
     }
 
     @SuppressWarnings("unchecked")
@@ -45,7 +52,7 @@ public class SimpleRepository<E, I> implements EntityRepository<E, I> {
 
     @SuppressWarnings("unchecked")
     public SimpleRepository(DB db, String tableName, String tenant) {
-        this.ds = new SimpleDataStore(db);
+        this.ds = new SimpleDataStore(new DBHandleProvider(db), db.getTablesPrefix());
         Type[] generics = ClassUtil.lookupGeneric(this.getClass(), SimpleRepository.class);
         Preconditions.checkNotNull(generics, "No EntityRepository found in class hierarchy");
         this.entityClass = (Class<E>)generics[0];
@@ -58,11 +65,11 @@ public class SimpleRepository<E, I> implements EntityRepository<E, I> {
     }
 
     public SimpleRepository(DB db, Class<E> entityClass) {
-        this(new SimpleDataStore(db), entityClass, null);
+        this(db, entityClass, null);
     }
 
     public SimpleRepository(DB db, Class<E> entityClass, String tableName) {
-        this(new SimpleDataStore(db), entityClass, tableName);
+        this(db, entityClass, tableName, null);
     }
 
     @Override
@@ -140,6 +147,14 @@ public class SimpleRepository<E, I> implements EntityRepository<E, I> {
     @Override
     public int delete(Criteria criteria) {
         return ds.delete(resolveTenant(), entityClass, criteria);
+    }
+
+    @Override
+    public void useTransaction(TenantId tenant, Consumer<EntityRepository<E, I>> consumer) {
+        ds.useTransaction(tenant, (ds) -> {
+            SimpleRepository<E, I> ser = new SimpleRepository<>(ds, entityClass, tableName, lockedTenant.getValue());
+            consumer.accept(ser);
+        });
     }
 
     protected TenantId resolveTenant() {

@@ -9,6 +9,7 @@ import dev.soffa.foundation.context.DefaultOperationContext;
 import dev.soffa.foundation.core.*;
 import dev.soffa.foundation.core.action.PublishEvent;
 import dev.soffa.foundation.core.model.Serialized;
+import dev.soffa.foundation.events.OnServiceStarted;
 import dev.soffa.foundation.model.Event;
 import dev.soffa.foundation.model.TenantId;
 import dev.soffa.foundation.multitenancy.TenantHolder;
@@ -113,7 +114,8 @@ public class OperationDispatcher implements Dispatcher, Resource {
                 new Event(pubSubOperation, Mappers.JSON.serialize(res))
             );
         }
-        if (!opContext.getSideEffects().isEmpty()) {
+        boolean shouldEnqueue = !opContext.getSideEffects().isEmpty() && !(operation instanceof OnServiceStarted);
+        if (shouldEnqueue) {
             sideEffectsHandler.enqueue(operationName,
                 DigestUtil.md5(Mappers.JSON.serialize(input)),
                 opContext.getSideEffects(),

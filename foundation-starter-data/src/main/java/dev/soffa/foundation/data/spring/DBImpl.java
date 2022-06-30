@@ -283,10 +283,7 @@ public final class DBImpl extends AbstractDataSource implements ApplicationListe
         });
     }
 
-    @Override
-    public DataStore newStore() {
-        return new SimpleDataStore(this);
-    }
+
 
     @Override
     public <E, ID> EntityRepository<E, ID> newEntityRepository(Class<E> entityClass) {
