@@ -194,6 +194,7 @@ public class SimpleDataStore implements DataStore {
 
     @Override
     public void useTransaction(TenantId tenant, Consumer<DataStore> consumer) {
+
         hp.inTransaction(tenant, (handle) -> {
             consumer.accept(new SimpleDataStore(new HandleHandleProvider(handle)));
             return null;
@@ -334,26 +335,30 @@ public class SimpleDataStore implements DataStore {
     private <T, E> T inTransaction(TenantId tenant,
                                    Class<E> entityClass,
                                    BiFunction<Handle, EntityInfo<E>, T> consumer) {
-        try {
-            EntityInfo<E> info = EntityInfo.of(entityClass, tablesPrefix);
-            return hp.inTransaction(tenant, handle -> consumer.apply(handle, info));
-        } catch (Exception e) {
-            LOG.error("Current tenant is: %s", TenantHolder.get().orElse(TenantId.DEFAULT_VALUE));
-            throw new DatabaseException(e);
-        }
+        return TenantHolder.use(tenant, () -> {
+            try {
+                EntityInfo<E> info = EntityInfo.of(entityClass, tablesPrefix);
+                return hp.inTransaction(tenant, handle -> consumer.apply(handle, info));
+            } catch (Exception e) {
+                LOG.error("Current tenant is: %s", tenant);
+                throw new DatabaseException(e);
+            }
+        });
     }
 
 
     private <T, E> T withHandle(TenantId tenant,
                                 Class<E> entityClass,
                                 BiFunction<Handle, EntityInfo<E>, T> consumer) {
-        try {
-            EntityInfo<E> info = EntityInfo.of(entityClass, tablesPrefix);
-            return hp.withHandle(tenant, handle -> consumer.apply(handle, info));
-        } catch (Exception e) {
-            LOG.error("Current tenant is: %s", TenantHolder.get().orElse(TenantId.DEFAULT_VALUE));
-            throw new DatabaseException(e);
-        }
+        return TenantHolder.use(tenant, () -> {
+            try {
+                EntityInfo<E> info = EntityInfo.of(entityClass, tablesPrefix);
+                return hp.withHandle(tenant, handle -> consumer.apply(handle, info));
+            } catch (Exception e) {
+                LOG.error("Current tenant is: %s", tenant);
+                throw new DatabaseException(e);
+            }
+        });
     }
 
 
