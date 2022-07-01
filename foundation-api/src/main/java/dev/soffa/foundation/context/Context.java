@@ -33,6 +33,8 @@ public class Context implements BaseContext {
     private String authorization;
     private String tenantId;
 
+    private boolean liveMode;
+
     private String accountId;
     private String accountName;
     private String tenantName;
@@ -201,8 +203,8 @@ public class Context implements BaseContext {
             applicationName = auth.getApplication();
         }
         applicationId = auth.getApplicationId();
-
         accountId = auth.getAccountId();
+        liveMode = auth.isLiveMode();
         accountName = auth.getAccountName();
     }
 
@@ -229,6 +231,7 @@ public class Context implements BaseContext {
         contextMap.put("tenant", getTenantId());
         contextMap.put("tenant_id", getTenantId());
         contextMap.put("tenant_name", getTenantName());
+        contextMap.put("live_mode", isLiveMode() ? "true" : "false");
         contextMap.put("ip_address", getApplicationId());
         contextMap.put("sender", getSender());
         contextMap.put("env", "production");
@@ -245,7 +248,6 @@ public class Context implements BaseContext {
     @JsonIgnore
     public Map<String, String> getHeaders() {
         Map<String, String> headers = new HashMap<>();
-
         if (isNotEmpty(getApplicationName())) {
             headers.put(Context.APPLICATION, getApplicationName());
         }

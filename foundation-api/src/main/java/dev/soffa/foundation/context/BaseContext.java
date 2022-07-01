@@ -8,6 +8,7 @@ import java.util.Optional;
 public interface BaseContext {
     boolean isProduction();
 
+    boolean isLiveMode();
     boolean hasAuthorization();
 
     String getSender();

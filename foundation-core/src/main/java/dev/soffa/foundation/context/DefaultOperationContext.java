@@ -78,6 +78,11 @@ public class DefaultOperationContext implements OperationContext {
     }
 
     @Override
+    public boolean isLiveMode() {
+        return internal.isLiveMode();
+    }
+
+    @Override
     public boolean hasAuthorization() {
         return internal.hasAuthorization();
     }

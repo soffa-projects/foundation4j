@@ -8,6 +8,8 @@ import java.util.Date;
 import java.util.Map;
 
 public interface OperationContext extends BaseContext {
+
+
     void hook(String name, String subject, Map<String, Object> data);
 
     void hook(String name, Map<String, Object> data);
