@@ -1,7 +1,6 @@
 package dev.soffa.foundation.data.spring.service;
 
 import dev.soffa.foundation.commons.DateUtil;
-import dev.soffa.foundation.commons.Logger;
 import dev.soffa.foundation.commons.Mappers;
 import dev.soffa.foundation.context.Context;
 import dev.soffa.foundation.context.OperationSideEffects;
@@ -36,7 +35,6 @@ public class PlatformSideEffectsHandler implements SideEffectsHandler {
             .created(DateUtil.now())
             .build();
         pendingJobs.insert(job);
-        Logger.app.info("Queueing side effect: %s | %s", job.getId(), operationName);
         scheduler.enqueue(uuid, ProcessSideEffect.class, new ProcessSideEffectInput(job.getId()), context);
     }
 

@@ -29,6 +29,7 @@ public class Context implements BaseContext {
     public static final String AUTHORIZATION = "Authorization";
 
     private static String serviceName = "app";
+    @JsonIgnore
     private String authorization;
     private String tenantId;
 

@@ -41,11 +41,11 @@ class JobRunrOperationScheduler implements OperationScheduler {
         if (dispatcher == null) {
             dispatcher = context.getBeansOfType(Dispatcher.class).values().iterator().next();
         }
-        final String serialzedContext = Mappers.JSON_FULLACCESS.serialize(ctx.getContextMap());
+        final String serialzedContext = Mappers.JSON.serialize(ctx);
         JobId jobId = TenantHolder.useDefault(() -> {
             // EL
             return jobScheduler.enqueue(uuid, () -> dispatcher.dispatch(operationName, input, serialzedContext));
         });
-        Logger.platform.info("Operation scheduled: %s --> %s", operationName, jobId);
+        Logger.platform.info("Operation scheduled: %s --> %s | context=%s", operationName, jobId, serialzedContext);
     }
 }

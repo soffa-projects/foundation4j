@@ -12,6 +12,11 @@ public final class Mappers {
         ObjectMapperFactory.newJsonMapper(true, new PropertyNamingStrategies.SnakeCaseStrategy())
     );
 
+
+    public static final Mapper JSON_SNAKE = new JacksonMapper(
+        ObjectMapperFactory.newJsonMapper(false, new PropertyNamingStrategies.SnakeCaseStrategy())
+    );
+
     public static final Mapper JSON_FULLACCESS = new JacksonMapper(
         ObjectMapperFactory.newJsonMapper(true)
     );

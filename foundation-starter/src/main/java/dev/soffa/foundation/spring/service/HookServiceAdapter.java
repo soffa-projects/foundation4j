@@ -59,15 +59,15 @@ public class HookServiceAdapter implements HookService {
             throw new ResourceNotFoundException("Hook not found: " + hook);
         }
         Map<String, Object> ldata = new HashMap<>(data);
-        ldata.put("context", context.getContextMap());
+        ldata.put("context", Mappers.JSON_SNAKE.serialize(context));
         for (HookItemSpec hookItem : lhook.getPost()) {
             String uuid = hook + ":" + subject + ":" + hookItem.getName();
             scheduler.enqueue(DigestUtil.makeUUID(uuid), ProcessHookItem.class, new ProcessHookItemInput(
                 hook,
                 hookItem.getName(),
                 hookItem.getType(),
-                Mappers.JSON_FULLACCESS_SNAKE.serialize(hookItem.getSpec()),
-                Mappers.JSON_FULLACCESS_SNAKE.serialize(ldata)
+                Mappers.JSON_SNAKE.serialize(hookItem.getSpec()),
+                Mappers.JSON_SNAKE.serialize(ldata)
             ), context);
             LOG.info("Hook queued: %s.%s [%s]", hook, hookItem.getName(), uuid);
         }
