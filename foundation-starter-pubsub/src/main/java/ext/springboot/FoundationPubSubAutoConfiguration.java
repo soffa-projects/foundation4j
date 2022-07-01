@@ -10,6 +10,7 @@ import dev.soffa.foundation.model.ServiceId;
 import dev.soffa.foundation.pubsub.PubSubMessengerFactory;
 import lombok.AllArgsConstructor;
 import org.checkerframework.checker.nullness.qual.NonNull;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.ApplicationListener;
@@ -33,7 +34,7 @@ public class FoundationPubSubAutoConfiguration {
     @Primary
     public PubSubMessenger createPubSubMessenger(@Value("${spring.application.name}") String applicationName,
                                                  PubSubConfig config,
-                                                 DispatchMessageHandler handler) {
+                                                 @Autowired(required = false) DispatchMessageHandler handler) {
         PubSubMessenger messenger = PubSubMessengerFactory.create(applicationName, config, handler);
         messenger.afterPropertiesSet();
         return messenger;

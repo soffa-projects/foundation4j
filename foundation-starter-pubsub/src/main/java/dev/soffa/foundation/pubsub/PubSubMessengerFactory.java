@@ -36,9 +36,11 @@ public final class PubSubMessengerFactory {
             String subjects = e.getValue().getSubscribe();
             if (TextUtil.isNotEmpty(subjects)) {
                 if (handler == null) {
+                    //LOG.warn("No MessageHandler is configured, so no messages will be received");
                     throw new ConfigurationException("A MessageHandler is required when  pubsub.subjects is set");
+                }else {
+                    configureListeners(client, subjects + "," + applicationName, handler);
                 }
-                configureListeners(client, subjects + "," + applicationName, handler);
             }
             clients.put(e.getKey(), client);
         }
