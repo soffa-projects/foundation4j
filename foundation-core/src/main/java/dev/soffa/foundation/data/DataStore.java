@@ -108,4 +108,6 @@ public interface DataStore {
 
     void useTransaction(TenantId tenant, Consumer<DataStore> consumer);
 
+    <E> double sumBy(TenantId tenant, Class<E> entityClass, String field, Criteria criteria);
+
 }

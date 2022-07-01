@@ -52,6 +52,8 @@ public interface DB {
         withLock(name, Duration.ofSeconds(atMostSeconds), Duration.ofSeconds(atLeastSeconds), runnable);
     }
 
+    boolean isTenantReady(String tenant);
+
     void withLock(String name, Duration atMost, Duration atLeast, Runnable runnable);
 
     /*default DataStore newStore() {

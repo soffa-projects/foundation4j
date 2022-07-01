@@ -23,7 +23,7 @@ import java.util.*;
 @Getter
 public class EntityInfo<T> {
 
-    private static final Map<String, EntityInfo<?>> REGISTRY = new HashMap<>();
+    //private static final Map<String, EntityInfo<?>> REGISTRY = new HashMap<>();
     private static final Map<String, String> CUSTOM_TABLES = new HashMap<>();
     private final Class<T> entityClass;
     private final Map<String, String> propertiesToColumnsMapping = new HashMap<>();
@@ -38,20 +38,13 @@ public class EntityInfo<T> {
     private static final Logger LOG = Logger.get(EntityInfo.class);
     private static final Map<String, EntityInfo<?>> CACHE = new HashMap<>();
 
-    public EntityInfo(Class<T> entityClass, String tablePrefix) {
-        this(entityClass, tablePrefix, true);
-    }
-    public EntityInfo(Class<T> entityClass, String tablePrefix, boolean checkTable) {
+    private EntityInfo(Class<T> entityClass, String tablePrefix, boolean checkTable) {
         this.entityClass = entityClass;
         tableName = getTableName(entityClass, checkTable);
         if (TextUtil.isNotEmpty(tablePrefix)) {
             tableName = tablePrefix + tableName;
         }
         // tableName = escapeTableName(tableName);
-    }
-
-    public static <T> void register(Class<T> entityClass, String tablePrefix) {
-        REGISTRY.put(entityClass.getName(), of(entityClass, tablePrefix, true));
     }
 
     public static <T> EntityInfo<T> of(@NonNull Class<T> entityClass, @Nullable String tablePrefix) {
@@ -64,9 +57,15 @@ public class EntityInfo<T> {
 
     public static <T> EntityInfo<T> of(@NonNull Class<T> entityClass, @Nullable String tablePrefix, boolean checkTable) {
 
-        if (CACHE.containsKey(entityClass.getName())) {
+        String cacheId = entityClass.getName();
+        if (TextUtil.isNotEmpty(tablePrefix)) {
+            cacheId += "__" + tablePrefix;
+        }
+        cacheId = cacheId.toLowerCase();
+
+        if (CACHE.containsKey(cacheId)) {
             //noinspection unchecked
-            return (EntityInfo<T>) CACHE.get(entityClass.getName());
+            return (EntityInfo<T>) CACHE.get(cacheId);
         }
 
         EntityInfo<T> info = new EntityInfo<>(entityClass, tablePrefix, checkTable);
@@ -99,26 +98,12 @@ public class EntityInfo<T> {
         }
 
         info.afterPropertiesSet();
-        CACHE.put(entityClass.getName(), info);
+        CACHE.put(cacheId, info);
 
         return info;
     }
 
     // -----------------------------------------------------------------------------------------------------------------
-
-    @SuppressWarnings("unchecked")
-    public static <T> EntityInfo<T> get(T model, String tablePrefix) {
-        return get((Class<T>) model.getClass(), tablePrefix);
-    }
-
-    @SuppressWarnings("unchecked")
-    public static <T> EntityInfo<T> get(Class<T> entityClass, String tablePrefix) {
-        String keyName = entityClass.getName();
-        if (!REGISTRY.containsKey(keyName)) {
-            register(entityClass, tablePrefix);
-        }
-        return (EntityInfo<T>) REGISTRY.get(keyName);
-    }
 
     public static void registerTable(Class<?> clazz, String tableName) {
         CUSTOM_TABLES.put(clazz.getName(), tableName);

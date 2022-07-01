@@ -270,6 +270,17 @@ public class SimpleDataStore implements DataStore {
         });
     }
 
+
+    @Override
+    public <E> double sumBy(TenantId tenant, @NonNull Class<E> entityClass, @NonNull String field, Criteria criteria) {
+        return withHandle(tenant, entityClass, (handle, info) -> {
+            return buildQuery(handle, entityClass, "SELECT SUM(<field>)", criteria, null)
+                .define("field", field)
+                .mapTo(Double.class).findFirst().orElse(0d);
+        });
+    }
+
+
     // =================================================================================================================
 
     private <E> Query buildQuery(Handle handle, Class<E> entityClass, @Nullable Criteria criteria, Paging paging) {
@@ -281,7 +292,7 @@ public class SimpleDataStore implements DataStore {
                                  String baseQuery,
                                  @Nullable Criteria criteria,
                                  @Nullable Paging paging) {
-        EntityInfo<E> info = EntityInfo.get(entityClass, tablesPrefix);
+        EntityInfo<E> info = EntityInfo.of(entityClass, tablesPrefix);
         Query q = define(
             info,
             paging,
@@ -324,7 +335,7 @@ public class SimpleDataStore implements DataStore {
                                    Class<E> entityClass,
                                    BiFunction<Handle, EntityInfo<E>, T> consumer) {
         try {
-            EntityInfo<E> info = EntityInfo.get(entityClass, tablesPrefix);
+            EntityInfo<E> info = EntityInfo.of(entityClass, tablesPrefix);
             return hp.inTransaction(tenant, handle -> consumer.apply(handle, info));
         } catch (Exception e) {
             LOG.error("Current tenant is: %s", TenantHolder.get().orElse(TenantId.DEFAULT_VALUE));
@@ -337,7 +348,7 @@ public class SimpleDataStore implements DataStore {
                                 Class<E> entityClass,
                                 BiFunction<Handle, EntityInfo<E>, T> consumer) {
         try {
-            EntityInfo<E> info = EntityInfo.get(entityClass, tablesPrefix);
+            EntityInfo<E> info = EntityInfo.of(entityClass, tablesPrefix);
             return hp.withHandle(tenant, handle -> consumer.apply(handle, info));
         } catch (Exception e) {
             LOG.error("Current tenant is: %s", TenantHolder.get().orElse(TenantId.DEFAULT_VALUE));

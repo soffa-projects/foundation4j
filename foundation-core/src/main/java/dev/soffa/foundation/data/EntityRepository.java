@@ -64,6 +64,16 @@ public interface EntityRepository<E, I> {
 
     Optional<E> get(Criteria criteria);
 
+    default double sumBy(String field, Criteria criteria) {
+        return sumBy(TenantId.CONTEXT, field, criteria);
+    }
+
+    default double sumBy(String field, Map<String,Object> criteria) {
+        return sumBy(TenantId.CONTEXT, field, Criteria.of(criteria));
+    }
+
+    double sumBy(TenantId tenant, String field, Criteria criteria);
+
     Optional<E> get(TenantId tenant, Criteria criteria);
 
     default Optional<E> get(Map<String, Object> filter) {

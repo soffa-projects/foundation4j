@@ -100,6 +100,11 @@ public class SimpleRepository<E, I> implements EntityRepository<E, I> {
     }
 
     @Override
+    public double sumBy(TenantId tenant, String field, Criteria criteria) {
+        return ds.sumBy(resolveTenant(tenant), entityClass, field, criteria);
+    }
+
+    @Override
     public Optional<E> get(TenantId tenant, Criteria criteria) {
         return ds.get(tenant, entityClass, criteria);
     }

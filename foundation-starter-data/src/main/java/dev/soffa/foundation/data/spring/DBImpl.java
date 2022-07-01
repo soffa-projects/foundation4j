@@ -116,6 +116,7 @@ public final class DBImpl extends AbstractDataSource implements ApplicationListe
             LOG.warn("No datasources configured for this service.");
         } else {
             for (Map.Entry<String, DataSourceConfig> dbLink : datasources.entrySet()) {
+                // Wait for application to start before running migrations
                 register(dbLink.getKey(), dbLink.getValue(), false);
             }
             if (!registry.containsKey(TenantId.DEFAULT_VALUE)) {
@@ -148,17 +149,17 @@ public final class DBImpl extends AbstractDataSource implements ApplicationListe
             DataSource ds = DBHelper.createDataSource(config.getName(), DataSourceProperties.create(appConfig.getName(), id, url));
             // config.setName(appConfig.getName());
             DatasourceInfo di = new DatasourceInfo(id, config, ds);
-
-            registry.put(sourceId, di);
             if (migrate) {
                 try {
-                    applyMigrations(id);
+                    applyMigrations(sourceId, di);
+                    registry.put(sourceId, di);
                 } catch (Exception e) {
-                    registry.remove(id);
                     LOG.error("Error applying migrations for datasource %s, skipping registration", id);
                     LOG.error(ErrorUtil.loookupOriginalMessage(e));
                     Sentry.get().captureException(e);
                 }
+            }else {
+                registry.put(sourceId, di);
             }
 
         }
@@ -231,13 +232,20 @@ public final class DBImpl extends AbstractDataSource implements ApplicationListe
     }
 
     public void applyMigrations(String datasource) {
+        if (TENANT_PLACEHOLDER.equals(datasource)) {
+            return;
+        }
+        DatasourceInfo info = registry.get(datasource.toLowerCase());
+        applyMigrations(datasource, info);
+    }
+
+    public void applyMigrations(String datasource, DatasourceInfo info) {
 
         if (TENANT_PLACEHOLDER.equals(datasource)) {
             return;
         }
 
         String linkId = datasource.toLowerCase();
-        DatasourceInfo info = registry.get(linkId);
         if (info.isMigrated()) {
             return;
         }
@@ -272,6 +280,12 @@ public final class DBImpl extends AbstractDataSource implements ApplicationListe
     }
 
     @Override
+    public boolean isTenantReady(String tenant) {
+        String id = tenant.toLowerCase();
+        return registry.containsKey(id) && registry.get(id).isMigrated();
+    }
+
+    @Override
     public void withLock(String name, Duration atMost, Duration atLeast, Runnable runnable) {
         LockConfiguration config = new LockConfiguration(Instant.now(), name, atMost, atLeast);
         lockProvider.lock(config).ifPresent(simpleLock -> {
@@ -282,7 +296,6 @@ public final class DBImpl extends AbstractDataSource implements ApplicationListe
             }
         });
     }
-
 
 
     @Override
