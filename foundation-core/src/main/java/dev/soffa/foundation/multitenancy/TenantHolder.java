@@ -3,6 +3,7 @@ package dev.soffa.foundation.multitenancy;
 import dev.soffa.foundation.commons.Logger;
 import dev.soffa.foundation.commons.TextUtil;
 import dev.soffa.foundation.context.ContextHolder;
+import dev.soffa.foundation.error.InvalidTenantException;
 import dev.soffa.foundation.model.TenantId;
 import lombok.SneakyThrows;
 
@@ -34,6 +35,10 @@ public final class TenantHolder {
             return Optional.empty();
         }
         return Optional.of(CURRENT.get());
+    }
+
+    public static String require() {
+        return get().orElseThrow(() -> new InvalidTenantException("Tenant is not set"));
     }
 
     private static boolean isEmpty(String value) {
@@ -88,18 +93,22 @@ public final class TenantHolder {
     @SneakyThrows
     public static <O> O use(final String tenantId, Supplier<O> supplier) {
         String current = CURRENT.get();
-        if (Objects.equals(tenantId, current)) {
+        String lTenant = tenantId;
+        if (TenantId.CONTEXT_VALUE.equals(lTenant)) {
+            lTenant = TenantHolder.require();
+        }
+        if (Objects.equals(lTenant, current)) {
             return supplier.get();
         }
         if (TextUtil.isNotEmpty(current)) {
-            LOG.trace("Tenant switch %s --> %s", current, tenantId);
+            LOG.trace("Tenant switch %s --> %s", current, lTenant);
         }
         try {
-            set(tenantId);
+            set(lTenant);
             return supplier.get();
         } finally {
             if (TextUtil.isNotEmpty(current)) {
-                LOG.trace("Tenant restored %s --> %s", tenantId, current);
+                LOG.trace("Tenant restored %s --> %s", lTenant, current);
                 set(current);
             }else {
                 clear();
