@@ -1,5 +1,6 @@
 plugins {
-    id("foundation.java8")
+    //id("foundation.java8")
+    id("foundation.kotlin")
     id("foundation.maven-publish")
     id("foundation.test.junit5")
     //id("foundation.qa.coverage.l1")

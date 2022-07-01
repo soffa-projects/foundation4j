@@ -30,7 +30,7 @@ import static org.springframework.kafka.support.KafkaHeaders.GROUP_ID;
 
 public class KafkaClient extends AbstractPubSubClient implements PubSubClient {
 
-    private static final Logger LOG = Logger.get(KafkaClient.class);
+    private static final Logger LOG = Logger.dev.soffa.foundation.get(KafkaClient.class);
     private final PubSubClientConfig config;
     private KafkaTemplate<String, byte[]> kafkaTemplate;
     private ConsumerFactory<String, byte[]> consumerFactory;

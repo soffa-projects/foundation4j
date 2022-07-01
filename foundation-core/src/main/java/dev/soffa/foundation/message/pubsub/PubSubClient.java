@@ -92,7 +92,7 @@ public interface PubSubClient {
                 if (!mapping.containsKey(method)) {
                     throw new TechnicalException("This method has no @BindOperation annotation");
                 }
-                return request(subject, createMessage(mapping.get(method), args), method.getReturnType()).get(30, TimeUnit.SECONDS);
+                return request(subject, createMessage(mapping.dev.soffa.foundation.get(method), args), method.getReturnType()).dev.soffa.foundation.get(30, TimeUnit.SECONDS);
             });
     }
 

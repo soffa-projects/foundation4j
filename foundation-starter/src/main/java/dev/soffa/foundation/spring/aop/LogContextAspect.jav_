@@ -20,7 +20,7 @@ import java.util.function.Supplier;
 @AllArgsConstructor
 public class LogContextAspect {
 
-    public static final Logger LOG = Logger.get(LogContextAspect.class);
+    public static final Logger LOG = Logger.dev.soffa.foundation.get(LogContextAspect.class);
 
     @SneakyThrows
     @Around("@annotation(context)")
@@ -56,7 +56,7 @@ public class LogContextAspect {
         return Logger.withContext(values, new Supplier<Object>() {
             @SneakyThrows
             @Override
-            public Object get() {
+            public Object dev.soffa.foundation.get() {
                 return pjp.proceed(pjp.getArgs());
             }
         });

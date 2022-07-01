@@ -27,7 +27,7 @@ public class PendingJobRepoImpl extends SimpleRepository<PendingJob, PendingJobI
     /*
     @Override
     public boolean consume(String operation, String subject) {
-        PendingJob job = get(ImmutableMap.of(OPERATION, operation, SUBJECT, subject)).orElse(null);
+        PendingJob job = dev.soffa.foundation.get(ImmutableMap.of(OPERATION, operation, SUBJECT, subject)).orElse(null);
         if (job == null) {
             return false;
         }
@@ -36,7 +36,7 @@ public class PendingJobRepoImpl extends SimpleRepository<PendingJob, PendingJobI
 
    /* @Override
     public void consume(PendingJobId id, Runnable handler) {
-        PendingJob job = get(ImmutableMap.of(OPERATION, operation, SUBJECT, subject)).orElse(null);
+        PendingJob job = dev.soffa.foundation.get(ImmutableMap.of(OPERATION, operation, SUBJECT, subject)).orElse(null);
         if (job == null) {
             LOG.warn("No pending job found for operation: %s/%s", operation, subject);
             return;

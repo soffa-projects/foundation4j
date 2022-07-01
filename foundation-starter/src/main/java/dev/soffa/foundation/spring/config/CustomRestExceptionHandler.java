@@ -31,6 +31,7 @@ import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Order(Ordered.HIGHEST_PRECEDENCE)
 @ControllerAdvice
@@ -68,16 +69,28 @@ class CustomRestExceptionHandler extends ResponseEntityExceptionHandler {
         body.put("status", status.value());
         body.put("message", message);
         body.put("prod", isProduction);
+        ContextHolder.get().ifPresent(context -> {
+            body.put("livemode", context.isLiveMode());
+        });
+        if (!isProduction) {
+            Optional.ofNullable(SecurityContextHolder.getContext()).ifPresent(context -> {
+                Authentication authentication = context.getAuthentication();
+                if (authentication != null && authentication.getAuthorities() != null) {
+                    body.put("permissions", authentication.getAuthorities().stream().map(Object::toString).collect(Collectors.joining(",")));
+                }
+            });
+        }
 
         body.put("path", ((ServletWebRequest) request).getRequest().getRequestURI());
 
         String auth = ((ServletWebRequest) request).getRequest().getHeader("Authorization");
         if (TextUtil.isNotEmpty(auth)) {
-            body.put("authorization", "**********" + TextUtil.takeLast(auth, 4));
+            body.put("authorization", "*****" + TextUtil.takeLast(auth, 4));
         }
         Span span = Span.current();
 
-        if (span != null) {
+        if (span != null && span.getSpanContext().getTraceId() != null &&
+            !span.getSpanContext().getTraceId().startsWith("0000000000000000")) {
             body.put("traceId", span.getSpanContext().getTraceId());
             body.put("spanId", span.getSpanContext().getSpanId());
         }

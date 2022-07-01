@@ -82,6 +82,11 @@ public class SimpleRepository<E, I> implements EntityRepository<E, I> {
         return ds.count(resolveTenant(), entityClass);
     }
 
+    @Override
+    public EntityRepository<E, I> withTenant(TenantId tenant) {
+        return new SimpleRepository<>(this.ds, this.entityClass, this.tableName, tenant.getValue());
+    }
+
 
     @Override
     public PagedList<E> findAll(TenantId tenant, Paging paging) {

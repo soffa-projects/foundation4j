@@ -15,6 +15,8 @@ public interface EntityRepository<E, I> {
 
     long count();
 
+    EntityRepository<E,I> withTenant(TenantId tenant);
+
     default long count(Map<String, Object> filter) {
         return count(Criteria.of(filter));
     }
@@ -38,7 +40,6 @@ public interface EntityRepository<E, I> {
     default PagedList<E> find(TenantId tenant, Criteria criteria) {
         return find(tenant, criteria, Paging.DEFAULT);
     }
-
 
     default PagedList<E> findAll(TenantId tenantId) {
         return findAll(tenantId, Paging.DEFAULT);

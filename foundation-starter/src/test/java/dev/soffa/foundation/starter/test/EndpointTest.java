@@ -29,15 +29,15 @@ public class EndpointTest {
 
     @Test
     public void testActuator() {
-        //test.get("/actuator/health").expect().isOK().json("status", "UP");
+        //test.dev.soffa.foundation.get("/actuator/health").expect().isOK().json("status", "UP");
         test.get("/health").expect().isOK().print().json("status", "UP");
     }
 
     /*
     @Test
     public void testMetrics() {
-        test.get("/actuator/prometheus").expect().isOK();
-        test.get("/metrics").expect().isOK();
+        test.dev.soffa.foundation.get("/actuator/prometheus").expect().isOK();
+        test.dev.soffa.foundation.get("/metrics").expect().isOK();
     }*/
 
     @Test
