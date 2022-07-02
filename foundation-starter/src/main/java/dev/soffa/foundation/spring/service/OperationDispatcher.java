@@ -9,6 +9,7 @@ import dev.soffa.foundation.context.DefaultOperationContext;
 import dev.soffa.foundation.core.*;
 import dev.soffa.foundation.core.action.PublishEvent;
 import dev.soffa.foundation.core.model.Serialized;
+import dev.soffa.foundation.error.ForbiddenException;
 import dev.soffa.foundation.events.OnServiceStarted;
 import dev.soffa.foundation.model.Event;
 import dev.soffa.foundation.model.TenantId;
@@ -34,6 +35,7 @@ public class OperationDispatcher implements Dispatcher, Resource {
     private final SideEffectsHandler sideEffectsHandler;
     private static final Map<String, Boolean> DEFAULT_TENANT = new ConcurrentHashMap<>();
     private final AtomicReference<OperationsMapping> operationsMapping = new AtomicReference<>(null);
+
     private OperationsMapping getOperations() {
         if (operationsMapping.get() == null) {
             operationsMapping.set(context.getBean(OperationsMapping.class));
@@ -46,8 +48,11 @@ public class OperationDispatcher implements Dispatcher, Resource {
     @Override
     public <I, O> O dispatch(String operationName, Serialized input, String serializedContext) {
         Operation<I, O> op = getOperations().require(operationName);
-        I deserialized = (I) Mappers.JSON_FULLACCESS.deserialize(input.getData(), Class.forName(input.getType()));
-        Context context = Mappers.JSON_FULLACCESS.deserialize(serializedContext, Context.class);
+        I deserialized = null;
+        if (input.getData() != null) {
+            deserialized = (I) Mappers.JSON.deserialize(input.getData(), Class.forName(input.getType()));
+        }
+        Context context = Mappers.JSON.deserialize(serializedContext, Context.class);
         return invoke(op, deserialized, context);
     }
 
@@ -67,7 +72,9 @@ public class OperationDispatcher implements Dispatcher, Resource {
         if (operation == null) {
             return null;
         }
-
+        if (ctx == null) {
+            throw new ForbiddenException("No context provided");
+        }
 
         String className = operation.getClass().getSimpleName();
 
@@ -77,19 +84,21 @@ public class OperationDispatcher implements Dispatcher, Resource {
             DEFAULT_TENANT.put(className, AnnotationUtils.findAnnotation(operation.getClass(), DefaultTenant.class) != null);
         }
 
+
         if (DEFAULT_TENANT.get(className)) {
             return TenantHolder.useDefault(() -> apply(operation, input, ctx));
         } else {
             TenantId tenant = ctx.getTenant();
+            if (tenant==null) {
+                tenant = TenantId.DEFAULT;
+            }
             TenantId override = operation.getTenant(input, ctx);
             if (override == null || TenantId.CONTEXT.equals(override)) {
                 override = operation.getTenant(ctx);
             }
-            if (!TenantId.CONTEXT.equals(override) && override != null) {
-                if (tenant != override) {
-                    tenant = override;
-                    Logger.platform.info("Tenant overriden for operation %s: %s", className, tenant);
-                }
+            if (override != null && !TenantId.CONTEXT.equals(override) && !tenant.equals(override)) {
+                tenant = override;
+                Logger.platform.debug("Tenant overriden for operation %s: %s", className, tenant);
             }
             return TenantHolder.use(tenant, () -> apply(operation, input, ctx));
         }

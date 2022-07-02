@@ -23,7 +23,7 @@ import java.util.concurrent.atomic.AtomicLong;
 public class SimpleExecutorOperationScheduler implements OperationScheduler {
 
     private final ApplicationContext context;
-    private final ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
+    private final ScheduledExecutorService executorService = Executors.newScheduledThreadPool(6);
     private Dispatcher dispatcher;
 
     public static final AtomicLong COUNTER = new AtomicLong(0);
@@ -40,7 +40,7 @@ public class SimpleExecutorOperationScheduler implements OperationScheduler {
         if (dispatcher == null) {
             dispatcher = context.getBeansOfType(Dispatcher.class).values().iterator().next();
         }
-        final String serializedContext = Mappers.JSON_FULLACCESS.serialize(ctx);
+        final String serializedContext = Mappers.JSON.serialize(ctx);
         executorService.schedule(() -> {
             Logger.platform.info("Processing scheduled operation: %s", operationName);
             COUNTER.decrementAndGet();
