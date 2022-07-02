@@ -27,6 +27,10 @@ dependencies {
         exclude(module = "snakeyaml")
     }
 
+    api(platform("org.testcontainers:testcontainers-bom:1.17.3"))
+    api("org.testcontainers:postgresql")
+    api("org.testcontainers:junit-jupiter")
+
     testImplementation("org.springframework.boot:spring-boot-starter-web:2.7.0")
 }
 repositories {

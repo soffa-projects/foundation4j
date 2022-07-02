@@ -10,19 +10,31 @@ import dev.soffa.foundation.model.Paging;
 import dev.soffa.foundation.model.TenantId;
 import dev.soffa.foundation.multitenancy.TenantHolder;
 import dev.soffa.foundation.multitenancy.TenantsLoader;
-import dev.soffa.foundation.test.BaseTest;
 import org.awaitility.Awaitility;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.EnabledIfEnvironmentVariable;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.util.TestPropertyValues;
+import org.springframework.context.ApplicationContextInitializer;
+import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.ContextConfiguration;
+import org.testcontainers.containers.PostgreSQLContainer;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
 
 import javax.inject.Inject;
 import java.util.concurrent.TimeUnit;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 
-@SpringBootTest(properties ={"app.test.scheduler=mocked", "app.name=test007"})
-public class EntityRepositoryTest extends BaseTest {
+@ActiveProfiles("test")
+@ContextConfiguration(initializers = {EntityRepositoryIntegrationTest.Initializer.class})
+@SpringBootTest(properties = {"app.test.scheduler=mocked", "app.name=docker-test"})
+@EnabledIfEnvironmentVariable(named = "DOCKER_AVAILABLE", matches = "true")
+@Testcontainers
+public class EntityRepositoryIntegrationTest {
+
 
     @Inject
     private MessageDao messages;
@@ -38,6 +50,35 @@ public class EntityRepositoryTest extends BaseTest {
 
     @Inject
     private PendingJobRepo pendingJobs;
+
+    @SuppressWarnings("rawtypes")
+    @Container
+    public static PostgreSQLContainer container = new PostgreSQLContainer("postgres:11")
+        .withDatabaseName("foundation")
+        .withUsername("user1")
+        .withPassword("passw1");
+
+    static class Initializer implements ApplicationContextInitializer<ConfigurableApplicationContext> {
+
+        @Override
+        public void initialize(ConfigurableApplicationContext configurableApplicationContext) {
+            assertTrue(container.isRunning());
+            String url = String.format("postgres://%s:%s@%s:%d/%s",
+                container.getUsername(),
+                container.getPassword(),
+                container.getHost(),
+                container.getMappedPort(5432),
+                container.getDatabaseName()
+            );
+            String tenantsUrl = url + "?schema=__tenant__";
+            TestPropertyValues.of(
+                "app.test.scheduler=mocked",
+                "app.db.datasources.__tenant__.url=" + tenantsUrl,
+                "app.db.datasources.default.url=" + url
+            ).applyTo(configurableApplicationContext.getEnvironment());
+        }
+    }
+
 
     @Test
     public void testPendingJobs() {
@@ -67,7 +108,7 @@ public class EntityRepositoryTest extends BaseTest {
         assertEquals(10, messages.findAll(new Paging(-1, 10)).getPaging().getCount());
 
         for (String tenant : tenantsLoader.getTenantList()) {
-            Awaitility.await().atMost(2, TimeUnit.SECONDS).until(() -> db.isTenantReady(tenant));
+            Awaitility.await().atMost(5, TimeUnit.SECONDS).until(() -> db.isTenantReady(tenant));
         }
 
         for (String tenant : tenantsLoader.getTenantList()) {
@@ -96,4 +137,6 @@ public class EntityRepositoryTest extends BaseTest {
 
         }
     }
+
+
 }

@@ -41,6 +41,11 @@ dependencies {
     implementation("org.jdbi:jdbi3-sqlobject:3.30.0")
     testImplementation(project(":foundation-starter"))
     testImplementation(project(":foundation-starter-test"))
+
+    implementation(platform("org.testcontainers:testcontainers-bom:1.17.3"))
+    testImplementation("org.testcontainers:postgresql")
+    testImplementation("org.testcontainers:junit-jupiter")
+
 }
 repositories {
     mavenCentral()

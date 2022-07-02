@@ -87,9 +87,8 @@ public final class DBHelper {
         hc.addDataSourceProperty("cacheResultSetMetadata", true);
 
 
-
         if (!isH2 && config.hasSchema() && !TENANT_PLACEHOLDER.equalsIgnoreCase(config.getSchema())) {
-            Jdbi.create(config.getUrl()).useTransaction(handle -> {
+            Jdbi.create(config.getUrl(), config.getUsername(), config.getPassword()).useTransaction(handle -> {
                 //EL
                 String command = "CREATE SCHEMA IF NOT EXISTS " + config.getSchema();
                 int res = handle.execute(command);

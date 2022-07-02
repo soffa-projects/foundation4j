@@ -62,7 +62,7 @@ public final class DBImpl extends AbstractDataSource implements ApplicationListe
             this.lockProvider = DBHelper.createLockTable(getDefaultDataSource(), this.tablesPrefix);
             DBHelper.createPendingJobTable(getDefaultDataSource(), this.tablesPrefix);
             applyMigrations();
-        }else {
+        } else {
             throw new TechnicalException("No database configuration found");
         }
     }
@@ -151,7 +151,10 @@ public final class DBImpl extends AbstractDataSource implements ApplicationListe
         if (TENANT_PLACEHOLDER.equalsIgnoreCase(sourceId)) {
             registry.put(sourceId, config);
         } else {
-            ExtDataSource lconfig = config.ofTenant(sourceId);
+            ExtDataSource lconfig = config;
+            if (config.isTenantTemplate()) {
+                lconfig = config.ofTenant(sourceId);
+            }
             if (migrate) {
                 try {
                     applyMigrations(sourceId, lconfig);
@@ -246,38 +249,36 @@ public final class DBImpl extends AbstractDataSource implements ApplicationListe
             return;
         }
 
-        String linkId = datasource.toLowerCase();
         if (info.isMigrated()) {
             return;
         }
-        withLock("db-migration-" + linkId, 60, 30, () -> {
-            if (migrationDelegate == null) {
-                Map<String, MigrationDelegate> beans = context.getBeansOfType(MigrationDelegate.class);
-                if (beans.size() > 0) {
-                    migrationDelegate = beans.values().iterator().next();
-                } else {
-                    migrationDelegate = new NoMigrationDelegate();
-                }
+        //withLock("db-migration-" + linkId, 60, 30, () -> {
+        if (migrationDelegate == null) {
+            Map<String, MigrationDelegate> beans = context.getBeansOfType(MigrationDelegate.class);
+            if (beans.isEmpty()) {
+                migrationDelegate = new NoMigrationDelegate();
+            } else {
+                migrationDelegate = beans.values().iterator().next();
             }
-            String lMigrationName = AUTO_MIGRATE;
-            if (migrationDelegate != null && !TenantId.DEFAULT_VALUE.equals(datasource)) {
-                lMigrationName = migrationDelegate.getMigrationName(datasource);
+        }
+        String lMigrationName = AUTO_MIGRATE;
+        if (migrationDelegate != null && !TenantId.DEFAULT_VALUE.equals(datasource)) {
+            lMigrationName = migrationDelegate.getMigrationName(datasource);
+        }
+        if (AUTO_MIGRATE.equalsIgnoreCase(lMigrationName)) {
+            lMigrationName = info.getChangeLogPath();
+        }
+        String changelogPath = DBHelper.findChangeLogPath(appConfig.getName(), lMigrationName);
+        if (TextUtil.isNotEmpty(changelogPath) && !info.isMigrated()) {
+            if (info.isDefault()) {
+                Migrator.getInstance().execute(info);
+                registry.put(info.getBaseName(), info);
+            } else {
+                Migrator.getInstance().submit(info, out -> registry.put(out.getId(), out));
             }
-            if (AUTO_MIGRATE.equalsIgnoreCase(lMigrationName)) {
-                lMigrationName = info.getChangeLogPath();
-            }
-            String changelogPath = DBHelper.findChangeLogPath(appConfig.getName(), lMigrationName);
-            if (TextUtil.isNotEmpty(changelogPath) && !info.isMigrated()) {
-                if (info.isDefault()) {
-                    LOG.info("Applying migrations for default datasource");
-                    Migrator.getInstance().execute(info);
-                    registry.put(info.getBaseName(), info);
-                } else {
-                    Migrator.getInstance().submit(info, out -> registry.put(out.getId(), out));
-                }
-            }
+        }
 
-        });
+        //});
     }
 
     @Override
@@ -365,14 +366,14 @@ public final class DBImpl extends AbstractDataSource implements ApplicationListe
         for (String tenant : tenants) {
             try {
                 register(tenant, info.ofTenant(tenant), true);
-            }catch (Exception e) {
+            } catch (Exception e) {
                 hasErrors = true;
                 Logger.platform.error(e);
             }
         }
         if (hasErrors) {
             LOG.warn("Database is configured but some migrations has failed");
-        }else {
+        } else {
             LOG.info("Database is now configured");
         }
     }

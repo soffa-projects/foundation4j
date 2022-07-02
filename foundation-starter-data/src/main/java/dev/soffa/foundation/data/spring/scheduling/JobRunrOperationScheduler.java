@@ -17,7 +17,7 @@ import org.springframework.stereotype.Component;
 import java.util.UUID;
 
 @Component
-@ConditionalOnProperty(value = "app.scheduler.provider", havingValue = "jobrunr", matchIfMissing = true)
+@ConditionalOnProperty(value = "app.scheduler.provider", havingValue = "jobrunr")
 class JobRunrOperationScheduler implements OperationScheduler {
 
     private final JobScheduler jobScheduler;

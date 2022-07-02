@@ -141,7 +141,7 @@ public class ExtDataSource implements DataSource {
             throw new TechnicalException("This datasource cannot be called directly, use ofTenant() instead");
         }
         if (this.dataSource == null) {
-            String fingerprint = DigestUtil.md5(baseUrl);
+            String fingerprint = DigestUtil.md5(applicationName + ":" + baseUrl);
             if (UNIQDS.containsKey(fingerprint)) {
                 this.dataSource = UNIQDS.get(fingerprint);
             } else {
@@ -159,7 +159,7 @@ public class ExtDataSource implements DataSource {
             return this;
         }
         createSchema(this.getDataSource(), this.getSchema());
-        initialized =true;
+        initialized = true;
         return this;
     }
 
@@ -274,13 +274,17 @@ public class ExtDataSource implements DataSource {
 
     @SneakyThrows
     private Connection withSchema(Connection cnx) {
-        if (!initialized) {
+        if (!initialized || cnx == null) {
             return cnx;
         }
-        if (cnx != null && TextUtil.isNotEmpty(schema)) {
+        if (TextUtil.isEmpty(schema)) {
+            if (isPG()) {
+                cnx.setSchema("public");
+            }
+        } else {
             if (isH2()) {
                 cnx.setSchema(schema.toUpperCase());
-            }else {
+            } else {
                 cnx.setSchema(schema);
             }
         }
