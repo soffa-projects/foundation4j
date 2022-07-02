@@ -19,6 +19,14 @@ public interface EntityRepository<E, I> {
 
     long count(TenantId t);
 
+    default boolean isEmpty(TenantId tenant) {
+        return count(tenant) == 0L;
+    }
+
+    default boolean isEmpty() {
+        return isEmpty(TenantId.CONTEXT);
+    }
+
     EntityRepository<E,I> withTenant(TenantId tenant);
 
     default long count(Map<String, Object> filter) {

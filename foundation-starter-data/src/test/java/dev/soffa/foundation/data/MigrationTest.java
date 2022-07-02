@@ -32,10 +32,7 @@ public class MigrationTest {
             migrator.submit(el);
         });
 
-        Awaitility.await().atMost(5, TimeUnit.SECONDS).until(() -> {
-            System.out.println("counter = " + migrator.getCounter());
-            return migrator.isEmpty();
-        });
+        Awaitility.await().atMost(5, TimeUnit.SECONDS).until(migrator::isEmpty);
 
         for (ExtDataSource dataSource : dataSources) {
             assertTrue(dataSource.isMigrated());

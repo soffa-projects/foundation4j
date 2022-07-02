@@ -58,7 +58,7 @@ public final class DBImpl extends AbstractDataSource implements ApplicationListe
         if (appConfig.getDb() != null) {
             this.tenanstListQuery = appConfig.getDb().getTenantListQuery();
             this.tablesPrefix = appConfig.getDb().getTablesPrefix();
-            createDatasources(appConfig.getDb().getDatasources());
+            createDatasources(appConfig.getDb().getTablesPrefix(), appConfig.getDb().getDatasources());
             this.lockProvider = DBHelper.createLockTable(getDefaultDataSource(), this.tablesPrefix);
             DBHelper.createPendingJobTable(getDefaultDataSource(), this.tablesPrefix);
             applyMigrations();
@@ -114,7 +114,7 @@ public final class DBImpl extends AbstractDataSource implements ApplicationListe
         });
     }
 
-    private void createDatasources(Map<String, DataSourceConfig> datasources) {
+    private void createDatasources(String tablesPrerix, Map<String, DataSourceConfig> datasources) {
         if (datasources == null || datasources.isEmpty()) {
             LOG.warn("No datasources configured for this service.");
         } else {
@@ -122,6 +122,7 @@ public final class DBImpl extends AbstractDataSource implements ApplicationListe
                 // Wait for application to start before running migrations
                 DataSourceConfig el = dbLink.getValue();
                 el.setName(dbLink.getKey());
+                el.setTablesPrefix(tablesPrerix);
                 register(dbLink.getKey(), ExtDataSource.create(appConfig.getName(), el), false);
             }
             if (!registry.containsKey(TenantId.DEFAULT_VALUE)) {
@@ -272,9 +273,7 @@ public final class DBImpl extends AbstractDataSource implements ApplicationListe
                     Migrator.getInstance().execute(info);
                     registry.put(info.getBaseName(), info);
                 } else {
-                    Migrator.getInstance().submit(info, out -> {
-                        registry.put(out.getId(), out);
-                    });
+                    Migrator.getInstance().submit(info, out -> registry.put(out.getId(), out));
                 }
             }
 
@@ -357,7 +356,7 @@ public final class DBImpl extends AbstractDataSource implements ApplicationListe
         } catch (NoSuchBeanDefinitionException e) {
             LOG.error("No TenantsLoader defined");
         } catch (Exception e) {
-            LOG.error("Error loading tenants", e);
+            LOG.error(e, "Error loading tenants: %s", e.getMessage());
         }
 
         LOG.info("Tenants loaded: %d", tenants.size());

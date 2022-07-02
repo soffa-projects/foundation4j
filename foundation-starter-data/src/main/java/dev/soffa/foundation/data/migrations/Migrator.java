@@ -35,31 +35,37 @@ public class Migrator implements Observer<MigrationJob> {
         subject.subscribe(this);
     }
 
-    public synchronized void submit(ExtDataSource job) {
-        counter.incrementAndGet();
-        subject.onNext(new MigrationJob(job, null));
+    public void submit(ExtDataSource job) {
+        synchronized (counter) {
+            counter.incrementAndGet();
+            subject.onNext(new MigrationJob(job, null));
+        }
     }
 
-    public synchronized void execute(ExtDataSource job) {
-        if (pendingJobs.contains(job.getName())) {
-            Logger.platform.warn("Migration job already submitted: " + job.getName());
-            return;
+    public void execute(ExtDataSource job) {
+        synchronized (counter) {
+            if (pendingJobs.contains(job.getName())) {
+                Logger.platform.warn("Migration job already submitted: %s",  job.getName());
+                return;
+            }
+            counter.incrementAndGet();
+            pendingJobs.add(job.getName());
+            applyMigrations(job);
+            job.setMigrated(true);
+            counter.decrementAndGet();
         }
-        counter.incrementAndGet();
-        pendingJobs.add(job.getName());
-        applyMigrations(job);
-        job.setMigrated(true);
-        counter.decrementAndGet();
     }
 
-    public synchronized void submit(ExtDataSource job, Consumer<ExtDataSource> callback) {
-        if (pendingJobs.contains(job.getName())) {
-            Logger.platform.warn("Migration job already submitted: " + job.getName());
-            return;
+    public void submit(ExtDataSource job, Consumer<ExtDataSource> callback) {
+        synchronized(counter) {
+            if (pendingJobs.contains(job.getName())) {
+                Logger.platform.warn("Migration job already submitted: %s",  job.getName());
+                return;
+            }
+            counter.incrementAndGet();
+            pendingJobs.add(job.getName());
+            subject.onNext(new MigrationJob(job, callback));
         }
-        counter.incrementAndGet();
-        pendingJobs.add(job.getName());
-        subject.onNext(new MigrationJob(job, callback));
     }
 
     public static Migrator getInstance() {
@@ -172,7 +178,7 @@ public class Migrator implements Observer<MigrationJob> {
 
     @Override
     public void onSubscribe(@NonNull Disposable d) {
-
+        // Nothing to do
     }
 
     @Override
@@ -195,10 +201,13 @@ public class Migrator implements Observer<MigrationJob> {
 
     @Override
     public void onError(@NonNull Throwable e) {
+        // Nothing to do
+        Logger.platform.error(e);
     }
 
     @Override
     public void onComplete() {
+        // Nothing to do
     }
 
 }

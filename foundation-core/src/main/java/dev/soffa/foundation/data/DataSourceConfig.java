@@ -19,11 +19,6 @@ public class DataSourceConfig {
         this.url = url;
     }
 
-    public DataSourceConfig(String name, String url, String migration) {
-        this.name = name;
-        this.url = url;
-        this.migration = migration;
-    }
 
 
 }

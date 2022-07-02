@@ -28,6 +28,7 @@ import java.util.logging.Logger;
 
 @Data
 @Builder
+@SuppressWarnings("PMD.GodClass")
 public class ExtDataSource implements DataSource {
 
     private static final Map<String, DataSource> UNIQDS = new ConcurrentHashMap<>();
@@ -53,7 +54,7 @@ public class ExtDataSource implements DataSource {
     private String changeLogPath;
     private String tablesPrefix;
 
-    private transient boolean initialized = false;
+    private transient boolean initialized;
 
     @JsonIgnore
     private transient DataSource dataSource;
@@ -228,7 +229,7 @@ public class ExtDataSource implements DataSource {
             jdbcDriver = H2_DRIVER;
             jdbcUrl.append(String.format("jdbc:h2:%1$s:%2$s;MODE=PostgreSQL;DB_CLOSE_ON_EXIT=FALSE", hostname, path));
             if (TextUtil.isNotEmpty(schema)) {
-                jdbcUrl.append(";INIT=CREATE SCHEMA IF NOT EXISTS ").append(schema).append("\\;SET SCHEMA ").append(schema);
+                jdbcUrl.append(";INIT=CREATE SCHEMA IF NOT EXISTS ").append(schema); //.append("\\;SET SCHEMA ").append(schema);
             }
         } else {
             jdbcDriver = PG_DRIVER;

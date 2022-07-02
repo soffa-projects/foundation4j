@@ -6,7 +6,7 @@
     logicalFilePath="foundation/data/test">
 
     <changeSet id="0_create_users" author="core.team">
-        <createTable tableName="${table_prefix}messages">
+        <createTable tableName="${prefix}messages">
             <column name="id" type="varchar(64)">
                 <constraints primaryKey="true" nullable="false"/>
             </column>

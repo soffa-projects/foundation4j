@@ -71,8 +71,6 @@ public class EntityRepositoryTest extends BaseTest {
         }
 
         for (String tenant : tenantsLoader.getTenantList()) {
-            System.out.println("tenant = " + tenant);
-
             TenantId tenantId = TenantId.of(tenant);
             // MessagesDAO is locked to TenantID.DEFAULT, so no matter the tenant, it should return the same result.
             assertEquals(generatedMessagesCount, messages.count(tenantId));

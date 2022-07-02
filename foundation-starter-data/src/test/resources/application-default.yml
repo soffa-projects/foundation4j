@@ -1,5 +1,6 @@
 app.name: foundation-data
 app.db:
+  tables-prefix: test
   datasources:
     default:
       url: h2://mem/default

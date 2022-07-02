@@ -21,7 +21,7 @@ import java.lang.reflect.Modifier;
 import java.util.*;
 
 @Getter
-public class EntityInfo<T> {
+public final class EntityInfo<T> {
 
     //private static final Map<String, EntityInfo<?>> REGISTRY = new HashMap<>();
     private static final Map<String, String> CUSTOM_TABLES = new HashMap<>();
