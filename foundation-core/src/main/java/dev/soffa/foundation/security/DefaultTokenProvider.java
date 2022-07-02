@@ -163,7 +163,7 @@ public class DefaultTokenProvider implements TokenProvider, ClaimsExtractor {
             accountId(token.lookupClaim("accountId", "accoun_id").orElse(null)).
             accountName(token.lookupClaim("account_name", "accountName").orElse(null)).
             applicationId(token.lookupClaim("applicationId", "application_id", "appId", "app_id").orElse(null)).
-            liveMode(Boolean.parseBoolean(token.lookupClaim("liveMode", "live_mode", "livemode").orElse("true"))).
+            liveMode(Boolean.parseBoolean(liveMode)).
             application(token.lookupClaim("applicationName", "application_name", "application", "ap_name", "app").orElse(null)).
             profile(profile).
             roles(roles).
