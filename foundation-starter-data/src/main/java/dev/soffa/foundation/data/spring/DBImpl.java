@@ -3,7 +3,8 @@ package dev.soffa.foundation.data.spring;
 import dev.soffa.foundation.commons.*;
 import dev.soffa.foundation.config.AppConfig;
 import dev.soffa.foundation.data.*;
-import dev.soffa.foundation.data.config.DataSourceProperties;
+import dev.soffa.foundation.data.common.ExtDataSource;
+import dev.soffa.foundation.data.migrations.Migrator;
 import dev.soffa.foundation.error.*;
 import dev.soffa.foundation.model.TenantId;
 import dev.soffa.foundation.multitenancy.TenantHolder;
@@ -39,10 +40,10 @@ public final class DBImpl extends AbstractDataSource implements ApplicationListe
     private static final String TENANT_PLACEHOLDER = "__tenant__";
     private final AppConfig appConfig;
     private final ApplicationContext context;
-    private final Map<String, DatasourceInfo> registry = new ConcurrentHashMap<>();
-    private String tablesPrefix;
-    private String tenanstListQuery;
-    private LockProvider lockProvider;
+    private final Map<String, ExtDataSource> registry = new ConcurrentHashMap<>();
+    private final String tablesPrefix;
+    private final String tenanstListQuery;
+    private final LockProvider lockProvider;
     private MigrationDelegate migrationDelegate;
 
 
@@ -61,6 +62,8 @@ public final class DBImpl extends AbstractDataSource implements ApplicationListe
             this.lockProvider = DBHelper.createLockTable(getDefaultDataSource(), this.tablesPrefix);
             DBHelper.createPendingJobTable(getDefaultDataSource(), this.tablesPrefix);
             applyMigrations();
+        }else {
+            throw new TechnicalException("No database configuration found");
         }
     }
 
@@ -79,7 +82,7 @@ public final class DBImpl extends AbstractDataSource implements ApplicationListe
 
     @Override
     public DataSource getDefaultDataSource() {
-        return registry.get(TenantId.DEFAULT_VALUE).getDataSource();
+        return registry.get(TenantId.DEFAULT_VALUE);
     }
 
     @Override
@@ -117,7 +120,9 @@ public final class DBImpl extends AbstractDataSource implements ApplicationListe
         } else {
             for (Map.Entry<String, DataSourceConfig> dbLink : datasources.entrySet()) {
                 // Wait for application to start before running migrations
-                register(dbLink.getKey(), dbLink.getValue(), false);
+                DataSourceConfig el = dbLink.getValue();
+                el.setName(dbLink.getKey());
+                register(dbLink.getKey(), ExtDataSource.create(appConfig.getName(), el), false);
             }
             if (!registry.containsKey(TenantId.DEFAULT_VALUE)) {
                 throw new TechnicalException("No default datasource provided");
@@ -130,38 +135,33 @@ public final class DBImpl extends AbstractDataSource implements ApplicationListe
         if (!registry.containsKey(TENANT_PLACEHOLDER)) {
             throw new ConfigurationException("No tenant template (__TENANT__) provided, check your config");
         }
-        DataSourceConfig tplConfig = registry.get(TENANT_PLACEHOLDER).getConfig();
+        ExtDataSource tplConfig = registry.get(TENANT_PLACEHOLDER);
         for (String name : names) {
             register(name, tplConfig, migrate);
         }
     }
 
-    private void register(String id, DataSourceConfig config, boolean migrate) {
+    private void register(String id, ExtDataSource config, boolean migrate) {
         String sourceId = id.toLowerCase();
         if (registry.containsKey(sourceId)) {
             LOG.debug("Datasource with id %s is already registered", id);
             return;
         }
-        String url = config.getUrl().replace(TENANT_PLACEHOLDER, id).replace(TENANT_PLACEHOLDER.toUpperCase(), id);
         if (TENANT_PLACEHOLDER.equalsIgnoreCase(sourceId)) {
-            registry.put(id.toLowerCase(), new DatasourceInfo(id, config));
+            registry.put(sourceId, config);
         } else {
-            DataSource ds = DBHelper.createDataSource(config.getName(), DataSourceProperties.create(appConfig.getName(), id, url));
-            // config.setName(appConfig.getName());
-            DatasourceInfo di = new DatasourceInfo(id, config, ds);
+            ExtDataSource lconfig = config.ofTenant(sourceId);
             if (migrate) {
                 try {
-                    applyMigrations(sourceId, di);
-                    registry.put(sourceId, di);
+                    applyMigrations(sourceId, lconfig);
                 } catch (Exception e) {
                     LOG.error("Error applying migrations for datasource %s, skipping registration", id);
                     LOG.error(ErrorUtil.loookupOriginalMessage(e));
                     Sentry.get().captureException(e);
                 }
-            }else {
-                registry.put(sourceId, di);
+            } else {
+                registry.put(sourceId, lconfig);
             }
-
         }
     }
 
@@ -189,7 +189,7 @@ public final class DBImpl extends AbstractDataSource implements ApplicationListe
         if (!registry.containsKey(lookupKey)) {
             throw new InvalidTenantException("%s is not a valid database link", lookupKey);
         }
-        return registry.get(lookupKey).getDataSource();
+        return registry.get(lookupKey);
     }
 
     private Object determineCurrentLookupKey() {
@@ -214,7 +214,7 @@ public final class DBImpl extends AbstractDataSource implements ApplicationListe
 
     @Override
     public void createSchema(String tenantId, String schema) {
-        DataSource ds = registry.get(tenantId.toLowerCase()).getDataSource();
+        DataSource ds = registry.get(tenantId.toLowerCase());
         if (ds == null) {
             throw new TechnicalException("Datasource not registered: " + tenantId);
         }
@@ -235,11 +235,11 @@ public final class DBImpl extends AbstractDataSource implements ApplicationListe
         if (TENANT_PLACEHOLDER.equals(datasource)) {
             return;
         }
-        DatasourceInfo info = registry.get(datasource.toLowerCase());
+        ExtDataSource info = registry.get(datasource.toLowerCase());
         applyMigrations(datasource, info);
     }
 
-    public void applyMigrations(String datasource, DatasourceInfo info) {
+    public void applyMigrations(String datasource, ExtDataSource info) {
 
         if (TENANT_PLACEHOLDER.equals(datasource)) {
             return;
@@ -263,14 +263,21 @@ public final class DBImpl extends AbstractDataSource implements ApplicationListe
                 lMigrationName = migrationDelegate.getMigrationName(datasource);
             }
             if (AUTO_MIGRATE.equalsIgnoreCase(lMigrationName)) {
-                lMigrationName = info.getConfig().getMigration();
+                lMigrationName = info.getChangeLogPath();
             }
             String changelogPath = DBHelper.findChangeLogPath(appConfig.getName(), lMigrationName);
-            if (TextUtil.isNotEmpty(changelogPath)) {
-                DBHelper.applyMigrations(info, changelogPath, tablesPrefix, appConfig.getName());
+            if (TextUtil.isNotEmpty(changelogPath) && !info.isMigrated()) {
+                if (info.isDefault()) {
+                    LOG.info("Applying migrations for default datasource");
+                    Migrator.getInstance().execute(info);
+                    registry.put(info.getBaseName(), info);
+                } else {
+                    Migrator.getInstance().submit(info, out -> {
+                        registry.put(out.getId(), out);
+                    });
+                }
             }
-            info.setMigrated(true);
-            LOG.info("Migrations [%s] applied for [%s]", lMigrationName, linkId);
+
         });
     }
 
@@ -282,7 +289,16 @@ public final class DBImpl extends AbstractDataSource implements ApplicationListe
     @Override
     public boolean isTenantReady(String tenant) {
         String id = tenant.toLowerCase();
-        return registry.containsKey(id) && registry.get(id).isMigrated();
+        if (!registry.containsKey(id)) {
+            Logger.platform.warn("Tenant not yet registered: %s", id);
+            return false;
+        }
+        if (!registry.get(id).isMigrated()) {
+            Logger.platform.warn("Tenant registered but not yet migrated: %s", id);
+            return false;
+        }
+        Logger.platform.info("Tenant is now registered and migrated: %s", id);
+        return true;
     }
 
     @Override
@@ -345,11 +361,21 @@ public final class DBImpl extends AbstractDataSource implements ApplicationListe
         }
 
         LOG.info("Tenants loaded: %d", tenants.size());
-        DatasourceInfo info = registry.get(TENANT_PLACEHOLDER);
+        ExtDataSource info = registry.get(TENANT_PLACEHOLDER);
+        boolean hasErrors = false;
         for (String tenant : tenants) {
-            register(tenant, info.getConfig(), true);
+            try {
+                register(tenant, info.ofTenant(tenant), true);
+            }catch (Exception e) {
+                hasErrors = true;
+                Logger.platform.error(e);
+            }
         }
-        LOG.info("Database is now configured");
+        if (hasErrors) {
+            LOG.warn("Database is configured but some migrations has failed");
+        }else {
+            LOG.info("Database is now configured");
+        }
     }
 
 }

@@ -4,4 +4,9 @@ app.db:
     default:
       url: h2://mem/default
       migration: application
+    nomig:
+      url: h2://mem/nomig
+    __tenant__:
+      url: h2://mem/tenants?schema=__tenant__
+      migration: tenant
 

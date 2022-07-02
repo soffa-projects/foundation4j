@@ -1,5 +1,6 @@
 package dev.soffa.foundation.data.spring.scheduling;
 
+import com.google.common.base.Preconditions;
 import dev.soffa.foundation.commons.Logger;
 import dev.soffa.foundation.commons.TextUtil;
 import dev.soffa.foundation.data.DB;
@@ -31,6 +32,8 @@ public class JobSchedulingConfig {
                                             DB db,
                                             @Value("${app.scheduler.dashbort.port:${SCHEDULER_DASHBOARD_PORT:}}") String dashboardPort,
                                             @Autowired(required = false) DataSource dataSource) {
+
+        Preconditions.checkNotNull(db.getDefaultDataSource(), "No default datasource found");
         StorageProvider storage;
         if (dataSource != null) {
             storage = SqlStorageProviderFactory.using(db.getDefaultDataSource());

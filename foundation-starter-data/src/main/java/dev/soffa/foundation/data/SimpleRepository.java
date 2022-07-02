@@ -55,7 +55,7 @@ public class SimpleRepository<E, I> implements EntityRepository<E, I> {
         this.ds = new SimpleDataStore(new DBHandleProvider(db), db.getTablesPrefix());
         Type[] generics = ClassUtil.lookupGeneric(this.getClass(), SimpleRepository.class);
         Preconditions.checkNotNull(generics, "No EntityRepository found in class hierarchy");
-        this.entityClass = (Class<E>)generics[0];
+        this.entityClass = (Class<E>) generics[0];
         if (TextUtil.isNotEmpty(tableName)) {
             EntityInfo.registerTable(entityClass, tableName);
         }
@@ -78,8 +78,8 @@ public class SimpleRepository<E, I> implements EntityRepository<E, I> {
     }
 
     @Override
-    public long count() {
-        return ds.count(resolveTenant(), entityClass);
+    public long count(TenantId tenant) {
+        return ds.count(resolveTenant(tenant), entityClass);
     }
 
     @Override
@@ -172,10 +172,10 @@ public class SimpleRepository<E, I> implements EntityRepository<E, I> {
     }
 
     protected TenantId resolveTenant(TenantId tenant) {
-        if (tenant != null && !tenant.equals(TenantId.CONTEXT)) {
-            return tenant;
+        if (!TenantId.CONTEXT.equals(lockedTenant)) {
+            return lockedTenant;
         }
-        return lockedTenant;
+        return tenant;
     }
 
 

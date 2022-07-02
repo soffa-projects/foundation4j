@@ -1,8 +1,8 @@
 package dev.soffa.foundation.data.jdbi;
 
 import com.google.common.base.Preconditions;
-import com.zaxxer.hikari.HikariDataSource;
 import dev.soffa.foundation.data.DB;
+import dev.soffa.foundation.data.common.ExtDataSource;
 import dev.soffa.foundation.model.TenantId;
 import dev.soffa.foundation.multitenancy.TenantHolder;
 import lombok.AllArgsConstructor;
@@ -12,14 +12,13 @@ import org.jdbi.v3.postgres.PostgresPlugin;
 import org.jdbi.v3.sqlobject.SqlObjectPlugin;
 import org.springframework.jdbc.datasource.TransactionAwareDataSourceProxy;
 
-import javax.sql.DataSource;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
 @AllArgsConstructor
-public class DBHandleProvider implements HandleProvider{
+public class DBHandleProvider implements HandleProvider {
 
     private final Map<String, Jdbi> cache = new ConcurrentHashMap<>();
 
@@ -43,14 +42,12 @@ public class DBHandleProvider implements HandleProvider{
     }
 
     private Jdbi getDataSource(String lTenant) {
-        DataSource dataSource = db.determineTargetDataSource(lTenant);
+        ExtDataSource dataSource = (ExtDataSource) db.determineTargetDataSource(lTenant);
         Jdbi jdbi = Jdbi.create(new TransactionAwareDataSourceProxy(dataSource))
+        //Jdbi jdbi = Jdbi.create(dataSource)
             .installPlugin(new SqlObjectPlugin());
-        if (dataSource instanceof HikariDataSource) {
-            String url = ((HikariDataSource) dataSource).getJdbcUrl();
-            if (url.startsWith("jdbc:postgres")) {
-                jdbi.installPlugin(new PostgresPlugin());
-            }
+        if (dataSource.isPG()) {
+            jdbi.installPlugin(new PostgresPlugin());
         }
         jdbi.registerArgument(new SerializableArgumentFactory());
         jdbi.registerArgument(new MapArgumentFactory());

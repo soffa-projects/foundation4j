@@ -13,7 +13,11 @@ import java.util.function.Consumer;
 @SuppressWarnings({"UnusedReturnValue", "unused"})
 public interface EntityRepository<E, I> {
 
-    long count();
+    default long count() {
+        return count(TenantId.CONTEXT);
+    }
+
+    long count(TenantId t);
 
     EntityRepository<E,I> withTenant(TenantId tenant);
 
@@ -128,6 +132,5 @@ public interface EntityRepository<E, I> {
     default boolean exists(I id) {
         return exists(ImmutableMap.of("id", id));
     }
-
 
 }

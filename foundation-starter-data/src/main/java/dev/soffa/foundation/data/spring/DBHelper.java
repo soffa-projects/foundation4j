@@ -2,55 +2,54 @@ package dev.soffa.foundation.data.spring;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
-import dev.soffa.foundation.commons.DigestUtil;
 import dev.soffa.foundation.commons.Logger;
 import dev.soffa.foundation.commons.Properties;
 import dev.soffa.foundation.commons.TextUtil;
-import dev.soffa.foundation.data.common.HikariDS;
-import dev.soffa.foundation.data.config.DataSourceProperties;
+import dev.soffa.foundation.data.common.ExtDataSource;
 import dev.soffa.foundation.error.DatabaseException;
 import dev.soffa.foundation.error.TechnicalException;
-import dev.soffa.foundation.model.TenantId;
-import liquibase.integration.spring.SpringLiquibase;
 import lombok.SneakyThrows;
 import net.javacrumbs.shedlock.core.LockProvider;
 import net.javacrumbs.shedlock.provider.jdbctemplate.JdbcTemplateLockProvider;
 import org.jdbi.v3.core.Jdbi;
 import org.springframework.core.io.DefaultResourceLoader;
-import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 import javax.sql.DataSource;
-import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.TimeZone;
+
+import static dev.soffa.foundation.data.common.ExtDataSource.TENANT_PLACEHOLDER;
 
 public final class DBHelper {
-
-    private static final Logger LOG = Logger.get(DBHelper.class);
-    private static final ResourceLoader RL = new DefaultResourceLoader();
-
-    private static final Map<String, HikariDataSource> CACHE = new ConcurrentHashMap<>();
 
 
     private DBHelper() {
     }
 
+    public static DataSource createDataSource(String name, String url) {
+        return createDataSource(name, ExtDataSource.create("application", name, url));
+    }
+
+    public static DataSource createDataSource(String applicationName, String name, String url) {
+        return createDataSource(name, ExtDataSource.create(applicationName, name, url));
+    }
+
     @SneakyThrows
-    public static DataSource createDataSource(String sname, DataSourceProperties config) {
+    public static DataSource createDataSource(ExtDataSource config) {
+        return createDataSource(config.getName(), config);
+    }
+
+    @SneakyThrows
+    public static DataSource createDataSource(String sname, ExtDataSource config) {
         String name = sname;
         if (TextUtil.isEmpty(name)) {
             name = config.getName();
         }
 
-        String baseJdbcUrl = config.getUrl().split("\\?")[0];
-        String cacheId = DigestUtil.md5(baseJdbcUrl);
         boolean isH2 = config.getUrl().contains(":h2:");
-
-        if (CACHE.containsKey(cacheId)) {
-            createSchema(CACHE.get(cacheId), config.getSchema());
-            return new HikariDS(CACHE.get(cacheId), config.getSchema());
-        }
 
         HikariConfig hc = new HikariConfig();
 
@@ -71,10 +70,13 @@ public final class DBHelper {
 
         // hc.setLeakDetectionThreshold(10 * 1000);
 
-        LOG.debug("Using jdbcUrl: %s", config.getUrl());
+        Logger.platform.debug("Using jdbcUrl: %s", config.getUrl());
 
         if (isH2) {
             hc.addDataSourceProperty("ignore_startup_parameters", "search_path");
+            if (config.hasSchema()) {
+                config.setSchema(config.getSchema().toUpperCase());
+            }
         }
 
         hc.addDataSourceProperty("autoReconnect", true);
@@ -85,124 +87,34 @@ public final class DBHelper {
         hc.addDataSourceProperty("cacheResultSetMetadata", true);
 
 
-        if (config.hasSchema()) {
-            hc.setSchema("@@$$auto$$@@");
-        }
 
-        HikariDataSource ds = new HikariDataSource(hc);
-
-        if (!isH2 && !config.isDefaultSource()) {
-            CACHE.put(cacheId, ds);
+        if (!isH2 && config.hasSchema() && !TENANT_PLACEHOLDER.equalsIgnoreCase(config.getSchema())) {
+            Jdbi.create(config.getUrl()).useTransaction(handle -> {
+                //EL
+                String command = "CREATE SCHEMA IF NOT EXISTS " + config.getSchema();
+                int res = handle.execute(command);
+                Logger.platform.debug("Schema creation result: %s --> %s", config.getSchema(), res);
+            });
+            hc.setSchema(config.getSchema());
         }
-        createSchema(ds, config.getSchema());
-        return new HikariDS(ds, config.getSchema());
+        return new HikariDataSource(hc);
     }
 
-    private static void createSchema(DataSource ds, String schema) {
-        if (TextUtil.isEmpty(schema)) {
-            return;
-        }
-        JdbcTemplate jdbcTemplate = new JdbcTemplate(ds);
-        jdbcTemplate.execute("create schema if not exists " + schema);
-    }
-
-    public static void applyMigrations(DatasourceInfo dsInfo, String changeLogPath, String tablesPrefix, String appicationName) {
-        SpringLiquibase lqb = new SpringLiquibase();
-        lqb.setDropFirst(false);
-        lqb.setResourceLoader(RL);
-        Map<String, String> changeLogParams = new HashMap<>();
-
-        changeLogParams.put("prefix", "");
-        changeLogParams.put("table_prefix", "");
-        changeLogParams.put("tables_prefix", "");
-        changeLogParams.put("tablePrefix", "");
-        changeLogParams.put("tablesPrefix", "");
-
-
-        if (TextUtil.isNotEmpty(tablesPrefix)) {
-            changeLogParams.put("prefix", tablesPrefix);
-            changeLogParams.put("table_prefix", tablesPrefix);
-            changeLogParams.put("tables_prefix", tablesPrefix);
-            changeLogParams.put("tablePrefix", tablesPrefix);
-            changeLogParams.put("tablesPrefix", tablesPrefix);
-
-            lqb.setDatabaseChangeLogLockTable(tablesPrefix + "changelog_lock");
-            lqb.setDatabaseChangeLogTable(tablesPrefix + "changelog");
-        }
-        if (TextUtil.isNotEmpty(appicationName)) {
-            changeLogParams.put("application", appicationName);
-            changeLogParams.put("applicationName", appicationName);
-            changeLogParams.put("application_name", appicationName);
-        }
-
-        Resource res = RL.getResource(changeLogPath);
-        if (!res.exists()) {
-            throw new TechnicalException("Liquibase changeLog was not found: %s", changeLogPath);
-        }
-        lqb.setChangeLog(changeLogPath);
-        doApplyMigration(dsInfo, lqb, changeLogParams);
-    }
-
-    @SuppressWarnings("resource")
-    private static void doApplyMigration(DatasourceInfo dsInfo, SpringLiquibase lqb, Map<String, String> changeLogParams) {
-        @SuppressWarnings("PMD.CloseResource")
-        DataSource ds = dsInfo.getDataSource();
-        String schema = null;
-        if (ds instanceof HikariDataSource) {
-            schema = ((HikariDataSource) ds).getSchema();
-        } else if (ds instanceof HikariDS) {
-            schema = ((HikariDS) ds).getSchema();
-        }
-        if (TenantId.DEFAULT_VALUE.equals(dsInfo.getName())) {
-            lqb.setContexts(TenantId.DEFAULT_VALUE);
-        } else {
-            lqb.setContexts("tenant," + dsInfo.getName());
-        }
-        if (TextUtil.isNotEmpty(schema)) {
-            lqb.setDefaultSchema(schema);
-            lqb.setLiquibaseSchema(schema);
-        }
-        lqb.setChangeLogParameters(changeLogParams);
-        try {
-            lqb.setDataSource(ds);
-            lqb.afterPropertiesSet(); // Run migrations
-            LOG.info("[datasource:%s] migration '%s' successfully applied", dsInfo.getName(), lqb.getChangeLog());
-        } catch (Exception e) {
-            String msg = e.getMessage().toLowerCase();
-            if (msg.contains("changelog") && msg.contains("already exists")) {
-                boolean isTestDb = unwrapDataSource(lqb.getDataSource()).getJdbcUrl().startsWith("jdbc:h2:mem");
-                if (!isTestDb) {
-                    LOG.warn("Looks like migrations are being ran twice for %s.%s, ignore this error", dsInfo.getName(), schema);
-                }
-            } else {
-                throw new DatabaseException(e, "Migration failed for %s", schema);
-            }
-        }
-    }
-
-    private static HikariDataSource unwrapDataSource(DataSource source) {
-        if (source instanceof HikariDataSource) {
-            return (HikariDataSource) source;
-        } else if (source instanceof HikariDS) {
-            return ((HikariDS) source).unwrap();
-        }
-        throw new IllegalArgumentException("DataSource is not a HikariDataSource");
-    }
 
     public static String findChangeLogPath(String applicationName, String migrationName) {
-        String changelogPath = null;
-        boolean hasMigration = !("false".equals(migrationName) || "no".equals(migrationName));
-        if (hasMigration) {
-            if (TextUtil.isNotEmpty(migrationName) && !"true".equals(migrationName)) {
-                changelogPath = "/db/changelog/" + migrationName + ".xml";
-            } else {
-                changelogPath = "/db/changelog/" + applicationName + ".xml";
-            }
-            if (TextUtil.isNotEmpty(changelogPath)) {
-                ResourceLoader resourceLoader = new DefaultResourceLoader();
-                if (!resourceLoader.getResource(changelogPath).exists()) {
-                    throw new TechnicalException("Changelog file not found: " + changelogPath);
-                }
+        if (TextUtil.isEmpty(migrationName) || migrationName.matches("no|yes|0|disabled")) {
+            return null;
+        }
+        String changelogPath;
+        if (TextUtil.isNotEmpty(migrationName) && !"true".equals(migrationName)) {
+            changelogPath = "/db/changelog/" + migrationName + ".xml";
+        } else {
+            changelogPath = "/db/changelog/" + applicationName + ".xml";
+        }
+        if (TextUtil.isNotEmpty(changelogPath)) {
+            ResourceLoader resourceLoader = new DefaultResourceLoader();
+            if (!resourceLoader.getResource(changelogPath).exists()) {
+                throw new TechnicalException("Changelog file not found: " + changelogPath);
             }
         }
         return changelogPath;
@@ -226,7 +138,7 @@ public final class DBHelper {
                     .execute();
             });
         } catch (Exception e) {
-            LOG.warn(e.getMessage());
+            Logger.platform.warn(e.getMessage());
             throw new DatabaseException(e);
         }
         return lockProvider;
@@ -258,7 +170,7 @@ public final class DBHelper {
                 }
             });
         } catch (Exception e) {
-            LOG.warn(e.getMessage());
+            Logger.platform.warn(e.getMessage());
             throw new DatabaseException(e);
         }
     }

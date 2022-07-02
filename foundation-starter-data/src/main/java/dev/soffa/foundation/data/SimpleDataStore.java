@@ -2,7 +2,7 @@ package dev.soffa.foundation.data;
 
 import dev.soffa.foundation.commons.Logger;
 import dev.soffa.foundation.commons.TextUtil;
-import dev.soffa.foundation.data.config.DataSourceProperties;
+import dev.soffa.foundation.data.common.ExtDataSource;
 import dev.soffa.foundation.data.jdbi.BeanMapper;
 import dev.soffa.foundation.data.jdbi.DBIHandleProvider;
 import dev.soffa.foundation.data.jdbi.HandleHandleProvider;
@@ -31,7 +31,6 @@ import java.util.stream.Collectors;
 @SuppressWarnings("PMD.GodClass")
 public class SimpleDataStore implements DataStore {
 
-    private static final Logger LOG = Logger.getLogger(SimpleDataStore.class);
     private static final String TABLE = "table";
     private static final String ORDER = "order";
     private static final String LIMIT = "limit";
@@ -65,7 +64,7 @@ public class SimpleDataStore implements DataStore {
 
      */
     public static SimpleDataStore create(@NonNull String dbUrl) {
-        DataSourceProperties props = DataSourceProperties.create("default", "default", dbUrl);
+        ExtDataSource props = ExtDataSource.create("default", "default", dbUrl);
         Jdbi dbi = Jdbi.create(props.getUrl(), props.getUsername(), props.getPassword());
         return new SimpleDataStore(new DBIHandleProvider(dbi));
     }
@@ -340,7 +339,7 @@ public class SimpleDataStore implements DataStore {
                 EntityInfo<E> info = EntityInfo.of(entityClass, tablesPrefix);
                 return hp.inTransaction(tenant, handle -> consumer.apply(handle, info));
             } catch (Exception e) {
-                LOG.error("Current tenant is: %s", tenant);
+                Logger.platform.error("Current tenant is: %s", tenant);
                 throw new DatabaseException(e);
             }
         });
@@ -355,7 +354,7 @@ public class SimpleDataStore implements DataStore {
                 EntityInfo<E> info = EntityInfo.of(entityClass, tablesPrefix);
                 return hp.withHandle(tenant, handle -> consumer.apply(handle, info));
             } catch (Exception e) {
-                LOG.error("Current tenant is: %s", tenant);
+                Logger.platform.error("Current tenant is: %s", tenant);
                 throw new DatabaseException(e);
             }
         });

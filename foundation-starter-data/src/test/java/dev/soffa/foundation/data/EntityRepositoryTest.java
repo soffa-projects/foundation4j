@@ -3,21 +3,38 @@ package dev.soffa.foundation.data;
 import com.google.common.collect.ImmutableMap;
 import dev.soffa.foundation.commons.RandomUtil;
 import dev.soffa.foundation.data.app.MessageDao;
+import dev.soffa.foundation.data.app.TenantMessageDao;
 import dev.soffa.foundation.data.app.model.Message;
 import dev.soffa.foundation.extra.jobs.PendingJobRepo;
 import dev.soffa.foundation.model.Paging;
+import dev.soffa.foundation.model.TenantId;
+import dev.soffa.foundation.multitenancy.TenantHolder;
+import dev.soffa.foundation.multitenancy.TenantsLoader;
 import dev.soffa.foundation.test.BaseTest;
+import org.awaitility.Awaitility;
 import org.junit.jupiter.api.Test;
+import org.springframework.boot.test.context.SpringBootTest;
 
 import javax.inject.Inject;
+import java.util.concurrent.TimeUnit;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
+@SpringBootTest(properties = "app.test.scheduler=mocked")
 public class EntityRepositoryTest extends BaseTest {
 
     @Inject
     private MessageDao messages;
+
+    @Inject
+    private TenantMessageDao tenantMessages;
+
+    @Inject
+    private TenantsLoader tenantsLoader;
+
+    @Inject
+    private DB db;
 
     @Inject
     private PendingJobRepo pendingJobs;
@@ -48,5 +65,37 @@ public class EntityRepositoryTest extends BaseTest {
 
         assertEquals(10, messages.findAll(new Paging(0, 10)).getPaging().getCount());
         assertEquals(10, messages.findAll(new Paging(-1, 10)).getPaging().getCount());
+
+        for (String tenant : tenantsLoader.getTenantList()) {
+            Awaitility.await().atMost(2, TimeUnit.SECONDS).until(() -> db.isTenantReady(tenant));
+        }
+
+        for (String tenant : tenantsLoader.getTenantList()) {
+            System.out.println("tenant = " + tenant);
+
+            TenantId tenantId = TenantId.of(tenant);
+            // MessagesDAO is locked to TenantID.DEFAULT, so no matter the tenant, it should return the same result.
+            assertEquals(generatedMessagesCount, messages.count(tenantId));
+
+            // TenantMessageDAO is not locked
+            assertEquals(0, tenantMessages.count(tenantId));
+
+            TenantHolder.use(tenantId, () -> {
+                assertEquals(generatedMessagesCount, messages.count());
+                assertEquals(0, tenantMessages.count());
+            });
+
+            int generated = 1;
+            for (int i = 0; i < generated; i++) {
+                messages.insert(tenantId, new Message("msg_" + i, RandomUtil.nextString(20)));
+            }
+
+            assertEquals(generated, tenantMessages.count(tenantId));
+
+            // MessagesDAO should not change
+            assertEquals(generatedMessagesCount, messages.count(tenantId));
+
+
+        }
     }
 }
