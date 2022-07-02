@@ -41,7 +41,8 @@ public class JacksonMapper implements Mapper {
     @Override
     public String fromXml(String xmlInput) {
         if (xmlInput == null) return null;
-        return XML.toJSONObject(xmlInput).toString();
+        String noNamespace = xmlInput.replaceAll("</[^:>]+:", "</").replaceAll("<[^:>/]+:", "<");
+        return XML.toJSONObject(noNamespace).toString();
     }
 
     @SneakyThrows

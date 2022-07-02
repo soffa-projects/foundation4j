@@ -24,7 +24,6 @@ class JobRunrOperationScheduler implements OperationScheduler {
     private final ApplicationContext context;
     private Dispatcher dispatcher;
 
-
     public JobRunrOperationScheduler(JobScheduler jobScheduler, ApplicationContext context) {
         this.jobScheduler = jobScheduler;
         this.context = context;

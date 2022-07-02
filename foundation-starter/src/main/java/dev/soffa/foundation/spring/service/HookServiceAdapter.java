@@ -22,6 +22,7 @@ import org.springframework.stereotype.Component;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Function;
 
 @Component
@@ -35,6 +36,8 @@ public class HookServiceAdapter implements HookService {
     private final ResourceLoader rLoader;
     private final ApplicationContext context;
     private final OperationScheduler scheduler;
+
+    private final AtomicLong processedHooks = new AtomicLong(0);
 
     @Override
     public int process(Context context, ProcessHookInput input) {
@@ -52,14 +55,18 @@ public class HookServiceAdapter implements HookService {
     }
 
     @Override
-    public void enqueue(@NonNull String hook, @NonNull String subject, @NonNull Map<String, Object> data, @NonNull Context context) {
+    public long getProcessedHooks() {
+        return processedHooks.get();
+    }
 
+    @Override
+    public void enqueue(@NonNull String hook, @NonNull String subject, @NonNull Map<String, Object> data, @NonNull Context context) {
         HookSpec lhook = getHook(hook);
         if (NO_HOOK.equals(lhook)) {
             throw new ResourceNotFoundException("Hook not found: " + hook);
         }
         Map<String, Object> ldata = new HashMap<>(data);
-        ldata.put("context", Mappers.JSON_SNAKE.serialize(context));
+        ldata.put("context", context);
         for (HookItemSpec hookItem : lhook.getPost()) {
             String uuid = hook + ":" + subject + ":" + hookItem.getName();
             scheduler.enqueue(DigestUtil.makeUUID(uuid), ProcessHookItem.class, new ProcessHookItemInput(
@@ -85,7 +92,7 @@ public class HookServiceAdapter implements HookService {
         for (HookItemSpec item : hook.getPost()) {
             internalProcessItem(
                 item.getType(),
-                Mappers.JSON_FULLACCESS.serialize(item.getSpec()),
+                Mappers.JSON.serialize(item.getSpec()),
                 input.getData()
             );
             count++;
@@ -94,12 +101,13 @@ public class HookServiceAdapter implements HookService {
     }
 
     public void internalProcessItem(String type, String spec, String data) {
-        Map<String, Object> mData = Mappers.JSON_FULLACCESS.deserializeMap(data);
+        processedHooks.incrementAndGet();
+        Map<String, Object> mData = Mappers.JSON.deserializeMap(data);
         String tpl = TemplateHelper.render(spec, mData);
         if (HookSpec.EMAIL.equals(type)) {
-            handleEmailHook(Mappers.YAML_FULLACCESS.deserialize(tpl, EmailHookSpec.class));
+            handleEmailHook(Mappers.YAML.deserialize(tpl, EmailHookSpec.class));
         } else if (HookSpec.NOTIFICATION.equals(type)) {
-            handleNotificationHook(Mappers.YAML_FULLACCESS.deserialize(tpl, NotificationHook.class));
+            handleNotificationHook(Mappers.YAML.deserialize(tpl, NotificationHook.class));
         } else {
             LOG.error("Hook type not supported: %s", type);
         }

@@ -110,7 +110,7 @@ public class DefaultTokenProvider implements TokenProvider, ClaimsExtractor {
         } else {
             throw new NotImplementedException("Token type not supported yet: %s", type.name());
         }
-        return new Token(token, subjet, claims, (int)duration.toMinutes());
+        return new Token(token, subjet, claims, (int) duration.toMinutes());
     }
 
     @Override
@@ -148,7 +148,9 @@ public class DefaultTokenProvider implements TokenProvider, ClaimsExtractor {
             }
         });
 
-        String liveMode = token.lookupClaim("live", "liveMode").orElse("false");
+        String liveMode = token.lookupClaim("live", "liveMode", "live_mode").orElse("false");
+
+        Logger.platform.info("Extracted liveMode = %s", liveMode);
 
         return Authentication.builder().
             claims(token.getClaims()).

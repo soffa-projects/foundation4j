@@ -10,6 +10,7 @@ public interface HookService extends Hooks{
     HookSpec getHook(String operationId);
     int process(Context context, ProcessHookInput input);
     void process(Context context, ProcessHookItemInput input);
+    long getProcessedHooks();
 
 
 }

@@ -30,7 +30,7 @@ public interface DataStore {
         return count(TenantId.CONTEXT, entityClass, criteria);
     }
 
-    <E> long count(TenantId tenant, @NonNull Class<E> entityClass, @NonNull Criteria criteria);
+    <E> long count(TenantId tenant, @NonNull Class<E> entityClass, Criteria criteria);
 
     default <E> int delete(@NonNull Class<E> entityClass, @NonNull Criteria criteria) {
         return delete(TenantId.CONTEXT, entityClass, criteria);

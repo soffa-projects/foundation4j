@@ -103,9 +103,9 @@ public class RequestFilter extends OncePerRequestFilter {
         try {
             LOG.debug("Setting request context and tenant before proceeding");
             if (context.hasAuthorization()) {
-                LOG.info("Authenticated access [%s] %s", request.getMethod(), request.getRequestURI());
+                LOG.debug("Authenticated access [%s] %s", request.getMethod(), request.getRequestURI());
             }else {
-                LOG.info("Anonymous access [%s] %s", request.getMethod(), request.getRequestURI());
+                LOG.debug("Anonymous access [%s] %s", request.getMethod(), request.getRequestURI());
             }
             context.setIpAddress(request.getRemoteAddr());
             ContextHolder.set(context);

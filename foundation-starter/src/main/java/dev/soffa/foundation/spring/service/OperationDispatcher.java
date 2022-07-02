@@ -71,7 +71,7 @@ public class OperationDispatcher implements Dispatcher, Resource {
 
         String className = operation.getClass().getSimpleName();
 
-        Logger.app.debug("Invoking operation %s", className);
+        Logger.app.debug("Invoking operation %s [livemode=%s]", className, ctx.isLiveMode());
 
         if (!DEFAULT_TENANT.containsKey(className)) {
             DEFAULT_TENANT.put(className, AnnotationUtils.findAnnotation(operation.getClass(), DefaultTenant.class) != null);
@@ -86,8 +86,10 @@ public class OperationDispatcher implements Dispatcher, Resource {
                 override = operation.getTenant(ctx);
             }
             if (!TenantId.CONTEXT.equals(override) && override != null) {
-                tenant = override;
-                Logger.platform.info("Token overriden for operation %s: %s", className, tenant);
+                if (tenant != override) {
+                    tenant = override;
+                    Logger.platform.info("Tenant overriden for operation %s: %s", className, tenant);
+                }
             }
             return TenantHolder.use(tenant, () -> apply(operation, input, ctx));
         }
