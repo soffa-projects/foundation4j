@@ -11,4 +11,11 @@ public class Event {
     private String operation;
     private String target = "*";
     private String payload;
+
+    public Event(String operation, String payload) {
+        this.operation = operation;
+        this.payload = payload;
+    }
 }
+
+
