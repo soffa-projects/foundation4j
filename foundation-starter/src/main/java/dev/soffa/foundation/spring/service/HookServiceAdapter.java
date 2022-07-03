@@ -73,7 +73,7 @@ public class HookServiceAdapter implements HookService {
                 hook,
                 hookItem.getName(),
                 hookItem.getType(),
-                Mappers.JSON.serialize(hookItem.getSpec()),
+                Mappers.JSON_SNAKE.serialize(hookItem.getSpec()),
                 Mappers.JSON_SNAKE.serialize(ldata)
             ), context);
             LOG.info("Hook queued: %s.%s [%s]", hook, hookItem.getName(), uuid);
@@ -92,7 +92,7 @@ public class HookServiceAdapter implements HookService {
         for (HookItemSpec item : hook.getPost()) {
             internalProcessItem(
                 item.getType(),
-                Mappers.JSON.serialize(item.getSpec()),
+                Mappers.JSON_SNAKE.serialize(item.getSpec()),
                 input.getData()
             );
             count++;
@@ -102,7 +102,7 @@ public class HookServiceAdapter implements HookService {
 
     public void internalProcessItem(String type, String spec, String data) {
         processedHooks.incrementAndGet();
-        Map<String, Object> mData = Mappers.JSON.deserializeMap(data);
+        Map<String, Object> mData = Mappers.JSON_SNAKE.deserializeMap(data);
         String tpl = TemplateHelper.render(spec, mData);
         if (HookSpec.EMAIL.equals(type)) {
             handleEmailHook(Mappers.YAML.deserialize(tpl, EmailHookSpec.class));

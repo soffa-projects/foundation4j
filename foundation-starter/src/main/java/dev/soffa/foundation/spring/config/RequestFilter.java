@@ -82,7 +82,7 @@ public class RequestFilter extends OncePerRequestFilter {
                     int statusCode = ErrorUtil.resolveErrorCode(e);
                     if (statusCode > -1) {
                         response.setContentType("application/json");
-                        response.sendError(statusCode, Mappers.JSON.serialize(ImmutableMap.of(
+                        response.sendError(statusCode, Mappers.JSON_SNAKE.serialize(ImmutableMap.of(
                                 "message", e.getMessage()
                         )));
                     } else if (e instanceof AccessDeniedException) {

@@ -32,8 +32,8 @@ public class PlatformSideEffectsHandler implements SideEffectsHandler {
             .id(new PendingJobId(ID.generate("side_effect_")))
             .operation(operationName)
             .subject(uuid)
-            .data(Mappers.JSON.serialize(sideEffects))
-            .metas(ImmutableMap.of("content", Mappers.JSON.serialize(context)))
+            .data(Mappers.JSON_SNAKE.serialize(sideEffects))
+            .metas(ImmutableMap.of("content", Mappers.JSON_SNAKE.serialize(context)))
             .created(DateUtil.now())
             .build();
         pendingJobs.insert(job);
