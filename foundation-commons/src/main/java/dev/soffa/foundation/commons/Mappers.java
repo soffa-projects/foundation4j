@@ -12,17 +12,18 @@ public final class Mappers {
         ObjectMapperFactory.newJsonMapper(true, new PropertyNamingStrategies.SnakeCaseStrategy())
     );
 
-
     public static final Mapper JSON_SNAKE = new JacksonMapper(
         ObjectMapperFactory.newJsonMapper(false, new PropertyNamingStrategies.SnakeCaseStrategy())
     );
+
+    public static final Mapper JSON_DEFAULT = JSON_SNAKE;
 
     public static final Mapper JSON_FULLACCESS = new JacksonMapper(
         ObjectMapperFactory.newJsonMapper(true)
     );
 
-    public static final Mapper JSON = new JacksonMapper(
-        ObjectMapperFactory.newJsonMapper()
+    public static final Mapper JSON_CAMEL = new JacksonMapper(
+        ObjectMapperFactory.newJsonMapper(false, new PropertyNamingStrategies.LowerCamelCaseStrategy())
     );
 
     public static final Mapper YAML = new JacksonMapper(

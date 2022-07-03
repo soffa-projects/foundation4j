@@ -22,7 +22,7 @@ public class FakeEmailSender implements EmailSender {
     public EmailAck send(Email message) {
         LOG.info(
             "Email processed by FakeEmailSender:\nFrom: %s\nSubject: %s\nTo: %s",
-            message.getSender(), message.getSubject(), Mappers.JSON.serialize(message.getTo())
+            message.getSender(), message.getSubject(), Mappers.JSON_DEFAULT.serialize(message.getTo())
         );
         COUNTER.incrementAndGet();
         return new EmailAck("OK", RandomUtil.nextString());

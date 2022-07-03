@@ -94,7 +94,7 @@ public class Validator implements ValidationResult {
     @Override
     public void printErrors(String message) {
         if (hasErrors()) {
-            Logger.app.error("%s -- %s", message, Mappers.JSON.serialize(errors));
+            Logger.app.error("%s -- %s", message, Mappers.JSON_DEFAULT.serialize(errors));
         }
     }
 }

@@ -21,7 +21,7 @@ public final class MessageFactory {
         if (message.getPayload() == null) {
             return null;
         }
-        return (T) Mappers.JSON.deserialize(message.getPayload(), Class.forName(message.getPayloadType()));
+        return (T) Mappers.JSON_DEFAULT.deserialize(message.getPayload(), Class.forName(message.getPayloadType()));
     }
 
     @SneakyThrows
@@ -29,21 +29,21 @@ public final class MessageFactory {
         if (type == Void.class) {
             return null;
         }
-        return Mappers.JSON.deserialize(message.getPayload(), type);
+        return Mappers.JSON_DEFAULT.deserialize(message.getPayload(), type);
     }
   @SneakyThrows
     public static <T> T getPayload(final Message message, Type type) {
         if (type == Void.class) {
             return null;
         }
-        return Mappers.JSON.deserialize(message.getPayload(), type);
+        return Mappers.JSON_DEFAULT.deserialize(message.getPayload(), type);
     }
 
     public static Message create(String operation, Object payload) {
         byte[] lPayload = null;
         String payloadType = null;
         if (payload != null) {
-            lPayload = Mappers.JSON.serialize(payload).getBytes(StandardCharsets.UTF_8);
+            lPayload = Mappers.JSON_DEFAULT.serialize(payload).getBytes(StandardCharsets.UTF_8);
             payloadType = payload.getClass().getName();
         }
         Context context = ContextHolder.inheritOrCreate();

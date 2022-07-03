@@ -56,8 +56,8 @@ public class EchoResourceTest {
 
         String content = "Hello World!";
 
-        String requestBody = Mappers.JSON.serialize(new EchoInput(content));
-        EchoInput input = Mappers.JSON.deserialize(requestBody, EchoInput.class);
+        String requestBody = Mappers.JSON_DEFAULT.serialize(new EchoInput(content));
+        EchoInput input = Mappers.JSON_DEFAULT.deserialize(requestBody, EchoInput.class);
         assertNotNull(input);
         assertNotNull(input.getMessage());
         assertEquals(content, input.getMessage());
@@ -96,8 +96,8 @@ public class EchoResourceTest {
 
         String content = "Hello World!";
 
-        String requestBody = Mappers.JSON.serialize(new EchoInput(content));
-        EchoInput input = Mappers.JSON.deserialize(requestBody, EchoInput.class);
+        String requestBody = Mappers.JSON_DEFAULT.serialize(new EchoInput(content));
+        EchoInput input = Mappers.JSON_DEFAULT.deserialize(requestBody, EchoInput.class);
         Token bearerToken = tokenProvider.create(
                 TokenType.JWT, "user",
                 ImmutableMap.of("permissions", "foo")

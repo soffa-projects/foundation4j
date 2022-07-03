@@ -44,7 +44,7 @@ public class DefaultOperationContext implements OperationContext {
 
     @Override
     public void event(String name, Map<String, Object> data) {
-        sideEffects.getEvents().add(new Event(name, Mappers.JSON.serialize(data)));
+        sideEffects.getEvents().add(new Event(name, Mappers.JSON_DEFAULT.serialize(data)));
     }
 
     @Override
@@ -64,7 +64,7 @@ public class DefaultOperationContext implements OperationContext {
 
     @Override
     public void activity(@NonNull String event, String subject, Object data) {
-        sideEffects.getActivities().add(new Activity(event, subject, Mappers.JSON.serialize(data)));
+        sideEffects.getActivities().add(new Activity(event, subject, Mappers.JSON_DEFAULT.serialize(data)));
     }
 
     @Override

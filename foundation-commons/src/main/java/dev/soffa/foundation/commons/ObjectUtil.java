@@ -24,7 +24,7 @@ public final class ObjectUtil {
             Optional<?> opt = (Optional<?>) input;
             return opt.map(ObjectUtil::serialize).orElse(null);
         }
-        return Mappers.JSON.serialize(input).getBytes(StandardCharsets.UTF_8);
+        return Mappers.JSON_DEFAULT.serialize(input).getBytes(StandardCharsets.UTF_8);
     }
 
     @SneakyThrows
@@ -32,7 +32,7 @@ public final class ObjectUtil {
         if (input == null || input.length == 0) {
             return null;
         }
-        return Mappers.JSON.deserialize(input, type);
+        return Mappers.JSON_DEFAULT.deserialize(input, type);
     }
 
     @SuppressWarnings("unchecked")

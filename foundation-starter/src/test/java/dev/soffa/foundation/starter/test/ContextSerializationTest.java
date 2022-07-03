@@ -15,11 +15,11 @@ public class ContextSerializationTest {
     public void testSerialization() {
         Context ctx = Context.create("t1");
         ctx.setApplicationName("application");
-        String out1 = Mappers.JSON_SNAKE.serialize(ctx);
+        String out1 = Mappers.JSON_DEFAULT.serialize(ctx);
         assertNotNull(out1);
         assertTrue(out1.contains("application_name"));
 
-        String out2 = Mappers.JSON_SNAKE.serialize(ImmutableMap.of("context", ctx));
+        String out2 = Mappers.JSON_DEFAULT.serialize(ImmutableMap.of("context", ctx));
         assertNotNull(out2);
         assertTrue(out2.contains("application_name"));
     }

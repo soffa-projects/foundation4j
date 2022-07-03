@@ -50,11 +50,11 @@ public class OperationDispatcher implements Dispatcher, Resource {
         Operation<I, O> op = getOperations().require(operationName);
         I deserialized = null;
         if (input.getData() != null) {
-            deserialized = (I) Mappers.JSON_SNAKE.deserialize(input.getData(), Class.forName(input.getType()));
+            deserialized = (I) Mappers.JSON_DEFAULT.deserialize(input.getData(), Class.forName(input.getType()));
         }
         Logger.platform.info("Deseriazing context: %s", serializedContext);
-        Context context = Mappers.JSON_SNAKE.deserialize(serializedContext, Context.class);
-        Logger.platform.info("Deseriazed context: %s", Mappers.JSON_SNAKE.serialize(context));
+        Context context = Mappers.JSON_DEFAULT.deserialize(serializedContext, Context.class);
+        Logger.platform.info("Deseriazed context: %s", Mappers.JSON_DEFAULT.serialize(context));
         return invoke(op, deserialized, context);
     }
 
@@ -124,13 +124,13 @@ public class OperationDispatcher implements Dispatcher, Resource {
             opContext.delayed(
                 DefaultIdGenerator.uuid(operationName),
                 PublishEvent.class,
-                new Event(pubSubOperation, Mappers.JSON.serialize(res))
+                new Event(pubSubOperation, Mappers.JSON_DEFAULT.serialize(res))
             );
         }
         boolean shouldEnqueue = !opContext.getSideEffects().isEmpty() && !(operation instanceof OnServiceStarted);
         if (shouldEnqueue) {
             sideEffectsHandler.enqueue(operationName,
-                DigestUtil.md5(Mappers.JSON.serialize(input)),
+                DigestUtil.md5(Mappers.JSON_DEFAULT.serialize(input)),
                 opContext.getSideEffects(),
                 ctx
             );

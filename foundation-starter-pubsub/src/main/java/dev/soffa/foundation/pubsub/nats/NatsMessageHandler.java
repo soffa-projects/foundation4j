@@ -39,7 +39,7 @@ public class NatsMessageHandler implements MessageHandler {
         dev.soffa.foundation.message.Message message;
 
         try {
-            message = Mappers.JSON.deserialize(msg.getData(), dev.soffa.foundation.message.Message.class);
+            message = Mappers.JSON_DEFAULT.deserialize(msg.getData(), dev.soffa.foundation.message.Message.class);
         } catch (Exception e) {
             //TODO: handle lost payloads (audit)
             LOG.error(e, "Invalid payload, message will be discarded -- %s", e.getMessage());
@@ -59,7 +59,7 @@ public class NatsMessageHandler implements MessageHandler {
                 if (!isNoop) {
                     MessageResponse response = MessageResponse.ok(operationResult.orElse(null));
                     LOG.debug("Sending response back to %s [SID:%s]", msg.getReplyTo(), msg.getSID());
-                    connection.publish(msg.getReplyTo(), msg.getSubject(), Mappers.JSON.serializeAsBytes(response));
+                    connection.publish(msg.getReplyTo(), msg.getSubject(), Mappers.JSON_DEFAULT.serializeAsBytes(response));
                 }
             }
         } catch (Exception e) {
@@ -69,7 +69,7 @@ public class NatsMessageHandler implements MessageHandler {
                     connection.publish(
                         msg.getReplyTo(),
                         msg.getSubject(),
-                        Mappers.JSON.serializeAsBytes(MessageResponse.error(e))
+                        Mappers.JSON_DEFAULT.serializeAsBytes(MessageResponse.error(e))
                     );
                 }
             } else {

@@ -85,7 +85,7 @@ public class SideEffectProcessor implements ProcessSideEffect {
         bootstrap();
         pendingJobs.consume(input.getId(), pendingJob -> {
 
-            OperationSideEffects sideEffects = Mappers.JSON_SNAKE.deserialize(pendingJob.getData(), OperationSideEffects.class);
+            OperationSideEffects sideEffects = Mappers.JSON_DEFAULT.deserialize(pendingJob.getData(), OperationSideEffects.class);
 
             Logger.app.info("PendingJob context: %s",pendingJob.getContext().orElse(null));
 
@@ -145,7 +145,7 @@ public class SideEffectProcessor implements ProcessSideEffect {
     }
 
     private void updateJob(PendingJob pendingJob, OperationSideEffects sideEffects) {
-        pendingJob.setData(Mappers.JSON_SNAKE.serialize(sideEffects));
+        pendingJob.setData(Mappers.JSON_DEFAULT.serialize(sideEffects));
         pendingJobs.update(pendingJob);
 
     }

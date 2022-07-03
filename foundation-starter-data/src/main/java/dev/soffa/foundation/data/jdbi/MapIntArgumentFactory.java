@@ -17,7 +17,7 @@ public class MapIntArgumentFactory extends AbstractArgumentFactory<Map<String, I
     @Override
     protected Argument build(Map<String, Integer> value, ConfigRegistry config) {
         return (position, statement, ctx) -> {
-            statement.setString(position, value == null ? null : Mappers.JSON.serialize(value));
+            statement.setString(position, value == null ? null : Mappers.JSON_DEFAULT.serialize(value));
         };
     }
 }

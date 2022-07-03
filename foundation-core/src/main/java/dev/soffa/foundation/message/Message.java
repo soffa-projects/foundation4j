@@ -49,7 +49,7 @@ public class Message implements Serializable {
             if (payload instanceof byte[]) {
                 this.payload = (byte[]) payload;
             } else {
-                this.payload = Mappers.JSON.serialize(payload).getBytes(StandardCharsets.UTF_8);
+                this.payload = Mappers.JSON_DEFAULT.serialize(payload).getBytes(StandardCharsets.UTF_8);
                 this.payloadType = payload.getClass().getName();
             }
         }

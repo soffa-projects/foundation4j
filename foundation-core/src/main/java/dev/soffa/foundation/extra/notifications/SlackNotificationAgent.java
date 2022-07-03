@@ -41,7 +41,7 @@ public class SlackNotificationAgent implements NotificationAgent {
                 )
             );
         }
-        String payload = Mappers.JSON.serialize(ImmutableMap.of("blocks", blocks));
+        String payload = Mappers.JSON_DEFAULT.serialize(ImmutableMap.of("blocks", blocks));
         HttpResponse response = client.post(webhook, payload);
         if (!response.isOK()) {
             Logger.platform.info("Slack notification failed: %s", response.getBody());

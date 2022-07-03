@@ -40,7 +40,7 @@ public final class KarateTester {
 
     public Karate create(String env, Map<String, Object> config, String... paths) {
         return Karate.run(feature(paths))
-            .systemProperty("config", Mappers.JSON.serialize(config))
+            .systemProperty("config", Mappers.JSON_DEFAULT.serialize(config))
             .karateEnv(env)
             .clientFactory(this.clientFactory);
     }

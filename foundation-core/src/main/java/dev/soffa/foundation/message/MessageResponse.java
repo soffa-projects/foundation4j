@@ -27,7 +27,7 @@ public class MessageResponse {
             response.setError(e.getMessage());
         }
         if (payload != null) {
-            response.setData(Mappers.JSON.serializeAsBytes(payload));
+            response.setData(Mappers.JSON_DEFAULT.serializeAsBytes(payload));
         }
         return response;
     }

@@ -50,7 +50,7 @@ public final class BeanMapper<T> implements RowMapper<T> {
             boolean convertToMap = entityInfo.isCustomTypeOrMap(prop) && value instanceof String;
             if (convertToMap && Mappers.isJson(value.toString())) {
                 if (Map.class.isAssignableFrom(target)) {
-                    value = Mappers.JSON.deserializeMap(value.toString());
+                    value = Mappers.JSON_DEFAULT.deserializeMap(value.toString());
                 } else {
                     value = Mappers.JSON_FULLACCESS_SNAKE.deserializeMap(value.toString());
                 }

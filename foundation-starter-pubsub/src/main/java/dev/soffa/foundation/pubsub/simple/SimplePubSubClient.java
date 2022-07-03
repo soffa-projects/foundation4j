@@ -37,7 +37,7 @@ public class SimplePubSubClient extends AbstractPubSubClient implements PubSubCl
                 return null;
             }
             MessageResponse opr = MessageResponse.of(result, null);
-            return Mappers.JSON.serializeAsBytes(opr);
+            return Mappers.JSON_DEFAULT.serializeAsBytes(opr);
         });
     }
 

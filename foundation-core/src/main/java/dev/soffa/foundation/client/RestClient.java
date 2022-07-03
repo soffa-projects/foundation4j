@@ -56,7 +56,7 @@ public final class RestClient implements InvocationHandler {
 
     private Object parseResponse(HttpResponse response, Method method) {
         if (response.is2xxSuccessful()) {
-            return Mappers.JSON.deserialize(response.getBody(), method.getReturnType());
+            return Mappers.JSON_DEFAULT.deserialize(response.getBody(), method.getReturnType());
         }
         if (response.isForbidden()) {
             throw new ForbiddenException(response.getMessageOrBody());

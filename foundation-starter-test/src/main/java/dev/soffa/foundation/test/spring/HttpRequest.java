@@ -41,7 +41,7 @@ public class HttpRequest {
 
     @SneakyThrows
     public HttpRequest withJson(Object any) {
-        body = Mappers.JSON.serialize(any);
+        body = Mappers.JSON_DEFAULT.serialize(any);
         this.contentType = MediaType.APPLICATION_JSON;
         return this;
     }

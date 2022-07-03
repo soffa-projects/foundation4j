@@ -40,7 +40,7 @@ public class SimpleExecutorOperationScheduler implements OperationScheduler {
         if (dispatcher == null) {
             dispatcher = context.getBeansOfType(Dispatcher.class).values().iterator().next();
         }
-        final String serializedContext = Mappers.JSON_SNAKE.serialize(ctx);
+        final String serializedContext = Mappers.JSON_DEFAULT.serialize(ctx);
         executorService.schedule(() -> {
             Logger.platform.info("Processing scheduled operation: %s", operationName);
             COUNTER.decrementAndGet();

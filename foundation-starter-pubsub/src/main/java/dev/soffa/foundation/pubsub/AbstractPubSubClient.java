@@ -66,9 +66,9 @@ public abstract class AbstractPubSubClient implements PubSubClient {
         if (data == null) {
             return null;
         }
-        MessageResponse response = Mappers.JSON.deserialize(data, MessageResponse.class);
+        MessageResponse response = Mappers.JSON_DEFAULT.deserialize(data, MessageResponse.class);
         if (response.isSuccess()) {
-            return Mappers.JSON.deserialize(response.getData(), responseClass);
+            return Mappers.JSON_DEFAULT.deserialize(response.getData(), responseClass);
         } else {
             switch (response.getErrorCode()) {
                 case ResponseStatus.UNAUTHORIZED:

@@ -23,6 +23,6 @@ public class Serialized implements Serializable {
         if (input.getClass() == Object.class) {
             throw new IllegalArgumentException("Cannot serialize object of type " + input.getClass());
         }
-        return new Serialized(input.getClass().getName(), Mappers.JSON.serialize(input));
+        return new Serialized(input.getClass().getName(), Mappers.JSON_DEFAULT.serialize(input));
     }
 }

@@ -45,7 +45,7 @@ public final class NatsUtil {
 
     @SneakyThrows
     static NatsMessage createNatsMessage(String subject, Message message) {
-        byte[] data = Mappers.JSON.serializeAsBytes(message);
+        byte[] data = Mappers.JSON_DEFAULT.serializeAsBytes(message);
         return new NatsMessage(
             subject,
             "",

@@ -32,7 +32,7 @@ public class PendingJob {
 
     public Optional<Context> getContext() {
         if (metas != null && metas.containsKey("context")) {
-            return Optional.of(Mappers.JSON.deserialize(metas.get("context").toString(), Context.class));
+            return Optional.of(Mappers.JSON_DEFAULT.deserialize(metas.get("context").toString(), Context.class));
         }
         return Optional.empty();
     }

@@ -48,7 +48,7 @@ public class AmqpClient extends AbstractPubSubClient implements PubSubClient {
     protected CompletableFuture<byte[]> sendAndReceive(@NonNull String subject, Message message) {
         return CompletableFuture.supplyAsync(() -> {
             org.springframework.amqp.core.Message msg = new org.springframework.amqp.core.Message(
-                Mappers.JSON.serializeAsBytes(message)
+                Mappers.JSON_DEFAULT.serializeAsBytes(message)
             );
             msg.getMessageProperties().setAppId(applicationName);
             msg.getMessageProperties().setCorrelationId(TextUtil.snakeCase(message.getOperation()) + "_");
@@ -81,14 +81,14 @@ public class AmqpClient extends AbstractPubSubClient implements PubSubClient {
         public String handle(org.springframework.amqp.core.Message message) {
             boolean hasReply = TextUtil.isNotEmpty(message.getMessageProperties().getReplyTo());
             try {
-                Object result = handler.handle(Mappers.JSON.deserialize(message.getBody(), Message.class)).orElse(null);
+                Object result = handler.handle(Mappers.JSON_DEFAULT.deserialize(message.getBody(), Message.class)).orElse(null);
                 if (hasReply) {
-                    return Mappers.JSON.serialize(MessageResponse.ok(result));
+                    return Mappers.JSON_DEFAULT.serialize(MessageResponse.ok(result));
                 }
                 return null;
             } catch (Exception e) {
                 if (hasReply) {
-                    return Mappers.JSON.serialize(MessageResponse.error(e));
+                    return Mappers.JSON_DEFAULT.serialize(MessageResponse.error(e));
                 } else {
                     throw e;
                 }
@@ -135,7 +135,7 @@ public class AmqpClient extends AbstractPubSubClient implements PubSubClient {
     public void publish(@NonNull String subject, Message message) {
         this.rabbitAdmin.getRabbitTemplate().convertAndSend(
             subject,
-            "", Mappers.JSON.serialize(message));
+            "", Mappers.JSON_DEFAULT.serialize(message));
     }
 
     @Override
@@ -145,7 +145,7 @@ public class AmqpClient extends AbstractPubSubClient implements PubSubClient {
 
     @Override
     public void broadcast(@NonNull String target, Message message) {
-        this.rabbitAdmin.getRabbitTemplate().convertAndSend(target, Mappers.JSON.serialize(message));
+        this.rabbitAdmin.getRabbitTemplate().convertAndSend(target, Mappers.JSON_DEFAULT.serialize(message));
     }
 
     private RabbitAdmin configure() {

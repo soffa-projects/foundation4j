@@ -24,14 +24,14 @@ public class ObjectFactoryTest {
     public void testObjectFactory() {
         Model m = new Model(VALUE_1, VALUE_2, VALUE_3, VALUE_4);
 
-        String serialized = Mappers.JSON.serialize(m);
+        String serialized = Mappers.JSON_DEFAULT.serialize(m);
 
         assertFalse(serialized.contains(VALUE_1));
         assertTrue(serialized.contains(VALUE_2));
         assertTrue(serialized.contains(VALUE_3));
         assertFalse(serialized.contains(VALUE_4));
 
-        Model m2 = Mappers.JSON.deserialize(serialized, Model.class);
+        Model m2 = Mappers.JSON_DEFAULT.deserialize(serialized, Model.class);
         assertNull(m2.getProp1());
         assertEquals(m.getProp2(), m2.getProp2());
         assertNull(m2.getProp3());

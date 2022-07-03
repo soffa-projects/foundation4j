@@ -36,7 +36,7 @@ public class DefaultHttpClient implements HttpClient {
             if (b instanceof String) {
                 body = RequestBody.create((String) b, MediaType.parse(req.getContentType()));
             } else if (req.getContentType() == null || req.getContentType().contains("json")) {
-                body = RequestBody.create(Mappers.JSON.serialize(req.getBody()), MediaType.parse(req.getContentType()));
+                body = RequestBody.create(Mappers.JSON_DEFAULT.serialize(req.getBody()), MediaType.parse(req.getContentType()));
             } else {
                 throw new TechnicalException("Content type not supported: %s", req.getContentType());
             }

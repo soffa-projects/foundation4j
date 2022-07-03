@@ -141,7 +141,7 @@ public class HttpResult {
     public <T> T readJson(String path, Class<T> type) {
         result.andExpect(jsonPath(path).exists());
         Object value = JsonPath.read(string(), path);
-        return Mappers.JSON.convert(value, type);
+        return Mappers.JSON_DEFAULT.convert(value, type);
     }
 
     @SneakyThrows
