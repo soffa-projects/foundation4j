@@ -1,10 +1,14 @@
 package dev.soffa.foundation.model;
 
-import lombok.Value;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-@Value
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class Counter {
 
-    String name;
-    long count;
+    private String name;
+    private long count;
 }
