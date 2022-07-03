@@ -1,10 +1,10 @@
 package dev.soffa.foundation.model;
 
-import lombok.Value;
+import lombok.Data;
 
-@Value
+@Data
 public class Event {
-    String operation;
-    String target = "*";
-    String payload;
+    private String operation;
+    private String target = "*";
+    private String payload;
 }
