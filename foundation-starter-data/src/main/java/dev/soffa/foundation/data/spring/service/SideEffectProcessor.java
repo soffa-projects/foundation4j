@@ -87,11 +87,13 @@ public class SideEffectProcessor implements ProcessSideEffect {
 
             OperationSideEffects sideEffects = Mappers.JSON.deserialize(pendingJob.getData(), OperationSideEffects.class);
 
+            Logger.app.info("PendingJob context: %s",pendingJob.getContext().orElse(null));
+
             if (tsp != null && sideEffects.hasDataPoints()) {
                 tsp.getWriter().write(sideEffects.getDataPoints());
                 // DataPoints  processed wihtout errors, update side effects if following block files
                 Logger.app.info("[%s] %d datapoints processed", input.getId(), sideEffects.getDataPoints().size());
-                sideEffects.setDelayedJobs(null);
+                sideEffects.setDataPoints(null);
                 updateJob(pendingJob, sideEffects);
             }
 

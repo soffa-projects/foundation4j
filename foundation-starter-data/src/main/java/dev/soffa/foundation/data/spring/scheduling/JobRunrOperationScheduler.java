@@ -40,7 +40,7 @@ class JobRunrOperationScheduler implements OperationScheduler {
         if (dispatcher == null) {
             dispatcher = context.getBeansOfType(Dispatcher.class).values().iterator().next();
         }
-        final String serialzedContext = Mappers.JSON_SNAKE.serialize(ctx);
+        final String serialzedContext = Mappers.JSON.serialize(ctx);
         JobId jobId = TenantHolder.useDefault(() -> {
             // EL
             return jobScheduler.enqueue(uuid, () -> dispatcher.dispatch(operationName, input, serialzedContext));

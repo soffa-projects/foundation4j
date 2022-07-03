@@ -20,6 +20,8 @@ public class OperationSideEffects {
     private List<DataPoint> dataPoints = new ArrayList<>();
     private List<DelayedOperation<?>> delayedJobs = new ArrayList<>();
 
+    private String serializedContext;
+
     public boolean isEmpty() {
         return !hasDataPoints() && !hasEvents() && !hasActivities() && !hasHooks() && !hasDelayedJobs();
     }

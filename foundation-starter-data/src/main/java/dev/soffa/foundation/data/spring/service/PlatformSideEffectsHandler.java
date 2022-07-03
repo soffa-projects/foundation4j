@@ -13,6 +13,7 @@ import dev.soffa.foundation.extra.jobs.ProcessSideEffectInput;
 import dev.soffa.foundation.helper.ID;
 import dev.soffa.foundation.scheduling.OperationScheduler;
 import lombok.AllArgsConstructor;
+import org.checkerframework.com.google.common.collect.ImmutableMap;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Component;
 
@@ -32,6 +33,7 @@ public class PlatformSideEffectsHandler implements SideEffectsHandler {
             .operation(operationName)
             .subject(uuid)
             .data(Mappers.JSON.serialize(sideEffects))
+            .metas(ImmutableMap.of("content", Mappers.JSON.serialize(context)))
             .created(DateUtil.now())
             .build();
         pendingJobs.insert(job);
