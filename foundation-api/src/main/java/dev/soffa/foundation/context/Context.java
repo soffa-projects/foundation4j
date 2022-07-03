@@ -17,7 +17,7 @@ import java.util.Optional;
 @SuppressWarnings("PMD.GodClass")
 public class Context implements BaseContext {
 
-    private static boolean production = true;
+    private static boolean production = false;
 
     public static final String TENANT_ID = "X-TenantId";
     public static final String TENANT_NAME = "X-TenantName";
@@ -209,6 +209,7 @@ public class Context implements BaseContext {
     }
 
     @Override
+    @JsonIgnore
     public Optional<String> getUsername() {
         if (authentication != null) {
             return Optional.ofNullable(authentication.getUsername());
