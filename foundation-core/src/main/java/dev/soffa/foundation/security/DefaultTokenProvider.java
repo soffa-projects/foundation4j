@@ -150,8 +150,6 @@ public class DefaultTokenProvider implements TokenProvider, ClaimsExtractor {
 
         String liveMode = token.lookupClaim("live", "liveMode", "live_mode").orElse("false");
 
-        Logger.platform.info("Extracted liveMode = %s", liveMode);
-
         return Authentication.builder().
             claims(token.getClaims()).
             liveMode(Boolean.parseBoolean(liveMode.toLowerCase())).
