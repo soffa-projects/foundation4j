@@ -56,6 +56,7 @@ public class OperationsMapping {
         return (T) lookup(name).orElseThrow(() -> new TechnicalException("Operation not found: " + name));
     }
 
+
     public <I, O, T extends Operation<I, O>> T require(Class<T> operationClass) {
         return require(resolveClass(operationClass).getName());
     }

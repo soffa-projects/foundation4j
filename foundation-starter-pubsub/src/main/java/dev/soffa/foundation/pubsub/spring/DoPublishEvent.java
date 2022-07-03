@@ -1,4 +1,4 @@
-package dev.soffa.foundation.spring.handler;
+package dev.soffa.foundation.pubsub.spring;
 
 import dev.soffa.foundation.context.OperationContext;
 import dev.soffa.foundation.core.action.PublishEvent;
@@ -7,11 +7,9 @@ import dev.soffa.foundation.message.pubsub.PubSubMessenger;
 import dev.soffa.foundation.model.Event;
 import lombok.AllArgsConstructor;
 import org.checkerframework.checker.nullness.qual.NonNull;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.stereotype.Component;
 
 @Component
-@ConditionalOnBean(PubSubMessenger.class)
 @AllArgsConstructor
 public class DoPublishEvent implements PublishEvent {
 
