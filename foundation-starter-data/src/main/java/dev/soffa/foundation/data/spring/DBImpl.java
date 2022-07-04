@@ -333,6 +333,7 @@ public final class DBImpl extends AbstractDataSource implements ApplicationListe
 
         if (!registry.containsKey(TENANT_PLACEHOLDER)) {
             LOG.debug("No TenantDS provided, skipping tenants migration.");
+            return;
         }
 
         final Set<String> tenants = new HashSet<>();
@@ -347,6 +348,7 @@ public final class DBImpl extends AbstractDataSource implements ApplicationListe
                 }
             });
         }
+
         LOG.info("Loading tenants with TenantsLoader");
         try {
             TenantsLoader tenantsLoader = context.getBean(TenantsLoader.class);
@@ -360,8 +362,8 @@ public final class DBImpl extends AbstractDataSource implements ApplicationListe
             LOG.error(e, "Error loading tenants: %s", e.getMessage());
         }
 
-        LOG.info("Tenants loaded: %d", tenants.size());
         ExtDataSource info = registry.get(TENANT_PLACEHOLDER);
+
         boolean hasErrors = false;
         for (String tenant : tenants) {
             try {

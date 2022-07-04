@@ -1,29 +1,28 @@
 package dev.soffa.foundation.pubsub;
 
-import berlin.yuna.natsserver.embedded.annotation.EnableNatsServer;
 import dev.soffa.foundation.message.MessageFactory;
 import dev.soffa.foundation.message.pubsub.PubSubMessenger;
 import dev.soffa.foundation.pubsub.app.ApplicationListener;
 import org.awaitility.Awaitility;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.EnabledIfEnvironmentVariable;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ActiveProfiles;
 
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 
 
+/*
 @SpringBootTest(properties = {
     "app.pubsub.enabled=true",
     "PUBSUB_ADDRESSES=nats://localhost:14222"
-})
-@ActiveProfiles({"test", "foundation-pubsub"})
-@AutoConfigureMockMvc
-@EnableNatsServer(port = 14_222)
+})*/
+// @ActiveProfiles({"test", "foundation-pubsub"})
+// @AutoConfigureMockMvc
+// @EnableNatsServer(port = 14_222)
+@EnabledIfEnvironmentVariable(named = "DOCKER", matches = "true")
 public class NatsIntegrationTest {
 
     @Autowired

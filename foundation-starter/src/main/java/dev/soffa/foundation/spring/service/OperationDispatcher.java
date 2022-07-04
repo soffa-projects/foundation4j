@@ -52,9 +52,7 @@ public class OperationDispatcher implements Dispatcher, Resource {
         if (input.getData() != null) {
             deserialized = (I) Mappers.JSON_DEFAULT.deserialize(input.getData(), Class.forName(input.getType()));
         }
-        Logger.platform.info("Deseriazing context: %s", serializedContext);
         Context context = Mappers.JSON_DEFAULT.deserialize(serializedContext, Context.class);
-        Logger.platform.info("Deseriazed context: %s", Mappers.JSON_DEFAULT.serialize(context));
         return invoke(op, deserialized, context);
     }
 
