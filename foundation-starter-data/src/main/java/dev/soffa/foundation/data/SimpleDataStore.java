@@ -58,11 +58,11 @@ public class SimpleDataStore implements DataStore {
     }
 
     /*public SimpleDataStore(@NonNull DB db) {
-        this.db = db;
-        this.dataStoreHandle = new DataStoreHandle(this);
-    }
+            this.db = db;
+            this.dataStoreHandle = new DataStoreHandle(this);
+        }
 
-     */
+         */
     public static SimpleDataStore create(@NonNull String dbUrl) {
         ExtDataSource props = ExtDataSource.create("default", "default", dbUrl);
         Jdbi dbi = Jdbi.create(props.getUrl(), props.getUsername(), props.getPassword());
@@ -193,9 +193,8 @@ public class SimpleDataStore implements DataStore {
 
     @Override
     public void useTransaction(TenantId tenant, Consumer<DataStore> consumer) {
-
         hp.inTransaction(tenant, (handle) -> {
-            consumer.accept(new SimpleDataStore(new HandleHandleProvider(handle)));
+            consumer.accept(new SimpleDataStore(new HandleHandleProvider(handle), tablesPrefix));
             return null;
         });
     }

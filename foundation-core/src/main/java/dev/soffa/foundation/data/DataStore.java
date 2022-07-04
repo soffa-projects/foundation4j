@@ -12,6 +12,7 @@ import java.util.function.Consumer;
 
 public interface DataStore {
 
+
     default <E> Optional<E> findById(Class<E> entityClass, Object value) {
         return findById(TenantId.CONTEXT, entityClass, value);
     }
