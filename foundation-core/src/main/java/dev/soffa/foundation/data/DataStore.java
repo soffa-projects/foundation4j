@@ -57,11 +57,11 @@ public interface DataStore {
 
     <E> E insert(TenantId tenant, E entity);
 
-    default <E> E update(E entity) {
-        return update(TenantId.CONTEXT, entity);
+    default <E> E update(E entity, String... fields) {
+        return update(TenantId.CONTEXT, entity, fields);
     }
 
-    <E> E update(TenantId tenant, E entity);
+    <E> E update(TenantId tenant, E entity, String... fields);
 
     default <E> int delete(E entity) {
         return delete(TenantId.CONTEXT, entity);

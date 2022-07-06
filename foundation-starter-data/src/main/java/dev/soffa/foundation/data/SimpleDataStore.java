@@ -21,6 +21,7 @@ import org.jdbi.v3.core.Jdbi;
 import org.jdbi.v3.core.statement.Query;
 
 import java.time.Instant;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -134,7 +135,7 @@ public class SimpleDataStore implements DataStore {
 
 
     @Override
-    public <E> E update(TenantId tenant, @NonNull E model) {
+    public <E> E update(TenantId tenant, @NonNull E model, String... fields) {
 
         if (model instanceof EntityLifecycle) {
             EntityLifecycle lc = (EntityLifecycle) model;
@@ -145,9 +146,13 @@ public class SimpleDataStore implements DataStore {
             if (TextUtil.isEmpty(info.getIdProperty())) {
                 throw new TechnicalException("No @Id field defined for Entity %s", model.getClass());
             }
+            List<String> columns = info.getUpdatePairs();
+            if (fields != null) {
+                columns = Arrays.stream(fields).collect(Collectors.toList());
+            }
             h.createUpdate("UPDATE <table> SET <columns> WHERE <idColumn> = :<idField>")
                 .define(TABLE, info.getTableName())
-                .defineList(COLUMNS, info.getUpdatePairs())
+                .defineList(COLUMNS, columns)
                 .defineList(ID_COLUMN, info.getIdColumn())
                 .defineList(ID_FIELD, info.getIdProperty())
                 .bindBean(model)

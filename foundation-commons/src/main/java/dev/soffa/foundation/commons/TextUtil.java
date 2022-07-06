@@ -12,6 +12,10 @@ public final class TextUtil {
     private TextUtil() {
     }
 
+    public static boolean allEmpty(String... values) {
+        return Arrays.stream(values).allMatch(TextUtil::isEmpty);
+    }
+
     public static String snakeCase(String input) {
         if (TextUtil.isEmpty(input)) {
             return input;

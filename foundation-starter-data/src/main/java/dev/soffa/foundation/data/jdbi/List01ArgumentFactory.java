@@ -6,16 +6,16 @@ import org.jdbi.v3.core.argument.Argument;
 import org.jdbi.v3.core.config.ConfigRegistry;
 
 import java.sql.Types;
-import java.util.Map;
+import java.util.ArrayList;
 
-public class MapIntArgumentFactory extends AbstractArgumentFactory<Map<String, Integer>> {
+public class List01ArgumentFactory extends AbstractArgumentFactory<ArrayList<Object>> {
 
-    public MapIntArgumentFactory() {
+    public List01ArgumentFactory() {
         super(Types.VARCHAR);
     }
 
     @Override
-    protected Argument build(Map<String, Integer> value, ConfigRegistry config) {
+    protected Argument build(ArrayList<Object> value, ConfigRegistry config) {
         return (position, statement, ctx) -> {
             statement.setString(position, value == null ? null : Mappers.JSON_DEFAULT.serialize(value));
         };

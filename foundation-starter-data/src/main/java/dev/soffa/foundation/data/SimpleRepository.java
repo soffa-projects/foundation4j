@@ -135,13 +135,13 @@ public class SimpleRepository<E, I> implements EntityRepository<E, I> {
     }
 
     @Override
-    public E update(E entity) {
-        return ds.update(resolveTenant(), entity);
+    public E update(E entity, String... fields) {
+        return ds.update(resolveTenant(), entity, fields);
     }
 
     @Override
-    public E update(TenantId tenant, E entity) {
-        return ds.update(tenant, entity);
+    public E update(TenantId tenant, E entity, String... fields) {
+        return ds.update(tenant, entity, fields);
     }
 
     @Override

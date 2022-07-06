@@ -37,6 +37,10 @@ public  class DefaultIdGenerator implements IdGenerator {
         return TextUtil.prefix(UuidCreator.getRandomBased().toString(), prefix);
     }
 
+    public static String uuidNoDash(String... prefix) {
+        return TextUtil.prefix(UuidCreator.getRandomBased().toString(), prefix).replaceAll("-", "");
+    }
+
     public static String nanoId() {
         return nanoId("");
     }

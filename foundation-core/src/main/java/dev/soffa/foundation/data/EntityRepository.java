@@ -109,9 +109,9 @@ public interface EntityRepository<E, I> {
 
     E insert(TenantId tenant, E entity);
 
-    E update(E entity);
+    E update(E entity, String... fields);
 
-    E update(TenantId tenant, E entity);
+    E update(TenantId tenant, E entity, String... fields);
 
     int delete(E entity);
 

@@ -8,14 +8,14 @@ import org.jdbi.v3.core.config.ConfigRegistry;
 import java.sql.Types;
 import java.util.Map;
 
-public class MapArgumentFactory extends AbstractArgumentFactory<Map<String, Object>> {
+public class Map02ArgumentFactory extends AbstractArgumentFactory<Map<String, Integer>> {
 
-    public MapArgumentFactory() {
+    public Map02ArgumentFactory() {
         super(Types.VARCHAR);
     }
 
     @Override
-    protected Argument build(Map<String, Object> value, ConfigRegistry config) {
+    protected Argument build(Map<String, Integer> value, ConfigRegistry config) {
         return (position, statement, ctx) -> {
             statement.setString(position, value == null ? null : Mappers.JSON_DEFAULT.serialize(value));
         };

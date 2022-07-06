@@ -1,6 +1,7 @@
 package dev.soffa.foundation.commons;
 
 import dev.soffa.foundation.context.Context;
+import dev.soffa.foundation.context.OperationContext;
 import dev.soffa.foundation.error.ErrorUtil;
 import dev.soffa.foundation.error.ManagedException;
 import dev.soffa.foundation.error.TechnicalException;
@@ -79,8 +80,16 @@ public interface SentryProvider {
         Logger.app.error(message);
     }
 
+    default void captureError(OperationContext context, String message) {
+        captureError(context.getInternal(), message);
+    }
+
     default void captureEvent(Context context, String message) {
         captureEvent(context, message, EventLevel.INFO);
+    }
+
+    default void captureEvent(OperationContext context, String message) {
+        captureEvent(context.getInternal(), message);
     }
 
     class DefaultAdapter implements SentryProvider {
@@ -88,11 +97,19 @@ public interface SentryProvider {
         @Override
         public void captureException(Throwable e) {
             // Nothing
+            Logger.app.error(e);
         }
 
         @Override
         public void captureEvent(Context context, String messageId, String message, EventLevel level) {
             // Do nothing
+            if (level == EventLevel.ERROR) {
+                Logger.app.error(message);
+            } else if (level == EventLevel.WARNING) {
+                Logger.app.warn(message);
+            }else {
+                Logger.app.info(message);
+            }
         }
     }
 }

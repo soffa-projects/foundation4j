@@ -50,7 +50,11 @@ public class DBHandleProvider implements HandleProvider {
             jdbi.installPlugin(new PostgresPlugin());
         }
         jdbi.registerArgument(new SerializableArgumentFactory());
-        jdbi.registerArgument(new MapArgumentFactory());
+        jdbi.registerArgument(new Map01ArgumentFactory());
+        jdbi.registerArgument(new Map02ArgumentFactory());
+        jdbi.registerArgument(new Map03ArgumentFactory());
+        jdbi.registerArgument(new Map04ArgumentFactory());
+        jdbi.registerArgument(new List01ArgumentFactory());
         jdbi.registerArgument(new ObjectArgumentFactory());
         return jdbi;
     }

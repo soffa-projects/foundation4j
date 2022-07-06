@@ -22,14 +22,15 @@ spring.profiles.group:
   local: ${environments.local.include:default}
 
 
-
 spring.output.ansi.enabled: always
-
 
 server.compression.enabled: true
 server.forward-headers-strategy: NATIVE
 server.port: ${PORT:8080}
 
+spring.servlet.multipart:
+  max-file-size: 20MB
+  max-request-size: 10MB
 
 management.endpoints.web.exposure.include: info,health,prometheus,metrics,refresh
 

@@ -38,7 +38,7 @@ public class JobSchedulingConfig {
         Preconditions.checkNotNull(db.getDefaultDataSource(), "No default datasource found");
         StorageProvider storage;
         if (dataSource != null) {
-            storage = SqlStorageProviderFactory.using(db.getDefaultDataSource());
+            storage = SqlStorageProviderFactory.using(db.getDefaultDataSource(), db.getTablesPrefix());
         } else {
             storage = new InMemoryStorageProvider();
         }
