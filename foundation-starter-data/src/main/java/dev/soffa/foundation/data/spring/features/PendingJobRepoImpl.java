@@ -57,7 +57,7 @@ public class PendingJobRepoImpl extends SimpleRepository<PendingJob, PendingJobI
 
     @Override
     public void consume(PendingJobId id, Function<PendingJob, Boolean> consumer) {
-        PendingJob job = findById(id).orElse(null);
+        PendingJob job = findById(TenantId.DEFAULT, id).orElse(null);
         if (job == null) {
             Logger.app.warn("Pending job not found: %s", id);
             return;
@@ -65,7 +65,7 @@ public class PendingJobRepoImpl extends SimpleRepository<PendingJob, PendingJobI
         try {
             if (consumer.apply(job)) {
                 Logger.app.info("Pending job [%s] consumed, removing from database", id);
-                delete(job);
+                delete(TenantId.DEFAULT, job);
             }
         } catch (Exception e) {
             LOG.error(e);
@@ -73,7 +73,7 @@ public class PendingJobRepoImpl extends SimpleRepository<PendingJob, PendingJobI
             if (job.getErrorsCount() > RETRIES_TRESHOLD) {
                 LOG.warn("Job %s has failed %d times !", job.getId(), job.getErrorsCount());
             }
-            update(job);
+            update(TenantId.DEFAULT, job);
         }
     }
 

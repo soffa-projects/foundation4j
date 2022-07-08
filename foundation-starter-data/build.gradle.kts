@@ -8,7 +8,7 @@ dependencies {
     api(project(":foundation-api"))
     api(project(":foundation-core"))
 
-    implementation("org.springframework.boot:spring-boot-starter-data-jpa") {
+    api("org.springframework.boot:spring-boot-starter-data-jpa") {
         exclude(group = "com.zaxxer")
         exclude(group = "com.github.ben-manes.caffeine")
     }

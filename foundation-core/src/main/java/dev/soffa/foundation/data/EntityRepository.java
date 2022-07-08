@@ -6,11 +6,13 @@ import dev.soffa.foundation.model.PagedList;
 import dev.soffa.foundation.model.Paging;
 import dev.soffa.foundation.model.TenantId;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.function.Consumer;
 
-@SuppressWarnings({"UnusedReturnValue", "unused"})
+@SuppressWarnings({"UnusedReturnValue", "unused", "PMD.ExcessivePublicCount"})
 public interface EntityRepository<E, I> {
 
     default long count() {
@@ -48,6 +50,12 @@ public interface EntityRepository<E, I> {
     }
 
     PagedList<E> findAll(TenantId tenantId, Paging paging);
+
+    Set<String> pluck(TenantId tenantId, String field);
+
+    default Set<String> pluck(String field) {
+        return pluck(TenantId.CONTEXT, field);
+    }
 
     default PagedList<E> find(TenantId tenant, Criteria criteria) {
         return find(tenant, criteria, Paging.DEFAULT);
@@ -105,11 +113,24 @@ public interface EntityRepository<E, I> {
 
     Optional<E> findById(TenantId tenant, I id);
 
-    E insert(E entity);
+    default E insert(E entity){
+        return insert(TenantId.CONTEXT, entity);
+    }
+    default int[] insert(List<E> entities) {
+        return insert(TenantId.CONTEXT, entities);
+    }
 
     E insert(TenantId tenant, E entity);
 
+    int[] insert(TenantId tenant, List<E> entities);
+
     E update(E entity, String... fields);
+
+    default int loadCsvFile(String file, String delimiter) {
+        return loadCsvFile(TenantId.CONTEXT, file, delimiter);
+    }
+
+    int loadCsvFile(TenantId tenant, String file, String delimiter);
 
     E update(TenantId tenant, E entity, String... fields);
 

@@ -1,6 +1,7 @@
 package dev.soffa.foundation.commons;
 
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
@@ -34,6 +35,9 @@ public final class CollectionUtil {
         return map == null || map.isEmpty();
     }
 
+    public static boolean isNotEmpty(Iterator<?> array) {
+        return array!=null && array.hasNext();
+    }
     public static boolean isNotEmpty(Object... array) {
         return array != null && array.length > 0;
     }

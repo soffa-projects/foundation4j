@@ -95,7 +95,7 @@ public final class TenantHolder {
         String current = CURRENT.get();
         String lTenant = tenantId;
         if (TenantId.CONTEXT_VALUE.equals(lTenant)) {
-            lTenant = TenantHolder.require();
+            lTenant = TenantHolder.get().orElse(TenantId.DEFAULT_VALUE);
         }
         if (Objects.equals(lTenant, current)) {
             return supplier.get();

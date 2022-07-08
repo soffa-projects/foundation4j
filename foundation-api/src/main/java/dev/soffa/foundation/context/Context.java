@@ -17,7 +17,7 @@ import java.util.Optional;
 @SuppressWarnings("PMD.GodClass")
 public class Context implements BaseContext {
 
-    private static boolean production = false;
+    private static boolean production;
 
     public static final String TENANT_ID = "X-TenantId";
     public static final String TENANT_NAME = "X-TenantName";

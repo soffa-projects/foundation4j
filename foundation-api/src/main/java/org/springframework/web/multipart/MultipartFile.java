@@ -41,6 +41,7 @@ import java.nio.file.Path;
  * @see org.springframework.web.multipart.MultipartHttpServletRequest
  * @see org.springframework.web.multipart.MultipartResolver
  */
+@SuppressWarnings("PMD.AvoidUncheckedExceptionsInSignatures")
 public interface MultipartFile extends InputStreamSource {
 
     /**

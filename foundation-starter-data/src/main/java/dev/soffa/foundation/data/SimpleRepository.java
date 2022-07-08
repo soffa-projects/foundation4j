@@ -9,7 +9,9 @@ import dev.soffa.foundation.model.Paging;
 import dev.soffa.foundation.model.TenantId;
 
 import java.lang.reflect.Type;
+import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.function.Consumer;
 
 public class SimpleRepository<E, I> implements EntityRepository<E, I> {
@@ -94,6 +96,11 @@ public class SimpleRepository<E, I> implements EntityRepository<E, I> {
     }
 
     @Override
+    public Set<String> pluck(TenantId tenant, String field) {
+        return ds.pluck(resolveTenant(tenant), entityClass, field);
+    }
+
+    @Override
     public PagedList<E> find(TenantId tenant, Criteria criteria, Paging paging) {
         return ds.find(resolveTenant(tenant), entityClass, criteria, paging);
     }
@@ -125,18 +132,23 @@ public class SimpleRepository<E, I> implements EntityRepository<E, I> {
     }
 
     @Override
-    public E insert(E entity) {
-        return ds.insert(resolveTenant(), entity);
-    }
-
-    @Override
     public E insert(TenantId tenant, E entity) {
         return ds.insert(tenant, entity);
     }
 
     @Override
+    public int[] insert(TenantId tenant, List<E> entities) {
+        return ds.insert(tenant, entities);
+    }
+
+    @Override
     public E update(E entity, String... fields) {
         return ds.update(resolveTenant(), entity, fields);
+    }
+
+    @Override
+    public int loadCsvFile(TenantId tenant, String file, String delimiter) {
+        return ds.loadCsvFile(resolveTenant(tenant), tableName, file, delimiter);
     }
 
     @Override

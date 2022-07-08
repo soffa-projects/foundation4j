@@ -25,7 +25,7 @@ public class QuestDBPgProvider implements TimeSeriesProvider {
         private final String bucket;
 
         @Override
-        public void writeRecords(@NonNull List<Object> records) {
+        public <E> void writeRecords(@NonNull List<E> records) {
             ds.batch(bucket, records);
         }
 

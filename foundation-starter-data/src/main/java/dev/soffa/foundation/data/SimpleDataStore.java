@@ -1,12 +1,10 @@
 package dev.soffa.foundation.data;
 
+import dev.soffa.foundation.commons.CollectionUtil;
 import dev.soffa.foundation.commons.Logger;
 import dev.soffa.foundation.commons.TextUtil;
 import dev.soffa.foundation.data.common.ExtDataSource;
-import dev.soffa.foundation.data.jdbi.BeanMapper;
-import dev.soffa.foundation.data.jdbi.DBIHandleProvider;
-import dev.soffa.foundation.data.jdbi.HandleHandleProvider;
-import dev.soffa.foundation.data.jdbi.HandleProvider;
+import dev.soffa.foundation.data.jdbi.*;
 import dev.soffa.foundation.error.DatabaseException;
 import dev.soffa.foundation.error.TechnicalException;
 import dev.soffa.foundation.helper.ID;
@@ -18,13 +16,11 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.jdbi.v3.core.Handle;
 import org.jdbi.v3.core.Jdbi;
+import org.jdbi.v3.core.statement.PreparedBatch;
 import org.jdbi.v3.core.statement.Query;
 
 import java.time.Instant;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
@@ -67,7 +63,14 @@ public class SimpleDataStore implements DataStore {
     public static SimpleDataStore create(@NonNull String dbUrl) {
         ExtDataSource props = ExtDataSource.create("default", "default", dbUrl);
         Jdbi dbi = Jdbi.create(props.getUrl(), props.getUsername(), props.getPassword());
+        boolean isPG = dbUrl.startsWith("pg://") || dbUrl.startsWith("postgres");
+        JdbiUtil.configure(dbi, isPG);
         return new SimpleDataStore(new DBIHandleProvider(dbi));
+    }
+
+    @Override
+    public <E> int[] insert(TenantId tenant, @NonNull List<E> entities) {
+        return batch(tenant, entities);
     }
 
     @Override
@@ -109,12 +112,14 @@ public class SimpleDataStore implements DataStore {
         }
         return inTransaction(tenant, entities.get(0).getClass(), (h, info) -> {
             // EL
-            return h.prepareBatch("INSERT INTO <table> (<columns>) VALUES <values>")
+            PreparedBatch b = h.prepareBatch("INSERT INTO <table> (<columns>) VALUES (<values>)")
                 .define(TABLE, info.getTableName())
                 .defineList(COLUMNS, info.getColumnsEscaped())
-                //.defineList(VALUES, info.getValuesPlaceholder())
-                .bindBeanList("values", entities, info.getColumns())
-                .execute();
+                .define(VALUES, String.join(",", info.getValuesPlaceholder()));
+            for (E entity : entities) {
+                b.bindBean(entity).add();
+            }
+            return b.execute();
         });
     }
 
@@ -125,11 +130,15 @@ public class SimpleDataStore implements DataStore {
         }
         return inTransaction(tenant, entities.get(0).getClass(), (h, info) -> {
             // EL
-            return h.prepareBatch("INSERT INTO <table> (<columns>) VALUES <values>")
+            PreparedBatch b = h.prepareBatch("INSERT INTO <table> (<columns>) VALUES <values>")
                 .define(TABLE, table)
                 .defineList(COLUMNS, info.getColumnsEscaped())
-                .bindBeanList("values", entities, info.getColumns())
-                .execute();
+                .define(VALUES, String.join(",", info.getValuesPlaceholder()));
+
+            for (E entity : entities) {
+                b.bindBean(entity).add();
+            }
+            return b.execute();
         });
     }
 
@@ -147,8 +156,9 @@ public class SimpleDataStore implements DataStore {
                 throw new TechnicalException("No @Id field defined for Entity %s", model.getClass());
             }
             List<String> columns = info.getUpdatePairs();
-            if (fields != null) {
-                columns = Arrays.stream(fields).collect(Collectors.toList());
+            if (CollectionUtil.isNotEmpty((Object[]) fields)) {
+                Set<String> filtered = Arrays.stream(fields).map(TextUtil::snakeCase).collect(Collectors.toSet());
+                columns = columns.stream().filter(pair -> filtered.contains(pair.split("=")[0].trim())).collect(Collectors.toList());
             }
             h.createUpdate("UPDATE <table> SET <columns> WHERE <idColumn> = :<idField>")
                 .define(TABLE, info.getTableName())
@@ -201,6 +211,26 @@ public class SimpleDataStore implements DataStore {
         hp.inTransaction(tenant, (handle) -> {
             consumer.accept(new SimpleDataStore(new HandleHandleProvider(handle), tablesPrefix));
             return null;
+        });
+    }
+
+    @Override
+    public <T> Set<String> pluck(TenantId tenant, Class<T> entityClass, String field) {
+        return withHandle(tenant, entityClass, (h, info) -> {
+            // EL
+            List<String> data = h.createQuery("SELECT distinct <field> from <table>")
+                .define(TABLE, info.getTableName())
+                .define("field", field)
+                .mapTo(String.class).list();
+            return new HashSet<>(data);
+        });
+    }
+
+    @Override
+    public int loadCsvFile(TenantId tenant, String tableName, String file, String delimiter) {
+        return hp.inTransaction(tenant, handle -> {
+            String sql = String.format("COPY %s FROM %s ( DELIMITER '%s'  )", tableName, file, delimiter);
+            return handle.execute(sql);
         });
     }
 

@@ -8,6 +8,7 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.function.Consumer;
 
 public interface DataStore {
@@ -56,6 +57,8 @@ public interface DataStore {
     <E> int[] batch(TenantId tenantId, String table, List<E> entity);
 
     <E> E insert(TenantId tenant, E entity);
+
+    <E> int[] insert(TenantId tenant, List<E> entities);
 
     default <E> E update(E entity, String... fields) {
         return update(TenantId.CONTEXT, entity, fields);
@@ -111,4 +114,7 @@ public interface DataStore {
 
     <E> double sumBy(TenantId tenant, Class<E> entityClass, String field, Criteria criteria);
 
+    <E> Set<String> pluck(TenantId tenant, Class<E> entityClass, String field);
+
+    int loadCsvFile(TenantId tenant, String tableName, String file, String delimiter);
 }

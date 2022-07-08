@@ -6,11 +6,13 @@ All notable changes to this project will be documented in this file.
 Le format utilisé se base sur [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 et le versioning du projet respect les règles  [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [0.16.0] - 2022-06-29 (Breaking changes)
+## [0.16.x] - 2022-06-29 (Breaking changes)
 
-### Added 
+### Added
 
 - SideEffects through OperationContext
+- Various improvements
+- CSV file loading added to repository
 
 ## [0.15.6] - 2022-06-26
 
@@ -24,13 +26,13 @@ et le versioning du projet respect les règles  [Semantic Versioning](https://se
 
 - RabbitMQ sendAndReceive
 
-## [0.15.0] - 2022-06-25 
+## [0.15.0] - 2022-06-25
 
 ### Changed (Breaking)
 
 - Explicit resource declaration
 - Explicit repositories declaration
- 
+
 ## [0.14.11] - 2022-06-25
 
 ### Changed
@@ -57,14 +59,12 @@ et le versioning du projet respect les règles  [Semantic Versioning](https://se
 - NotificationAgent (Contract)
 - NotificationAgent (Slack implementation)
 
-
 ## [0.13.0] - 2022-06-19
 
 ### Added
 
 - Hazelcast integration
-- DistributedIdGenerator 
-
+- DistributedIdGenerator
 
 ## [0.12.0] - 2022-06-18
 

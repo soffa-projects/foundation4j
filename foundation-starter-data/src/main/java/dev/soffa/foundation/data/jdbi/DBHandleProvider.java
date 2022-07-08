@@ -8,9 +8,6 @@ import dev.soffa.foundation.multitenancy.TenantHolder;
 import lombok.AllArgsConstructor;
 import org.jdbi.v3.core.Handle;
 import org.jdbi.v3.core.Jdbi;
-import org.jdbi.v3.postgres.PostgresPlugin;
-import org.jdbi.v3.sqlobject.SqlObjectPlugin;
-import org.springframework.jdbc.datasource.TransactionAwareDataSourceProxy;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -43,21 +40,10 @@ public class DBHandleProvider implements HandleProvider {
 
     private Jdbi getDataSource(String lTenant) {
         ExtDataSource dataSource = (ExtDataSource) db.determineTargetDataSource(lTenant);
-        Jdbi jdbi = Jdbi.create(new TransactionAwareDataSourceProxy(dataSource))
-        //Jdbi jdbi = Jdbi.create(dataSource)
-            .installPlugin(new SqlObjectPlugin());
-        if (dataSource.isPG()) {
-            jdbi.installPlugin(new PostgresPlugin());
-        }
-        jdbi.registerArgument(new SerializableArgumentFactory());
-        jdbi.registerArgument(new Map01ArgumentFactory());
-        jdbi.registerArgument(new Map02ArgumentFactory());
-        jdbi.registerArgument(new Map03ArgumentFactory());
-        jdbi.registerArgument(new Map04ArgumentFactory());
-        jdbi.registerArgument(new List01ArgumentFactory());
-        jdbi.registerArgument(new ObjectArgumentFactory());
-        return jdbi;
+        // return JdbiUtil.create(new TransactionAwareDataSourceProxy(dataSource), dataSource.isPG());
+        return JdbiUtil.create(dataSource, dataSource.isPG());
     }
+
 
     @Override
     public void useHandle(TenantId tenant, Consumer<Handle> consumer) {

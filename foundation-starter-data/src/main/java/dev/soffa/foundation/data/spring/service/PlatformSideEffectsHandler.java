@@ -11,6 +11,7 @@ import dev.soffa.foundation.extra.jobs.PendingJobId;
 import dev.soffa.foundation.extra.jobs.PendingJobRepo;
 import dev.soffa.foundation.extra.jobs.ProcessSideEffectInput;
 import dev.soffa.foundation.helper.ID;
+import dev.soffa.foundation.model.TenantId;
 import dev.soffa.foundation.scheduling.OperationScheduler;
 import lombok.AllArgsConstructor;
 import org.checkerframework.com.google.common.collect.ImmutableMap;
@@ -36,7 +37,7 @@ public class PlatformSideEffectsHandler implements SideEffectsHandler {
             .metas(ImmutableMap.of("content", Mappers.JSON_DEFAULT.serialize(context)))
             .created(DateUtil.now())
             .build();
-        pendingJobs.insert(job);
+        pendingJobs.insert(TenantId.DEFAULT, job);
         scheduler.enqueue(uuid, ProcessSideEffect.class, new ProcessSideEffectInput(job.getId()), context);
     }
 

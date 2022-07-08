@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @SpringBootTest(properties = {
     "app.pubsub.enabled=true",
@@ -26,7 +26,7 @@ public class ActionDispatcherTest extends BaseTest {
     @Test
     public void testPublishEvent() {
         Context ctx = Context.create();
+        assertNotNull(ctx);
         dispatcher.dispatch(PublishEvent.class, new Event("op1", "data1"), ctx);
-        assertTrue(true);
     }
 }

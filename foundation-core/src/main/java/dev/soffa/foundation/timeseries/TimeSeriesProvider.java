@@ -23,7 +23,7 @@ public interface TimeSeriesProvider {
             throw new TodoException("Feature not implemented");
         }
 
-        default void writeRecords(@NonNull List<Object> model) {
+        default <E> void writeRecords(@NonNull List<E> model) {
             throw new TodoException("Feature not implemented");
         }
 
