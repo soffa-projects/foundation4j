@@ -6,6 +6,7 @@ import dev.soffa.foundation.model.PagedList;
 import dev.soffa.foundation.model.Paging;
 import dev.soffa.foundation.model.TenantId;
 
+import java.io.File;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -128,6 +129,10 @@ public interface EntityRepository<E, I> {
 
     default int loadCsvFile(String file, String delimiter) {
         return loadCsvFile(TenantId.CONTEXT, file, delimiter);
+    }
+
+    default int loadCsvFile(File file, String delimiter) {
+        return loadCsvFile(TenantId.CONTEXT, file.getAbsolutePath(), delimiter);
     }
 
     int loadCsvFile(TenantId tenant, String file, String delimiter);

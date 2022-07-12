@@ -20,7 +20,7 @@ public class SimpleRepository<E, I> implements EntityRepository<E, I> {
     private final Class<E> entityClass;
     private TenantId lockedTenant = TenantId.CONTEXT;
 
-    private String tableName;
+    private final String tableName;
 
     public SimpleRepository(DataStore ds, Class<E> entityClass) {
         this(ds, entityClass, null);
@@ -58,6 +58,7 @@ public class SimpleRepository<E, I> implements EntityRepository<E, I> {
         Type[] generics = ClassUtil.lookupGeneric(this.getClass(), SimpleRepository.class);
         Preconditions.checkNotNull(generics, "No EntityRepository found in class hierarchy");
         this.entityClass = (Class<E>) generics[0];
+        this.tableName = tableName;
         if (TextUtil.isNotEmpty(tableName)) {
             EntityInfo.registerTable(entityClass, tableName);
         }

@@ -229,7 +229,7 @@ public class SimpleDataStore implements DataStore {
     @Override
     public int loadCsvFile(TenantId tenant, String tableName, String file, String delimiter) {
         return hp.inTransaction(tenant, handle -> {
-            String sql = String.format("COPY %s FROM %s ( DELIMITER '%s'  )", tableName, file, delimiter);
+            String sql = String.format("COPY %s FROM '%s' ( DELIMITER '%s'  )", tablesPrefix + tableName, file, delimiter);
             return handle.execute(sql);
         });
     }

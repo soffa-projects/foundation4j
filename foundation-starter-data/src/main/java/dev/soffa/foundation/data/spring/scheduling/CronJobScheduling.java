@@ -31,7 +31,7 @@ class CronJobScheduling implements ApplicationLifecycle {
         Logger.platform.info("%s ServiceWorker(s) found in current context", workers.size());
 
         int count = 0;
-        for (final ServiceWorker worker : workers.values()) {
+        for (ServiceWorker worker : workers.values()) {
             String cron = Cron.EVERY_30_SECONDS;
             if (worker.getClass().isAnnotationPresent(Cron.class)) {
                 Cron annotation = worker.getClass().getAnnotation(Cron.class);
