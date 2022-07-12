@@ -21,7 +21,7 @@ import java.util.concurrent.TimeUnit;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-@SpringBootTest(properties ={"app.test.scheduler=mocked", "app.name=test007"})
+@SpringBootTest(properties = {"app.test.scheduler=mocked", "app.name=test007"})
 public class EntityRepositoryTest extends BaseTest {
 
     @Inject
@@ -60,6 +60,7 @@ public class EntityRepositoryTest extends BaseTest {
 
         assertEquals(30, messages.findAll(new Paging(6, 194)).getData().size());
 
+        assertEquals(TenantId.DEFAULT, messages.resolveTenant());
         assertNotNull(messages.get(ImmutableMap.of("id", "msg_1")));
 
 
@@ -73,7 +74,9 @@ public class EntityRepositoryTest extends BaseTest {
         for (String tenant : tenantsLoader.getTenantList()) {
             TenantId tenantId = TenantId.of(tenant);
             // MessagesDAO is locked to TenantID.DEFAULT, so no matter the tenant, it should return the same result.
-            assertEquals(generatedMessagesCount, messages.count(tenantId));
+            assertEquals(generatedMessagesCount, messages.count(tenantId), () -> {
+                return "Messages count for tenant " + tenantId + " is not equal to " + generatedMessagesCount;
+            });
 
             // TenantMessageDAO is not locked
             assertEquals(0, tenantMessages.count(tenantId));
@@ -85,7 +88,8 @@ public class EntityRepositoryTest extends BaseTest {
 
             int generated = 1;
             for (int i = 0; i < generated; i++) {
-                messages.insert(tenantId, new Message("msg_" + i, RandomUtil.nextString(20)));
+                assertEquals(tenantId, tenantMessages.resolveTenant(tenantId));
+                tenantMessages.insert(tenantId, new Message("msg_" + i, RandomUtil.nextString(32)));
             }
 
             assertEquals(generated, tenantMessages.count(tenantId));

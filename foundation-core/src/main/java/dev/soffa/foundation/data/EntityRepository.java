@@ -84,8 +84,6 @@ public interface EntityRepository<E, I> {
         return find(Criteria.of(filter), paging);
     }
 
-    Optional<E> get(Criteria criteria);
-
     default double sumBy(String field, Criteria criteria) {
         return sumBy(TenantId.CONTEXT, field, criteria);
     }
@@ -95,6 +93,11 @@ public interface EntityRepository<E, I> {
     }
 
     double sumBy(TenantId tenant, String field, Criteria criteria);
+
+    default  Optional<E> get(Criteria criteria) {
+        return get(TenantId.CONTEXT, criteria);
+    }
+
 
     Optional<E> get(TenantId tenant, Criteria criteria);
 
@@ -166,5 +169,7 @@ public interface EntityRepository<E, I> {
     default boolean exists(I id) {
         return exists(ImmutableMap.of("id", id));
     }
+
+    TenantId resolveTenant(TenantId tenant);
 
 }

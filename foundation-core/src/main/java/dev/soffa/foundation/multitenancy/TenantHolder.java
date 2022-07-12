@@ -71,6 +71,11 @@ public final class TenantHolder {
         return use((String) null, supplier);
     }
 
+
+    public static void setDefault() {
+        CURRENT.set(TenantId.DEFAULT_VALUE);
+    }
+
     public static void use(final String tenantId, Runnable runnable) {
         use(TenantId.of(tenantId), runnable);
     }

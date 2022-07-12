@@ -7,6 +7,7 @@ import dev.soffa.foundation.data.jdbi.DBHandleProvider;
 import dev.soffa.foundation.model.PagedList;
 import dev.soffa.foundation.model.Paging;
 import dev.soffa.foundation.model.TenantId;
+import dev.soffa.foundation.multitenancy.TenantHolder;
 
 import java.lang.reflect.Type;
 import java.util.List;
@@ -87,7 +88,7 @@ public class SimpleRepository<E, I> implements EntityRepository<E, I> {
 
     @Override
     public EntityRepository<E, I> withTenant(TenantId tenant) {
-        return new SimpleRepository<>(this.ds, this.entityClass, this.tableName, tenant.getValue());
+        return new SimpleRepository<>(this.ds, this.entityClass, this.tableName, resolveTenant(tenant).getValue());
     }
 
 
@@ -107,10 +108,6 @@ public class SimpleRepository<E, I> implements EntityRepository<E, I> {
     }
 
 
-    @Override
-    public Optional<E> get(Criteria criteria) {
-        return ds.get(resolveTenant(), entityClass, criteria);
-    }
 
     @Override
     public double sumBy(TenantId tenant, String field, Criteria criteria) {
@@ -119,7 +116,7 @@ public class SimpleRepository<E, I> implements EntityRepository<E, I> {
 
     @Override
     public Optional<E> get(TenantId tenant, Criteria criteria) {
-        return ds.get(tenant, entityClass, criteria);
+        return ds.get(resolveTenant(tenant), entityClass, criteria);
     }
 
     @Override
@@ -129,17 +126,17 @@ public class SimpleRepository<E, I> implements EntityRepository<E, I> {
 
     @Override
     public Optional<E> findById(TenantId tenant, I id) {
-        return ds.findById(tenant, entityClass, id);
+        return ds.findById(resolveTenant(tenant), entityClass, id);
     }
 
     @Override
     public E insert(TenantId tenant, E entity) {
-        return ds.insert(tenant, entity);
+        return ds.insert(resolveTenant(tenant), entity);
     }
 
     @Override
     public int[] insert(TenantId tenant, List<E> entities) {
-        return ds.insert(tenant, entities);
+        return ds.insert(resolveTenant(tenant), entities);
     }
 
     @Override
@@ -154,7 +151,7 @@ public class SimpleRepository<E, I> implements EntityRepository<E, I> {
 
     @Override
     public E update(TenantId tenant, E entity, String... fields) {
-        return ds.update(tenant, entity, fields);
+        return ds.update(resolveTenant(tenant), entity, fields);
     }
 
     @Override
@@ -164,7 +161,7 @@ public class SimpleRepository<E, I> implements EntityRepository<E, I> {
 
     @Override
     public int delete(TenantId tenant, E entity) {
-        return ds.delete(tenant, entity);
+        return ds.delete(resolveTenant(tenant), entity);
     }
 
     @Override
@@ -174,19 +171,24 @@ public class SimpleRepository<E, I> implements EntityRepository<E, I> {
 
     @Override
     public void useTransaction(TenantId tenant, Consumer<EntityRepository<E, I>> consumer) {
-        ds.useTransaction(tenant, (ds) -> {
+        ds.useTransaction(resolveTenant(tenant), (ds) -> {
             SimpleRepository<E, I> ser = new SimpleRepository<>(ds, entityClass, tableName, lockedTenant.getValue());
             consumer.accept(ser);
         });
     }
 
     protected TenantId resolveTenant() {
-        return lockedTenant;
+        return resolveTenant(TenantId.CONTEXT);
     }
 
-    protected TenantId resolveTenant(TenantId tenant) {
+
+    @Override
+    public TenantId resolveTenant(TenantId tenant) {
         if (!TenantId.CONTEXT.equals(lockedTenant)) {
             return lockedTenant;
+        }
+        if (tenant == TenantId.CONTEXT) {
+            return TenantId.of(TenantHolder.require());
         }
         return tenant;
     }
