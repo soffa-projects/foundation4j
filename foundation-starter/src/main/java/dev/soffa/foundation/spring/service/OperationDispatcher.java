@@ -134,7 +134,7 @@ public class OperationDispatcher implements Dispatcher, Resource {
         boolean shouldEnqueue = !opContext.getSideEffects().isEmpty() && !(operation instanceof OnServiceStarted);
         if (shouldEnqueue) {
             sideEffectsHandler.enqueue(operationName,
-                DigestUtil.md5(Mappers.JSON_DEFAULT.serialize(input)),
+                DefaultIdGenerator.uuid(TextUtil.snakeCase(operationName) + "_"),
                 opContext.getSideEffects(),
                 ctx
             );
