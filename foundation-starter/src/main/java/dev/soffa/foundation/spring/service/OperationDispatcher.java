@@ -48,13 +48,18 @@ public class OperationDispatcher implements Dispatcher, Resource {
     @Override
     public <I, O> O dispatch(String operationName, Serialized input, String serializedContext) {
         Logger.app.info("Dispatching operation: %s", operationName);
-        Operation<I, O> op = getOperations().require(operationName);
-        I deserialized = null;
-        if (input.getData() != null) {
-            deserialized = (I) Mappers.JSON_DEFAULT.deserialize(input.getData(), Class.forName(input.getType()));
+        try {
+            Operation<I, O> op = getOperations().require(operationName);
+            I deserialized = null;
+            if (input.getData() != null) {
+                deserialized = (I) Mappers.JSON_DEFAULT.deserialize(input.getData(), Class.forName(input.getType()));
+            }
+            Context context = Mappers.JSON_DEFAULT.deserialize(serializedContext, Context.class);
+            return invoke(op, deserialized, context);
+        }catch (Exception e) {
+            Logger.app.error("Error while dispatching operation: %s", operationName, e);
+            throw e;
         }
-        Context context = Mappers.JSON_DEFAULT.deserialize(serializedContext, Context.class);
-        return invoke(op, deserialized, context);
     }
 
     @Override
