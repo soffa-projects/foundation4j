@@ -17,7 +17,7 @@ dependencies {
             strictly("2.9.3")
         }
     }
-    implementation("org.jobrunr:jobrunr:5.1.3") {
+    implementation("org.jobrunr:jobrunr:5.1.4") {
         exclude(group = "com.zaxxer")
     }
     implementation("org.questdb:questdb:6.4.1-jdk8")
