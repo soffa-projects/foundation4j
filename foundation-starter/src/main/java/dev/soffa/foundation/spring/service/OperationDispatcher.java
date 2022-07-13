@@ -47,6 +47,7 @@ public class OperationDispatcher implements Dispatcher, Resource {
     @SuppressWarnings("unchecked")
     @Override
     public <I, O> O dispatch(String operationName, Serialized input, String serializedContext) {
+        Logger.app.info("Dispatching operation: %s", operationName);
         Operation<I, O> op = getOperations().require(operationName);
         I deserialized = null;
         if (input.getData() != null) {
