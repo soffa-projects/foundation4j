@@ -187,7 +187,7 @@ public class SimpleRepository<E, I> implements EntityRepository<E, I> {
         if (!TenantId.CONTEXT.equals(lockedTenant)) {
             return lockedTenant;
         }
-        if (tenant == TenantId.CONTEXT) {
+        if (TenantId.CONTEXT.equals(tenant)) {
             return TenantId.of(TenantHolder.require());
         }
         return tenant;
