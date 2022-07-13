@@ -150,6 +150,11 @@ public class SimpleRepository<E, I> implements EntityRepository<E, I> {
     }
 
     @Override
+    public int exportToCsvFile(TenantId tenant, String file, String query, String delimiter) {
+        return ds.exportToCsvFile(tenant, file, tableName, query, delimiter);
+    }
+
+    @Override
     public E update(TenantId tenant, E entity, String... fields) {
         return ds.update(resolveTenant(tenant), entity, fields);
     }

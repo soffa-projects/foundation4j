@@ -235,6 +235,20 @@ public class SimpleDataStore implements DataStore {
     }
 
     @Override
+    public int exportToCsvFile(TenantId tenant, String tableName, String query, String file, String delimiter) {
+        final String lQuery = TextUtil.isEmpty(query) ? "SELECT *  from %table%" : query;
+        return hp.inTransaction(tenant, handle -> {
+            String sql = String.format(
+                "COPY (%s) TO '%s' ( DELIMITER '%s'  )",
+                lQuery.replace("%table%", tablesPrefix + tableName),
+                file,
+                delimiter
+            );
+            return handle.execute(sql);
+        });
+    }
+
+    @Override
     public <E> PagedList<E> findAll(TenantId tenant, Class<E> entityClass, Paging paging) {
         return withHandle(tenant, entityClass, (handle, info) -> {
             // EL

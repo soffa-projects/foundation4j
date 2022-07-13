@@ -30,7 +30,7 @@ public interface EntityRepository<E, I> {
         return isEmpty(TenantId.CONTEXT);
     }
 
-    EntityRepository<E,I> withTenant(TenantId tenant);
+    EntityRepository<E, I> withTenant(TenantId tenant);
 
     default long count(Map<String, Object> filter) {
         return count(Criteria.of(filter));
@@ -88,13 +88,13 @@ public interface EntityRepository<E, I> {
         return sumBy(TenantId.CONTEXT, field, criteria);
     }
 
-    default double sumBy(String field, Map<String,Object> criteria) {
+    default double sumBy(String field, Map<String, Object> criteria) {
         return sumBy(TenantId.CONTEXT, field, Criteria.of(criteria));
     }
 
     double sumBy(TenantId tenant, String field, Criteria criteria);
 
-    default  Optional<E> get(Criteria criteria) {
+    default Optional<E> get(Criteria criteria) {
         return get(TenantId.CONTEXT, criteria);
     }
 
@@ -117,9 +117,10 @@ public interface EntityRepository<E, I> {
 
     Optional<E> findById(TenantId tenant, I id);
 
-    default E insert(E entity){
+    default E insert(E entity) {
         return insert(TenantId.CONTEXT, entity);
     }
+
     default int[] insert(List<E> entities) {
         return insert(TenantId.CONTEXT, entities);
     }
@@ -137,6 +138,12 @@ public interface EntityRepository<E, I> {
     default int loadCsvFile(File file, String delimiter) {
         return loadCsvFile(TenantId.CONTEXT, file.getAbsolutePath(), delimiter);
     }
+
+    default int exportToCsvFile(File file, String query, String delimiter) {
+        return exportToCsvFile(TenantId.CONTEXT, file.getAbsolutePath(), query, delimiter);
+    }
+
+    int exportToCsvFile(TenantId context, String file, String query, String delimiter);
 
     int loadCsvFile(TenantId tenant, String file, String delimiter);
 
