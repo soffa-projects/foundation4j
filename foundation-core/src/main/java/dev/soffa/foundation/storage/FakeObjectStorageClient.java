@@ -1,4 +1,4 @@
-package dev.soffa.foundation.storage.adapters;
+package dev.soffa.foundation.storage;
 
 import dev.soffa.foundation.commons.Logger;
 import dev.soffa.foundation.storage.ObjectStorageClient;

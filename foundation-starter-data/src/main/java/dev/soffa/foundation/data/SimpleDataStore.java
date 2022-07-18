@@ -18,7 +18,13 @@ import org.jdbi.v3.core.Handle;
 import org.jdbi.v3.core.Jdbi;
 import org.jdbi.v3.core.statement.PreparedBatch;
 import org.jdbi.v3.core.statement.Query;
+import org.postgresql.copy.CopyManager;
+import org.postgresql.core.BaseConnection;
 
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.sql.SQLException;
 import java.time.Instant;
 import java.util.*;
 import java.util.function.BiFunction;
@@ -227,24 +233,33 @@ public class SimpleDataStore implements DataStore {
     }
 
     @Override
-    public int loadCsvFile(TenantId tenant, String tableName, String file, String delimiter) {
+    public long loadCsvFile(TenantId tenant, String tableName, String file, String delimiter) {
         return hp.inTransaction(tenant, handle -> {
-            String sql = String.format("\\COPY %s FROM '%s' ( DELIMITER '%s'  )", tablesPrefix + tableName, file, delimiter);
-            return handle.execute(sql);
+            try {
+                CopyManager cm = new CopyManager(handle.getConnection().unwrap(BaseConnection.class));
+                String sql = String.format("COPY %s FROM STDIN ( DELIMITER '%s'  )", tablesPrefix + tableName, delimiter);
+                return cm.copyIn(sql, new FileReader(file));
+            } catch (SQLException | IOException e) {
+                throw new DatabaseException(e);
+            }
         });
     }
 
     @Override
-    public int exportToCsvFile(TenantId tenant, String tableName, String query, String file, String delimiter) {
+    public long exportToCsvFile(TenantId tenant, String tableName, String query, String file, String delimiter) {
         final String lQuery = TextUtil.isEmpty(query) ? "SELECT *  from %table%" : query;
         return hp.inTransaction(tenant, handle -> {
-            String sql = String.format(
-                "\\COPY (%s) TO '%s' ( DELIMITER '%s'  )",
-                lQuery.replace("%table%", tablesPrefix + tableName),
-                file,
-                delimiter
-            );
-            return handle.execute(sql);
+            try {
+                CopyManager cm = new CopyManager(handle.getConnection().unwrap(BaseConnection.class));
+                String sql = String.format(
+                    "COPY (%s) TO STDOUT ( DELIMITER '%s'  )",
+                    lQuery.replace("%table%", tablesPrefix + tableName),
+                    delimiter
+                );
+                return cm.copyOut(sql, new FileWriter(file));
+            } catch (Exception e) {
+                throw new DatabaseException(e);
+            }
         });
     }
 

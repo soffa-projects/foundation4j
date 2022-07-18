@@ -1,4 +1,4 @@
-package dev.soffa.foundation.storage.model;
+package dev.soffa.foundation.storage;
 
 import lombok.Data;
 

@@ -15,6 +15,7 @@ dependencies {
     implementation("com.nimbusds:nimbus-jose-jwt:9.23")
     implementation("commons-validator:commons-validator:1.7")
     api("io.reactivex.rxjava3:rxjava:3.1.5")
+    implementation("com.amazonaws:aws-java-sdk-s3:1.12.262")
 
     @Suppress("GradlePackageUpdate")
     api("com.github.ben-manes.caffeine:caffeine") {  // Don't use version 3, it's not compatible with Java8

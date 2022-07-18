@@ -117,8 +117,8 @@ public interface DataStore {
 
     <E> Set<String> pluck(TenantId tenant, Class<E> entityClass, String field);
 
-    int loadCsvFile(TenantId tenant, String tableName, String file, String delimiter);
+    long loadCsvFile(TenantId tenant, String tableName, String file, String delimiter);
 
-    int exportToCsvFile(TenantId tenant, String tableName, String query, String file, String delimiter);
+    long exportToCsvFile(TenantId tenant, String tableName, String query, String file, String delimiter);
 
 }

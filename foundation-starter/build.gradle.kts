@@ -29,6 +29,9 @@ dependencies {
     implementation("org.springdoc:springdoc-openapi-ui:1.6.9") {
         exclude(group = "io.github.classgraph")
     }
+    api("com.amazonaws:aws-java-sdk-s3:1.12.239") {
+        exclude(group = "com.github.ben-manes.caffeine")
+    }
 
     implementation("org.springdoc:springdoc-openapi-security:1.6.9") {
         exclude(group = "io.github.classgraph")

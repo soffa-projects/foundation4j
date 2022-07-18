@@ -1,8 +1,8 @@
 package ext.springboot;
 
 import dev.soffa.foundation.storage.ObjectStorageClient;
-import dev.soffa.foundation.storage.adapters.S3Client;
-import dev.soffa.foundation.storage.model.ObjectStorageConfig;
+import dev.soffa.foundation.storage.ObjectStorageConfig;
+import dev.soffa.foundation.storage.S3Client;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.ConfigurationProperties;

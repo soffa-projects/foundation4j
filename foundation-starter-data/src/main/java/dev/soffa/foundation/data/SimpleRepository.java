@@ -145,12 +145,12 @@ public class SimpleRepository<E, I> implements EntityRepository<E, I> {
     }
 
     @Override
-    public int loadCsvFile(TenantId tenant, String file, String delimiter) {
+    public long loadCsvFile(TenantId tenant, String file, String delimiter) {
         return ds.loadCsvFile(resolveTenant(tenant), tableName, file, delimiter);
     }
 
     @Override
-    public int exportToCsvFile(TenantId tenant, String file, String query, String delimiter) {
+    public long exportToCsvFile(TenantId tenant, String file, String query, String delimiter) {
         return ds.exportToCsvFile(tenant, file, tableName, query, delimiter);
     }
 

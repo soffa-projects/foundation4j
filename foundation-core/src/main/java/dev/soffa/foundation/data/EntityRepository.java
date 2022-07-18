@@ -131,21 +131,21 @@ public interface EntityRepository<E, I> {
 
     E update(E entity, String... fields);
 
-    default int loadCsvFile(String file, String delimiter) {
+    default long loadCsvFile(String file, String delimiter) {
         return loadCsvFile(TenantId.CONTEXT, file, delimiter);
     }
 
-    default int loadCsvFile(File file, String delimiter) {
+    default long loadCsvFile(File file, String delimiter) {
         return loadCsvFile(TenantId.CONTEXT, file.getAbsolutePath(), delimiter);
     }
 
-    default int exportToCsvFile(File file, String query, String delimiter) {
+    default long exportToCsvFile(File file, String query, String delimiter) {
         return exportToCsvFile(TenantId.CONTEXT, file.getAbsolutePath(), query, delimiter);
     }
 
-    int exportToCsvFile(TenantId context, String file, String query, String delimiter);
+    long exportToCsvFile(TenantId context, String file, String query, String delimiter);
 
-    int loadCsvFile(TenantId tenant, String file, String delimiter);
+    long loadCsvFile(TenantId tenant, String file, String delimiter);
 
     E update(TenantId tenant, E entity, String... fields);
 
