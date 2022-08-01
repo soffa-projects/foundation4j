@@ -16,5 +16,4 @@ public interface AuthManager {
     default Authentication authenticate(Context context, String username, String password) {
         return null;
     }
-
 }

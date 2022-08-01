@@ -16,7 +16,7 @@ public class PagedList<T> {
     private Pagination paging;
 
     public static <T> PagedList<T> of(List<T> items, long total, Paging paging) {
-        boolean hasMore = total < ((long) paging.getPage() * paging.getSize());
+        boolean hasMore = total > ((long) paging.getPage() * paging.getSize());
         int pages = (int) (total / paging.getSize());
         if (total % paging.getSize() > 0) {
             pages++;

@@ -30,7 +30,7 @@ public class Paging {
 
     public Paging(int page, int size) {
         this.page = page;
-        this.size = size;
+        this.size = Math.min(size, DEFAULT_MAX_SIZE);
     }
 
     public Paging cap() {
