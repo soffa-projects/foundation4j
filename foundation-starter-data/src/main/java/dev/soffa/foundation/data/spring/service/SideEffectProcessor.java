@@ -52,15 +52,15 @@ public class SideEffectProcessor implements ProcessSideEffect {
             this.activities = findBean(ActivityService.class).orElse(null);
             this.pubSub = findBean(PubSubMessenger.class).orElse(null);
             if (pubSub == null) {
-                Logger.app.warn("[sideffect] No PubSubClient registered, events will not be sent");
+                Logger.platform.warn("[sideffect] No PubSubClient registered, events will not be sent");
             }
             this.hooks = findBean(Hooks.class).orElse(null);
             if (this.hooks == null) {
-                Logger.app.warn("[sideffect] No HookProvider registered, hooks will be discarded");
+                Logger.platform.warn("[sideffect] No HookProvider registered, hooks will be discarded");
             }
             this.tsp = findBean(TimeSeriesProvider.class).orElse(null);
             if (this.tsp == null) {
-                Logger.app.warn("[sideffect] No TimeSeriesProvider registered, dataPoints will be discarded");
+                Logger.platform.warn("[sideffect] No TimeSeriesProvider registered, dataPoints will be discarded");
             }
             this.scheduler = findBean(OperationScheduler.class).orElse(null);
 
@@ -81,7 +81,7 @@ public class SideEffectProcessor implements ProcessSideEffect {
 
     @Override
     public Void handle(ProcessSideEffectInput input, @NonNull OperationContext ctx) {
-        Logger.app.info("Processing side effect: %s", input.getId());
+        Logger.platform.info("Processing side effect: %s", input.getId());
         bootstrap();
         pendingJobs.consume(input.getId(), pendingJob -> {
 
@@ -90,7 +90,7 @@ public class SideEffectProcessor implements ProcessSideEffect {
             if (tsp != null && sideEffects.hasDataPoints()) {
                 tsp.getWriter().write(sideEffects.getDataPoints());
                 // DataPoints  processed wihtout errors, update side effects if following block files
-                Logger.app.info("[%s] %d datapoints processed", input.getId(), sideEffects.getDataPoints().size());
+                Logger.platform.info("[%s] %d datapoints processed", input.getId(), sideEffects.getDataPoints().size());
                 sideEffects.setDataPoints(null);
                 updateJob(pendingJob, sideEffects);
             }
@@ -100,7 +100,7 @@ public class SideEffectProcessor implements ProcessSideEffect {
                     scheduler.enqueue(op.getUuid(), op.getOperation(), op.getInput(), ctx.getInternal());
                 }
                 // Delayed jobs processed wihtout errors, update side effects if following block files
-                Logger.app.info("[%s] %d delayed jobs processed", input.getId(), sideEffects.getDelayedJobs().size());
+                Logger.platform.info("[%s] %d delayed jobs processed", input.getId(), sideEffects.getDelayedJobs().size());
                 sideEffects.setDelayedJobs(null);
                 updateJob(pendingJob, sideEffects);
             }
@@ -110,7 +110,7 @@ public class SideEffectProcessor implements ProcessSideEffect {
                     pubSub.publish(event.getTarget(), MessageFactory.create(event.getOperation(), event.getPayload()));
                 }
                 // Events processed wihtout errors, update side effects if following block files
-                Logger.app.info("[%s] %d events processed", input.getId(), sideEffects.getEvents().size());
+                Logger.platform.info("[%s] %d events processed", input.getId(), sideEffects.getEvents().size());
                 sideEffects.setEvents(null);
                 updateJob(pendingJob, sideEffects);
             }
@@ -120,7 +120,7 @@ public class SideEffectProcessor implements ProcessSideEffect {
                     hooks.enqueue(hook, ctx.getInternal());
                 }
                 // Hooks processed wihtout errors, update side effects if following block files
-                Logger.app.info("[%s] %d hooks processed", input.getId(), sideEffects.getHooks().size());
+                Logger.platform.info("[%s] %d hooks processed", input.getId(), sideEffects.getHooks().size());
                 sideEffects.setHooks(null);
                 updateJob(pendingJob, sideEffects);
             }
@@ -130,14 +130,14 @@ public class SideEffectProcessor implements ProcessSideEffect {
                     activities.record(activity, ctx.getInternal());
                 }
                 // Activities processed wihtout errors, update side effects if following block files
-                Logger.app.info("[%s] %d activities processed", input.getId(), sideEffects.getActivities().size());
+                Logger.platform.info("[%s] %d activities processed", input.getId(), sideEffects.getActivities().size());
                 sideEffects.setActivities(null);
                 updateJob(pendingJob, sideEffects);
             }
 
             return true;
         });
-        Logger.app.info("Side effect %s processed successfully", input.getId());
+        Logger.platform.info("Side effect %s processed successfully", input.getId());
 
         return null;
     }

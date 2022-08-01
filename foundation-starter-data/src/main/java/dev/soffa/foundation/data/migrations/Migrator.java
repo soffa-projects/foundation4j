@@ -12,6 +12,7 @@ import io.reactivex.rxjava3.core.Observer;
 import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.subjects.PublishSubject;
 import liquibase.integration.spring.SpringLiquibase;
+import org.jdbi.v3.core.Jdbi;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
@@ -29,7 +30,6 @@ public class Migrator implements Observer<MigrationJob> {
     private static final Migrator INSTANCE = new Migrator();
 
     private final AtomicInteger counter = new AtomicInteger(0);
-
 
     public Migrator() {
         subject.subscribe(this);
@@ -146,6 +146,9 @@ public class Migrator implements Observer<MigrationJob> {
     }
 
     private void doApplyMigration(ExtDataSource ds, String name, SpringLiquibase lqb, Map<String, String> changeLogParams) {
+
+
+
         @SuppressWarnings("PMD.CloseResource")
         String schema = ds.getSchema();
         if (TenantId.DEFAULT_VALUE.equals(name)) {
@@ -158,16 +161,31 @@ public class Migrator implements Observer<MigrationJob> {
             lqb.setLiquibaseSchema(schema);
         }
         lqb.setChangeLogParameters(changeLogParams);
+
+        if (System.getenv("LIQUIBASE_RELEASE_LOCK") != null) {
+            Logger.platform.info("LIQUIBASE_RELEASE_LOCK detected");
+            Jdbi jdbi = Jdbi.create(ds);
+            jdbi.useTransaction(handle -> {
+                String table = lqb.getDatabaseChangeLogLockTable();
+                if (TextUtil.isNotEmpty(schema)) {
+                    table = schema + "." + table;
+                }
+                String query = "DELETE FROM " + table;
+                int count = handle.execute(query);
+                Logger.platform.info("Lock released: %d (%s)", count, query);
+            });
+        }
+
         try {
             lqb.setDataSource(ds);
             lqb.afterPropertiesSet(); // Run migrations
-            Logger.app.info("[datasource:%s] migration '%s' successfully applied", name, lqb.getChangeLog());
+            Logger.platform.info("[datasource:%s] migration '%s' successfully applied", name, lqb.getChangeLog());
         } catch (Exception e) {
             String msg = e.getMessage().toLowerCase();
             if (msg.contains("changelog") && msg.contains("already exists")) {
                 boolean isTestDb = ds.isH2();
                 if (!isTestDb) {
-                    Logger.app.warn("Looks like migrations are being ran twice for %s.%s, ignore this error", name, schema);
+                    Logger.platform.warn("Looks like migrations are being ran twice for %s.%s, ignore this error", name, schema);
                 }
             } else {
                 throw new DatabaseException(e, "Migration failed for %s", schema);

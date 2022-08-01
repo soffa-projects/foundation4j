@@ -127,7 +127,7 @@ public class AmqpClient extends AbstractPubSubClient implements PubSubClient {
         if (!hasSubscription(applicationName)) {
             subscribe(applicationName, false, handler);
         }else {
-            Logger.app.warn("A subscription already exists for: %s", applicationName);
+            Logger.platform.warn("A subscription already exists for: %s", applicationName);
         }
     }
 

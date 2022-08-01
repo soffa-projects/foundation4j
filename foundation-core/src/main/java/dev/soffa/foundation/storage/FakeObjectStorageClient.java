@@ -1,7 +1,6 @@
 package dev.soffa.foundation.storage;
 
 import dev.soffa.foundation.commons.Logger;
-import dev.soffa.foundation.storage.ObjectStorageClient;
 
 import java.io.File;
 import java.io.InputStream;

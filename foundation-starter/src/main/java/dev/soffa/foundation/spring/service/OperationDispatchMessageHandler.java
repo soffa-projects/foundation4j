@@ -77,13 +77,13 @@ public class OperationDispatchMessageHandler implements DispatchMessageHandler {
         LOG.info("[pubsub] New message received with operation %s#%s", message.getOperation(), message.getId());
 
         if (!(operation instanceof Operation)) {
-            Logger.app.error("[pubsub] unsupported operation type: %s", operation.getClass().getName());
+            Logger.platform.error("[pubsub] unsupported operation type: %s", operation.getClass().getName());
             return Optional.empty();
         }
 
         Type inputType = getOperations().getInputTypes().get(message.getOperation());
         if (inputType == null) {
-            Logger.app.error("[pubsub] Unable to find input type for operation %s", message.getOperation());
+            Logger.platform.error("[pubsub] Unable to find input type for operation %s", message.getOperation());
             return Optional.empty();
         }
 

@@ -18,6 +18,7 @@ import dev.soffa.foundation.model.Event;
 import dev.soffa.foundation.model.TenantId;
 import dev.soffa.foundation.multitenancy.TenantHolder;
 import dev.soffa.foundation.resource.Resource;
+import dev.soffa.foundation.scheduling.ServiceWorker;
 import lombok.AllArgsConstructor;
 import lombok.SneakyThrows;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -50,7 +51,7 @@ public class OperationDispatcher implements Dispatcher, Resource {
     @SuppressWarnings("unchecked")
     @Override
     public <I, O> O dispatch(String operationName, Serialized input, String serializedContext) {
-        Logger.app.info("Dispatching operation: %s", operationName);
+        Logger.platform.info("Dispatching operation: %s", operationName);
         try {
             Operation<I, O> op = getOperations().require(operationName);
             I deserialized = null;
@@ -60,7 +61,7 @@ public class OperationDispatcher implements Dispatcher, Resource {
             Context context = Mappers.JSON_DEFAULT.deserialize(serializedContext, Context.class);
             return invoke(op, deserialized, context);
         }catch (Exception e) {
-            Logger.app.error("Error while dispatching operation: %s", operationName, e);
+            Logger.platform.error("Error while dispatching operation: %s", operationName, e);
             throw e;
         }
     }
@@ -87,7 +88,7 @@ public class OperationDispatcher implements Dispatcher, Resource {
 
         String className = operation.getClass().getSimpleName();
 
-        Logger.app.debug("Invoking operation %s [livemode=%s]", className, ctx.isLiveMode());
+        Logger.platform.debug("Invoking operation %s [livemode=%s]", className, ctx.isLiveMode());
 
         if (!DEFAULT_TENANT.containsKey(className)) {
             DEFAULT_TENANT.put(className, AnnotationUtils.findAnnotation(operation.getClass(), DefaultTenant.class) != null);
@@ -134,7 +135,10 @@ public class OperationDispatcher implements Dispatcher, Resource {
                 new Event(pubSubOperation, Mappers.JSON_DEFAULT.serialize(res))
             );
         }
-        boolean shouldEnqueue = (operation instanceof Command) && !opContext.getSideEffects().isEmpty() && !(operation instanceof OnServiceStarted);
+
+        boolean shouldEnqueue = operation instanceof Command &&  !(operation instanceof ServiceWorker) &&
+            !opContext.getSideEffects().isEmpty() && !(operation instanceof OnServiceStarted);
+
         if (shouldEnqueue) {
             sideEffectsHandler.enqueue(operationName,
                 DefaultIdGenerator.uuid(TextUtil.snakeCase(operationName) + "_"),

@@ -21,15 +21,15 @@ import org.jdbi.v3.core.statement.Query;
 import org.postgresql.copy.CopyManager;
 import org.postgresql.core.BaseConnection;
 
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
+import java.nio.file.Files;
 import java.sql.SQLException;
 import java.time.Instant;
 import java.util.*;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @SuppressWarnings("PMD.GodClass")
 public class SimpleDataStore implements DataStore {
@@ -37,6 +37,7 @@ public class SimpleDataStore implements DataStore {
     private static final String TABLE = "table";
     private static final String ORDER = "order";
     private static final String LIMIT = "limit";
+    private static final String FIELD = "field";
     private static final String OFFSET = "offset";
     private static final String ID_COLUMN = "idColumn";
     private static final String ID_FIELD = "idField";
@@ -45,6 +46,8 @@ public class SimpleDataStore implements DataStore {
     private static final String BINDING = "binding";
     private static final String COLUMNS = "columns";
     private static final String VALUES = "values";
+
+    public static final int COPY_BUFFER_SIZE = 65_536 * 4;
 
     // private DB db;
     // private Jdbi dbi;
@@ -60,12 +63,18 @@ public class SimpleDataStore implements DataStore {
         this.tablesPrefix = TextUtil.trimToEmpty(tablesPrefix);
     }
 
-    /*public SimpleDataStore(@NonNull DB db) {
-            this.db = db;
-            this.dataStoreHandle = new DataStoreHandle(this);
-        }
 
-         */
+    @Override
+    public String getTablesPrefix() {
+        return tablesPrefix;
+    }
+
+    /*public SimpleDataStore(@NonNull DB db) {
+                this.db = db;
+                this.dataStoreHandle = new DataStoreHandle(this);
+            }
+
+             */
     public static SimpleDataStore create(@NonNull String dbUrl) {
         ExtDataSource props = ExtDataSource.create("default", "default", dbUrl);
         Jdbi dbi = Jdbi.create(props.getUrl(), props.getUsername(), props.getPassword());
@@ -93,6 +102,15 @@ public class SimpleDataStore implements DataStore {
         });
     }
 
+    @Override
+    public <E> int truncate(TenantId tenant, Class<E> entityClass) {
+        return inTransaction(tenant, entityClass, (h, info) -> {
+            // EL
+            return h.createUpdate("TRUNCATE TABLE <table>")
+                .define(TABLE, info.getTableName())
+                .execute();
+        });
+    }
 
     private <E> void prepare(@NonNull E model) {
         if (model instanceof EntityLifecycle) {
@@ -192,7 +210,12 @@ public class SimpleDataStore implements DataStore {
 
     @Override
     public int execute(TenantId tenant, String command) {
-        return hp.inTransaction(tenant, (handle) -> handle.createUpdate(command).execute());
+        if (command.toUpperCase().contains("VACUUM")) {
+            return hp.withHandle(tenant, (handle) -> handle.createUpdate(command).execute());
+        }else {
+            return hp.inTransaction(tenant, (handle) -> handle.createUpdate(command).execute());
+        }
+
     }
 
     @Override
@@ -221,24 +244,57 @@ public class SimpleDataStore implements DataStore {
     }
 
     @Override
-    public <T> Set<String> pluck(TenantId tenant, Class<T> entityClass, String field) {
+    public <T> Set<String> pluck(TenantId tenant, Class<T> entityClass, String field, int page, int count) {
         return withHandle(tenant, entityClass, (h, info) -> {
             // EL
-            List<String> data = h.createQuery("SELECT distinct <field> from <table>")
-                .define(TABLE, info.getTableName())
-                .define("field", field)
-                .mapTo(String.class).list();
+            List<String> data;
+            if (count > 0 && count < Integer.MAX_VALUE) {
+                data = h.createQuery("SELECT distinct <field> from <table> ORDER BY <field> LIMIT <limit> OFFSET <offset>")
+                    .define(TABLE, info.getTableName())
+                    .define(FIELD, field)
+                    .define(LIMIT, count)
+                    .define(OFFSET, (page - 1) * count)
+                    .mapTo(String.class).list();
+            } else {
+                data = h.createQuery("SELECT distinct <field> from <table>")
+                    .define(TABLE, info.getTableName())
+                    .define(FIELD, field)
+                    .mapTo(String.class).list();
+            }
             return new HashSet<>(data);
         });
     }
 
     @Override
-    public long loadCsvFile(TenantId tenant, String tableName, String file, String delimiter) {
+    public <T> void pluckStream(TenantId tenant, Class<T> entityClass, String field, int page, int count, Consumer<Stream<String>> consumer) {
+        withHandle(tenant, entityClass, (h, info) -> {
+            // EL
+            Stream<String> stream;
+            if (count > 0 && count < Integer.MAX_VALUE) {
+                stream = h.createQuery("SELECT distinct <field> from <table> ORDER BY <field> LIMIT <limit> OFFSET <offset>")
+                    .define(TABLE, info.getTableName())
+                    .define(FIELD, field)
+                    .define(LIMIT, count)
+                    .define(OFFSET, (page - 1) * count)
+                    .mapTo(String.class).stream();
+            } else {
+                stream = h.createQuery("SELECT distinct <field> from <table>")
+                    .define(TABLE, info.getTableName())
+                    .define(FIELD, field)
+                    .mapTo(String.class).stream();
+            }
+            consumer.accept(stream);
+            return null;
+        });
+    }
+
+    @Override
+    public long loadCsvFile(TenantId tenant, String tableName, File file, String delimiter) {
         return hp.inTransaction(tenant, handle -> {
             try {
                 CopyManager cm = new CopyManager(handle.getConnection().unwrap(BaseConnection.class));
                 String sql = String.format("COPY %s FROM STDIN ( DELIMITER '%s'  )", tablesPrefix + tableName, delimiter);
-                return cm.copyIn(sql, new FileReader(file));
+                return cm.copyIn(sql, Files.newBufferedReader(file.toPath()), COPY_BUFFER_SIZE);
             } catch (SQLException | IOException e) {
                 throw new DatabaseException(e);
             }
@@ -246,17 +302,33 @@ public class SimpleDataStore implements DataStore {
     }
 
     @Override
-    public long exportToCsvFile(TenantId tenant, String tableName, String query, String file, String delimiter) {
-        final String lQuery = TextUtil.isEmpty(query) ? "SELECT *  from %table%" : query;
+    public long loadCsvFile(TenantId tenant, String tableName, InputStream input, String delimiter) {
         return hp.inTransaction(tenant, handle -> {
             try {
                 CopyManager cm = new CopyManager(handle.getConnection().unwrap(BaseConnection.class));
+                String sql = String.format("COPY %s FROM STDIN ( DELIMITER '%s'  )", tablesPrefix + tableName, delimiter);
+                return cm.copyIn(sql, input, COPY_BUFFER_SIZE);
+            } catch (SQLException | IOException e) {
+                throw new DatabaseException(e);
+            }
+        });
+    }
+
+
+    @Override
+    public long exportToCsvFile(TenantId tenant, String tableName, String query, File file, String delimiter) {
+        final String lQuery = TextUtil.isEmpty(query) ? "SELECT *  from %table%" : query;
+        return hp.withHandle(tenant, handle -> {
+            try {
+                CopyManager cm = new CopyManager(handle.getConnection().unwrap(BaseConnection.class));
                 String sql = String.format(
-                    "COPY (%s) TO STDOUT ( DELIMITER '%s'  )",
+                    "COPY (%s) TO STDOUT ( DELIMITER '%s' )",
                     lQuery.replace("%table%", tablesPrefix + tableName),
                     delimiter
                 );
-                return cm.copyOut(sql, new FileWriter(file));
+                try(OutputStream writer = new BufferedOutputStream(Files.newOutputStream(file.toPath()))) {
+                    return cm.copyOut(sql,writer);
+                }
             } catch (Exception e) {
                 throw new DatabaseException(e);
             }
@@ -393,6 +465,7 @@ public class SimpleDataStore implements DataStore {
             .define(LIMIT, p.getSize())
             .define(OFFSET, (p.getPage() - 1) * p.getSize());
     }
+
 
     private <T, E> T inTransaction(TenantId tenant,
                                    Class<E> entityClass,

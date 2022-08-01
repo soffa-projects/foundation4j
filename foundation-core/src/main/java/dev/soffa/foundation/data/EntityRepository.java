@@ -7,11 +7,13 @@ import dev.soffa.foundation.model.Paging;
 import dev.soffa.foundation.model.TenantId;
 
 import java.io.File;
+import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Consumer;
+import java.util.stream.Stream;
 
 @SuppressWarnings({"UnusedReturnValue", "unused", "PMD.ExcessivePublicCount"})
 public interface EntityRepository<E, I> {
@@ -20,7 +22,13 @@ public interface EntityRepository<E, I> {
         return count(TenantId.CONTEXT);
     }
 
-    long count(TenantId t);
+    long count(TenantId tenant);
+
+    int execute(TenantId tenant, String command);
+
+    default int execute(String command) {
+        return execute(TenantId.CONTEXT, command);
+    }
 
     default boolean isEmpty(TenantId tenant) {
         return count(tenant) == 0L;
@@ -52,11 +60,25 @@ public interface EntityRepository<E, I> {
 
     PagedList<E> findAll(TenantId tenantId, Paging paging);
 
-    Set<String> pluck(TenantId tenantId, String field);
+    default Set<String> pluck(TenantId tenantId, String field) {
+        return pluck(tenantId, field, 1, Integer.MAX_VALUE);
+    }
+
+    Set<String> pluck(TenantId tenantId, String field, int page, int count);
 
     default Set<String> pluck(String field) {
         return pluck(TenantId.CONTEXT, field);
     }
+
+    default Set<String> pluck(String field, int page, int count) {
+        return pluck(TenantId.CONTEXT, field, page, count);
+    }
+
+    default void pluckStream(String field, int page, int count, Consumer<Stream<String>> consumer) {
+        pluckStream(TenantId.CONTEXT, field, page, count, consumer);
+    }
+
+    void pluckStream(TenantId tenant, String field, int page, int count, Consumer<Stream<String>> consumer);
 
     default PagedList<E> find(TenantId tenant, Criteria criteria) {
         return find(tenant, criteria, Paging.DEFAULT);
@@ -66,7 +88,16 @@ public interface EntityRepository<E, I> {
         return findAll(tenantId, Paging.DEFAULT);
     }
 
+
     PagedList<E> find(TenantId tenant, Criteria criteria, Paging paging);
+
+    DataStore getDataStore();
+
+    int truncate(TenantId tenant);
+
+    default int truncate() {
+        return truncate(TenantId.CONTEXT);
+    }
 
     default PagedList<E> find(Criteria criteria) {
         return find(criteria, Paging.DEFAULT);
@@ -131,21 +162,21 @@ public interface EntityRepository<E, I> {
 
     E update(E entity, String... fields);
 
-    default long loadCsvFile(String file, String delimiter) {
+    String getTableName();
+
+    default long loadCsvFile(File file, String delimiter) {
         return loadCsvFile(TenantId.CONTEXT, file, delimiter);
     }
 
-    default long loadCsvFile(File file, String delimiter) {
-        return loadCsvFile(TenantId.CONTEXT, file.getAbsolutePath(), delimiter);
-    }
-
     default long exportToCsvFile(File file, String query, String delimiter) {
-        return exportToCsvFile(TenantId.CONTEXT, file.getAbsolutePath(), query, delimiter);
+        return exportToCsvFile(TenantId.CONTEXT, file, query, delimiter);
     }
 
-    long exportToCsvFile(TenantId context, String file, String query, String delimiter);
+    long exportToCsvFile(TenantId context, File file, String query, String delimiter);
 
-    long loadCsvFile(TenantId tenant, String file, String delimiter);
+    long loadCsvFile(TenantId tenant, File file, String delimiter);
+
+    long loadCsvFile(TenantId tenant, InputStream source, String delimiter);
 
     E update(TenantId tenant, E entity, String... fields);
 

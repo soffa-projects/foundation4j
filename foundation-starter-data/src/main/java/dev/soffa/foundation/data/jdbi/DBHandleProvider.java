@@ -3,6 +3,7 @@ package dev.soffa.foundation.data.jdbi;
 import com.google.common.base.Preconditions;
 import dev.soffa.foundation.data.DB;
 import dev.soffa.foundation.data.common.ExtDataSource;
+import dev.soffa.foundation.error.DatabaseException;
 import dev.soffa.foundation.model.TenantId;
 import dev.soffa.foundation.multitenancy.TenantHolder;
 import lombok.AllArgsConstructor;
@@ -57,6 +58,20 @@ public class DBHandleProvider implements HandleProvider {
 
     @Override
     public <T> T inTransaction(TenantId tenant, Function<Handle, T> consumer) {
-        return getLink(tenant).inTransaction(consumer::apply);
+        int retries = 3;
+        while (true) {
+            try {
+                return getLink(tenant).inTransaction(consumer::apply);
+            } catch (Exception e) {
+                if (e.getMessage().contains("deadlock")) {
+                    retries--;
+                    if (retries == 0) {
+                        return getLink(tenant).inTransaction(consumer::apply);
+                    }
+                } else {
+                    throw new DatabaseException(e);
+                }
+            }
+        }
     }
 }

@@ -59,12 +59,12 @@ public class PendingJobRepoImpl extends SimpleRepository<PendingJob, PendingJobI
     public void consume(PendingJobId id, Function<PendingJob, Boolean> consumer) {
         PendingJob job = findById(TenantId.DEFAULT, id).orElse(null);
         if (job == null) {
-            Logger.app.warn("Pending job not found: %s", id);
+            Logger.platform.warn("Pending job not found: %s", id);
             return;
         }
         try {
             if (consumer.apply(job)) {
-                Logger.app.info("Pending job [%s] consumed, removing from database", id);
+                Logger.platform.info("Pending job [%s] consumed, removing from database", id);
                 delete(TenantId.DEFAULT, job);
             }
         } catch (Exception e) {

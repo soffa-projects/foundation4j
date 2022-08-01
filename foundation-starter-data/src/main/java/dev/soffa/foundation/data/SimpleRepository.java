@@ -9,13 +9,18 @@ import dev.soffa.foundation.model.Paging;
 import dev.soffa.foundation.model.TenantId;
 import dev.soffa.foundation.multitenancy.TenantHolder;
 
+import java.io.File;
+import java.io.InputStream;
 import java.lang.reflect.Type;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Consumer;
+import java.util.stream.Stream;
 
 public class SimpleRepository<E, I> implements EntityRepository<E, I> {
+
+    public static final String PH_TABLE = "<table>";
 
     private final DataStore ds;
     private final Class<E> entityClass;
@@ -31,10 +36,15 @@ public class SimpleRepository<E, I> implements EntityRepository<E, I> {
         this(ds, entityClass, tableName, null);
     }
 
+    public SimpleRepository(String databaseUrl, Class<E> entityClass, String tableName) {
+        this(SimpleDataStore.create(databaseUrl), entityClass, tableName, null);
+    }
+
     public SimpleRepository(DataStore ds, Class<E> entityClass, String tableName, String tenant) {
         this.ds = ds;
         this.entityClass = entityClass;
         this.tableName = tableName;
+
         if (TextUtil.isNotEmpty(tableName)) {
             EntityInfo.registerTable(entityClass, tableName);
         }
@@ -81,6 +91,16 @@ public class SimpleRepository<E, I> implements EntityRepository<E, I> {
         return ds.count(resolveTenant(tenant), entityClass, criteria);
     }
 
+
+    @Override
+    public int execute(TenantId tenant, String command) {
+        String cmd = command;
+        if (TextUtil.isNotEmpty(tableName)) {
+            cmd = command.replace(PH_TABLE, ds.getTableName(this.tableName));
+        }
+        return ds.execute(tenant, cmd);
+    }
+
     @Override
     public long count(TenantId tenant) {
         return ds.count(resolveTenant(tenant), entityClass);
@@ -91,15 +111,19 @@ public class SimpleRepository<E, I> implements EntityRepository<E, I> {
         return new SimpleRepository<>(this.ds, this.entityClass, this.tableName, resolveTenant(tenant).getValue());
     }
 
-
     @Override
     public PagedList<E> findAll(TenantId tenant, Paging paging) {
         return find(resolveTenant(tenant), null, paging);
     }
 
     @Override
-    public Set<String> pluck(TenantId tenant, String field) {
-        return ds.pluck(resolveTenant(tenant), entityClass, field);
+    public Set<String> pluck(TenantId tenant, String field, int page, int count) {
+        return ds.pluck(resolveTenant(tenant), entityClass, field, page, count);
+    }
+
+    @Override
+    public void pluckStream(TenantId tenant, String field, int page, int count, Consumer<Stream<String>> consumer) {
+        ds.pluckStream(resolveTenant(tenant), entityClass, field, page, count, consumer);
     }
 
     @Override
@@ -107,7 +131,14 @@ public class SimpleRepository<E, I> implements EntityRepository<E, I> {
         return ds.find(resolveTenant(tenant), entityClass, criteria, paging);
     }
 
-
+    @Override
+    public DataStore getDataStore() {
+        return ds;
+    }
+    @Override
+    public int truncate(TenantId tenant) {
+        return ds.truncate(resolveTenant(tenant), entityClass);
+    }
 
     @Override
     public double sumBy(TenantId tenant, String field, Criteria criteria) {
@@ -145,13 +176,23 @@ public class SimpleRepository<E, I> implements EntityRepository<E, I> {
     }
 
     @Override
-    public long loadCsvFile(TenantId tenant, String file, String delimiter) {
+    public String getTableName() {
+        return ds.getTableName(tableName);
+    }
+
+    @Override
+    public long loadCsvFile(TenantId tenant, File file, String delimiter) {
         return ds.loadCsvFile(resolveTenant(tenant), tableName, file, delimiter);
     }
 
     @Override
-    public long exportToCsvFile(TenantId tenant, String file, String query, String delimiter) {
-        return ds.exportToCsvFile(tenant, file, tableName, query, delimiter);
+    public long loadCsvFile(TenantId tenant, InputStream input, String delimiter) {
+        return ds.loadCsvFile(resolveTenant(tenant), tableName, input, delimiter);
+    }
+
+    @Override
+    public long exportToCsvFile(TenantId tenant, File file, String query, String delimiter) {
+        return ds.exportToCsvFile(tenant, tableName, query, file, delimiter);
     }
 
     @Override

@@ -32,7 +32,7 @@ public interface SentryProvider {
         try {
             return runnable.get();
         }catch (Exception e) {
-            Logger.app.error(e, "%s has failed with error: %s", label, ErrorUtil.loookupOriginalMessage(e));
+            Logger.platform.error(e, "%s has failed with error: %s", label, ErrorUtil.loookupOriginalMessage(e));
             captureTechnical(e);
             if (errorPropagation) {
                 throw e;
@@ -77,7 +77,7 @@ public interface SentryProvider {
 
     default void captureError(Context context, String message) {
         captureEvent(context, message, EventLevel.ERROR);
-        Logger.app.error(message);
+        Logger.platform.error(message);
     }
 
     default void captureError(OperationContext context, String message) {
@@ -97,18 +97,18 @@ public interface SentryProvider {
         @Override
         public void captureException(Throwable e) {
             // Nothing
-            Logger.app.error(e);
+            Logger.platform.error(e);
         }
 
         @Override
         public void captureEvent(Context context, String messageId, String message, EventLevel level) {
             // Do nothing
             if (level == EventLevel.ERROR) {
-                Logger.app.error(message);
+                Logger.platform.error(message);
             } else if (level == EventLevel.WARNING) {
-                Logger.app.warn(message);
+                Logger.platform.warn(message);
             }else {
-                Logger.app.info(message);
+                Logger.platform.info(message);
             }
         }
     }

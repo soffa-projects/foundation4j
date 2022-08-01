@@ -1,15 +1,19 @@
 package dev.soffa.foundation.data;
 
 
+import dev.soffa.foundation.commons.TextUtil;
 import dev.soffa.foundation.model.PagedList;
 import dev.soffa.foundation.model.Paging;
 import dev.soffa.foundation.model.TenantId;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
+import java.io.File;
+import java.io.InputStream;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Consumer;
+import java.util.stream.Stream;
 
 public interface DataStore {
 
@@ -57,6 +61,12 @@ public interface DataStore {
     <E> int[] batch(TenantId tenantId, String table, List<E> entity);
 
     <E> E insert(TenantId tenant, E entity);
+
+    String getTablesPrefix();
+
+    default String getTableName(String name) {
+        return TextUtil.join("_", getTablesPrefix(), name);
+    }
 
     <E> int[] insert(TenantId tenant, List<E> entities);
 
@@ -115,10 +125,16 @@ public interface DataStore {
 
     <E> double sumBy(TenantId tenant, Class<E> entityClass, String field, Criteria criteria);
 
-    <E> Set<String> pluck(TenantId tenant, Class<E> entityClass, String field);
+    <E> Set<String> pluck(TenantId tenant, Class<E> entityClass, String field, int page, int count);
 
-    long loadCsvFile(TenantId tenant, String tableName, String file, String delimiter);
+    <T> void pluckStream(TenantId tenant, Class<T> entityClass, String field, int page, int count, Consumer<Stream<String>> consumer);
 
-    long exportToCsvFile(TenantId tenant, String tableName, String query, String file, String delimiter);
+    long loadCsvFile(TenantId tenant, String tableName, File file, String delimiter);
+
+    long loadCsvFile(TenantId tenant, String tableName, InputStream input, String delimiter);
+
+    long exportToCsvFile(TenantId tenant, String tableName, String query, File file, String delimiter);
+
+    <E> int truncate(TenantId resolveTenant, Class<E> entityClass);
 
 }
