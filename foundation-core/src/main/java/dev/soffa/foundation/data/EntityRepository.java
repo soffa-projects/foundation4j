@@ -128,7 +128,7 @@ public interface EntityRepository<E, I> {
     default void forEach(TenantId context, Map<String, Object> filter, int fetchSize, Consumer<E> consumer) {
         int page = 1;
         Preconditions.checkArgument(fetchSize >= 1);
-        do {
+        while (true){
             PagedList<E> res = find(context, Criteria.of(filter), new Paging(page++, fetchSize));
             for (E record : res.getData()) {
                 consumer.accept(record);
@@ -136,7 +136,7 @@ public interface EntityRepository<E, I> {
             if (!res.getPaging().isHasMore()) {
                 break;
             }
-        } while (true);
+        }
     }
 
     default PagedList<E> find(Map<String, Object> filter, Paging paging) {
