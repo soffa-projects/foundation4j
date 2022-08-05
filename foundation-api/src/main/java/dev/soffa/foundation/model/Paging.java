@@ -16,7 +16,7 @@ public class Paging {
     public static final int BASE_INDEX = 1;
     private static final int DEFAULT_FETCH_SIZE = 25;
     public static final Paging DEFAULT = new Paging(BASE_INDEX, DEFAULT_FETCH_SIZE);
-    public static final int DEFAULT_MAX_SIZE = 1000;
+    public static final int DEFAULT_MAX_SIZE = 10_000;
     @Schema(defaultValue = "1", nullable = true)
     @Parameter(in = ParameterIn.QUERY)
     private int page;

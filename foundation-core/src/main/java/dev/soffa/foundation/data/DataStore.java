@@ -10,6 +10,7 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 import java.io.File;
 import java.io.InputStream;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Consumer;
@@ -119,7 +120,11 @@ public interface DataStore {
 
     <E> PagedList<E> findAll(TenantId tenant, Class<E> entityClass, Paging paging);
 
-    <T> List<T> query(String query, Class<T> resultClass);
+    default <T> List<T> query(String query, Class<T> resultClass) {
+        return query(TenantId.CONTEXT, query, null, resultClass);
+    }
+
+    <T> List<T> query(TenantId tenant, String query, Map<String, Object> binding, Class<T> resultClass);
 
     void useTransaction(TenantId tenant, Consumer<DataStore> consumer);
 
@@ -136,5 +141,6 @@ public interface DataStore {
     long exportToCsvFile(TenantId tenant, String tableName, String query, File file, String delimiter);
 
     <E> int truncate(TenantId resolveTenant, Class<E> entityClass);
+
 
 }

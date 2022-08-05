@@ -11,8 +11,8 @@ et le versioning du projet respect les règles  [Semantic Versioning](https://se
 ### Added
 
 - SideEffects through OperationContext
-- Various improvements
 - CSV file loading added to repository
+- Various improvements
 
 ## [0.15.6] - 2022-06-26
 

@@ -56,7 +56,6 @@ public class EntityRepositoryTest extends BaseTest {
 
         assertEquals(Paging.DEFAULT.getSize(), messages.findAll().getData().size());
         assertEquals(10, messages.findAll(new Paging(1, 10)).getData().size());
-        assertEquals(Paging.DEFAULT_MAX_SIZE, messages.findAll(new Paging(1, 10_000).cap()).getData().size());
 
         assertEquals(30, messages.findAll(new Paging(6, 194)).getData().size());
 

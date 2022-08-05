@@ -17,6 +17,10 @@ public final class Criteria {
     private Criteria() {
     }
 
+    private Criteria(String where) {
+        this.where = where;
+    }
+
     private Criteria(String where, Map<String, Object> binding) {
         this.binding = binding;
         this.where = where;
@@ -24,6 +28,10 @@ public final class Criteria {
 
     public static Criteria of(Map<String, Object> filter) {
         return new Criteria(buildWhere(filter), filter);
+    }
+
+    public static Criteria of(String query) {
+        return new Criteria(query);
     }
 
     public static Criteria of(String query, Map<String, Object> binding) {

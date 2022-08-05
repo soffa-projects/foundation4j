@@ -212,7 +212,7 @@ public class SimpleDataStore implements DataStore {
     public int execute(TenantId tenant, String command) {
         if (command.toUpperCase().contains("VACUUM")) {
             return hp.withHandle(tenant, (handle) -> handle.createUpdate(command).execute());
-        }else {
+        } else {
             return hp.inTransaction(tenant, (handle) -> handle.createUpdate(command).execute());
         }
 
@@ -231,8 +231,14 @@ public class SimpleDataStore implements DataStore {
     }
 
     @Override
-    public <T> List<T> query(String query, Class<T> resultClass) {
-        return hp.withHandle(null, handle -> handle.createQuery(query).map(BeanMapper.of(EntityInfo.of(resultClass))).list());
+    public <T> List<T> query(TenantId tenant, String query, Map<String, Object> binding, Class<T> resultClass) {
+        return hp.withHandle(tenant, handle -> {
+            Query q = handle.createQuery(query);
+            if (binding!=null && !binding.isEmpty()) {
+                q.bindMap(binding);
+            }
+            return q.map(BeanMapper.of(EntityInfo.of(resultClass, null, false))).list();
+        });
     }
 
     @Override
@@ -326,8 +332,8 @@ public class SimpleDataStore implements DataStore {
                     lQuery.replace("%table%", tablesPrefix + tableName),
                     delimiter
                 );
-                try(OutputStream writer = new BufferedOutputStream(Files.newOutputStream(file.toPath()))) {
-                    return cm.copyOut(sql,writer);
+                try (OutputStream writer = new BufferedOutputStream(Files.newOutputStream(file.toPath()))) {
+                    return cm.copyOut(sql, writer);
                 }
             } catch (Exception e) {
                 throw new DatabaseException(e);

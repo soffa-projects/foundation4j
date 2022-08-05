@@ -103,6 +103,16 @@ public interface EntityRepository<E, I> {
         return find(criteria, Paging.DEFAULT);
     }
 
+    default <T> List<T> query(String query, Class<T> resultClass) {
+        return query(TenantId.CONTEXT, query, null, resultClass);
+    }
+
+    default <T> List<T> query(String query, Map<String,Object> binding, Class<T> resultClass) {
+        return query(TenantId.CONTEXT, query, binding, resultClass);
+    }
+
+    <T> List<T> query(TenantId context, String query, Map<String,Object> binding, Class<T> resultClass);
+
     default PagedList<E> find(Criteria criteria, Paging paging) {
         return find(TenantId.CONTEXT, criteria, paging);
     }

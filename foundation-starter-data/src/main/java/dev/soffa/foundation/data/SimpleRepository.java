@@ -13,6 +13,7 @@ import java.io.File;
 import java.io.InputStream;
 import java.lang.reflect.Type;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Consumer;
@@ -138,6 +139,11 @@ public class SimpleRepository<E, I> implements EntityRepository<E, I> {
     @Override
     public int truncate(TenantId tenant) {
         return ds.truncate(resolveTenant(tenant), entityClass);
+    }
+
+    @Override
+    public <T> List<T> query(TenantId tenant, String query, Map<String,Object> binding, Class<T> resultClass) {
+        return ds.query(resolveTenant(tenant), query.replace(PH_TABLE, ds.getTableName(this.tableName)), binding, resultClass);
     }
 
     @Override
