@@ -58,14 +58,11 @@ public class RequestFilter extends OncePerRequestFilter {
         lookupHeader(request, "X-ApplicationName", "X-Application", "X-ApplicationId", "X-App").ifPresent(context::setApplicationName);
         lookupHeader(request, "X-ApplicationId", "X-Application", "X-ApplicationName", "X-App").ifPresent(context::setApplicationId);
 
-        LOG.debug("Pre-setting context with tracing data");
-
         // processTracing(context);
         ContextHolder.set(context);
 
         AtomicBoolean proceed = new AtomicBoolean(true);
 
-        LOG.debug("Looking up authorization");
         //noinspection Convert2Lambda
         lookupHeader(request, HttpHeaders.AUTHORIZATION, "X-JWT-Assertion", "X-JWT-Assertions").ifPresent(new Consumer<String>() {
             @SneakyThrows
