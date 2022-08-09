@@ -217,6 +217,15 @@ public class Context implements BaseContext {
         return Optional.empty();
     }
 
+    @Override
+    @JsonIgnore
+    public Optional<String> getUserEmail() {
+        if (authentication != null) {
+            return Optional.ofNullable(authentication.getEmail());
+        }
+        return Optional.empty();
+    }
+
     public void sync() {
         this.sender = serviceName;
     }

@@ -55,7 +55,8 @@ public class RequestFilter extends OncePerRequestFilter {
             context.setTenantId(value);
             TenantHolder.set(value);
         });
-        lookupHeader(request, "X-Application", "X-ApplicationName", "X-ApplicationId", "X-App").ifPresent(context::setApplicationName);
+        lookupHeader(request, "X-ApplicationName", "X-Application", "X-ApplicationId", "X-App").ifPresent(context::setApplicationName);
+        lookupHeader(request, "X-ApplicationId", "X-Application", "X-ApplicationName", "X-App").ifPresent(context::setApplicationId);
 
         LOG.debug("Pre-setting context with tracing data");
 
@@ -83,7 +84,7 @@ public class RequestFilter extends OncePerRequestFilter {
                     if (statusCode > -1) {
                         response.setContentType("application/json");
                         response.sendError(statusCode, Mappers.JSON_DEFAULT.serialize(ImmutableMap.of(
-                                "message", e.getMessage()
+                            "message", e.getMessage()
                         )));
                     } else if (e instanceof AccessDeniedException) {
                         response.sendError(HttpStatus.UNAUTHORIZED.value(), e.getMessage());
@@ -104,7 +105,7 @@ public class RequestFilter extends OncePerRequestFilter {
             LOG.debug("Setting request context and tenant before proceeding");
             if (context.hasAuthorization()) {
                 LOG.debug("Authenticated access [%s] %s", request.getMethod(), request.getRequestURI());
-            }else {
+            } else {
                 LOG.debug("Anonymous access [%s] %s", request.getMethod(), request.getRequestURI());
             }
             context.setIpAddress(request.getRemoteAddr());

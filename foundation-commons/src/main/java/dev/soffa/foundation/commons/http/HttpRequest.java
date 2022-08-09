@@ -53,6 +53,14 @@ public class HttpRequest {
         return new HttpRequest(HttpMethod.DELETE, url);
     }
 
+    public HttpRequest bearer(String token) {
+        return authorization( "Bearer " + token);
+    }
+
+    public HttpRequest authorization(String value) {
+        return header("Authorization", value);
+    }
+
     public HttpRequest withBody(Object body) {
         this.body = body;
         return this;

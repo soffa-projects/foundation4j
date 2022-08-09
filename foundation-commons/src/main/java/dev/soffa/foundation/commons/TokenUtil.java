@@ -3,6 +3,8 @@ package dev.soffa.foundation.commons;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTCreator;
 import com.auth0.jwt.algorithms.Algorithm;
+import com.auth0.jwt.exceptions.JWTDecodeException;
+import com.auth0.jwt.interfaces.DecodedJWT;
 import com.nimbusds.jose.JWSAlgorithm;
 import com.nimbusds.jose.JWSHeader;
 import com.nimbusds.jose.JWSSigner;
@@ -11,6 +13,7 @@ import com.nimbusds.jose.jwk.JWK;
 import com.nimbusds.jose.jwk.RSAKey;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
+import dev.soffa.foundation.error.NotImplementedException;
 import dev.soffa.foundation.error.TechnicalException;
 import lombok.SneakyThrows;
 import org.json.JSONObject;
@@ -20,6 +23,7 @@ import java.time.Duration;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 public final class TokenUtil {
 
@@ -29,10 +33,27 @@ public final class TokenUtil {
     private TokenUtil() {
     }
 
+    public static Optional<JwtToken> decodeJwt(final String jwt) {
+        try {
+            DecodedJWT decodedJwt = JWT.decode(jwt);
+            JwtToken token = new JwtToken();
+            token.setAudience(decodedJwt.getAudience());
+            token.setHeader(decodedJwt.getHeader());
+            token.setSubject(decodedJwt.getSubject());
+            token.setKeyId(decodedJwt.getKeyId());
+            token.setIssuer(decodedJwt.getIssuer());
+            token.setType(decodedJwt.getType());
+            return Optional.of(token);
+        }catch (JWTDecodeException e) {
+            LOG.error("Error decoding JWT", e);
+            return Optional.empty();
+        }
+    }
+
     public static boolean isWellFormedJwt(final String jwt) {
         // Token should look like a well-formed JWT before proceeding
         String[] jwtSplitted = jwt.split("\\.");
-        if (jwtSplitted.length != JWT_PARTS_LENGTH) {
+        if (jwtSplitted.length < JWT_PARTS_LENGTH) {
             LOG.warn("Received token *******%s is not a Well-formed JWT", TextUtil.takeLast(jwt, 5));
             return false;
         }
@@ -122,6 +143,6 @@ public final class TokenUtil {
 
 
     public static String createPaseto(String issuer, String subjet, Map<String, Object> claims, int ttlInMinutes) {
-        return null;
+        throw new NotImplementedException("Paseto is not implemented yet");
     }
 }

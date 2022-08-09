@@ -143,6 +143,11 @@ public class DefaultOperationContext implements OperationContext {
     }
 
     @Override
+    public Optional<String> getUserEmail() {
+        return internal.getUserEmail();
+    }
+
+    @Override
     public String getAccountId() {
         return internal.getAccountId();
     }

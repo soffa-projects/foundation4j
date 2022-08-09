@@ -33,6 +33,8 @@ public interface BaseContext {
 
     Optional<String> getUsername();
 
+    Optional<String> getUserEmail();
+
     String getAccountId();
 
     String getAccountName();

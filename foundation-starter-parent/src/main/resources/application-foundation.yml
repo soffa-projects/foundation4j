@@ -85,7 +85,7 @@ management.endpoint.health:
 app.redoc.enabled: true
 
 spring.jackson:
-  default-property-inclusion: non_empty
+  default-property-inclusion: non_null
   property-naming-strategy: ${jackson.property-naming-strategy:LOWER_CAMEL_CASE}
   serialization:
     write-dates-as-timestamps: true
