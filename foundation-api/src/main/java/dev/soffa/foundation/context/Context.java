@@ -22,6 +22,7 @@ public class Context implements BaseContext {
     public static final String TENANT_ID = "X-TenantId";
     public static final String TENANT_NAME = "X-TenantName";
     public static final String APPLICATION_ID = "X-ApplicationId";
+    public static final String APPLICATION_NAME = "X-ApplicationName";
     public static final String APPLICATION = "X-Application";
     // public static final String TRACE_ID = "X-TraceId";
     // public static final String SPAN_ID = "X-SpanId";
@@ -87,7 +88,20 @@ public class Context implements BaseContext {
                 continue;
             }
             String key = e.getKey();
-            if (key.equalsIgnoreCase(Context.APPLICATION)) {
+            if (key.equalsIgnoreCase(Context.APPLICATION_ID)) {
+                if (isEmpty(context.getApplicationName())) {
+                    context.setApplicationName(value);
+                }
+                context.setApplicationId(value);
+            }else if (key.equalsIgnoreCase(Context.APPLICATION_NAME)) {
+                if (isEmpty(context.getApplicationId())) {
+                    context.setApplicationId(value);
+                }
+                context.setApplicationName(value);
+            }else if (key.equalsIgnoreCase(Context.APPLICATION)) {
+                if (isEmpty(context.getApplicationId())) {
+                    context.setApplicationId(value);
+                }
                 context.setApplicationName(value);
             } else if (key.equalsIgnoreCase(Context.TENANT_ID)) {
                 context.setTenantId(value);
