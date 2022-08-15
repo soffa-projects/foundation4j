@@ -12,7 +12,8 @@ public class JobAction1Handler implements JobAction1 {
     public static final AtomicBoolean FLAG = new AtomicBoolean(false);
 
     @Override
-    public Void handle(String input, @NonNull OperationContext ctx) {FLAG.set(true);
+    public Void handle(String input, @NonNull OperationContext ctx) {
+        FLAG.set(true);
         return null;
     }
 }

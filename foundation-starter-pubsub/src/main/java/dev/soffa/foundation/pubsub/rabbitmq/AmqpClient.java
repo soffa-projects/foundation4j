@@ -34,7 +34,6 @@ public class AmqpClient extends AbstractPubSubClient implements PubSubClient {
     private final boolean embedded;
 
 
-
     @SneakyThrows
     public AmqpClient(String applicationName, PubSubClientConfig config, String broadcasting) {
         super(applicationName, config, broadcasting);
@@ -61,40 +60,6 @@ public class AmqpClient extends AbstractPubSubClient implements PubSubClient {
             }
             return res.getBody();
         });
-    }
-
-
-    @AllArgsConstructor
-    static class InternalMessageHandler {
-
-        private MessageHandler handler;
-        public static final Method HANDLER;
-
-        static {
-            try {
-                HANDLER = InternalMessageHandler.class.getMethod("handle", org.springframework.amqp.core.Message.class);
-            } catch (NoSuchMethodException e) {
-                throw new TechnicalException(e);
-            }
-        }
-
-        public String handle(org.springframework.amqp.core.Message message) {
-            boolean hasReply = TextUtil.isNotEmpty(message.getMessageProperties().getReplyTo());
-            try {
-                Object result = handler.handle(Mappers.JSON_DEFAULT.deserialize(message.getBody(), Message.class)).orElse(null);
-                if (hasReply) {
-                    return Mappers.JSON_DEFAULT.serialize(MessageResponse.ok(result));
-                }
-                return null;
-            } catch (Exception e) {
-                if (hasReply) {
-                    return Mappers.JSON_DEFAULT.serialize(MessageResponse.error(e));
-                } else {
-                    throw e;
-                }
-            }
-        }
-
     }
 
     @SneakyThrows
@@ -126,7 +91,7 @@ public class AmqpClient extends AbstractPubSubClient implements PubSubClient {
     public void subscribe(MessageHandler handler) {
         if (!hasSubscription(applicationName)) {
             subscribe(applicationName, false, handler);
-        }else {
+        } else {
             Logger.platform.warn("A subscription already exists for: %s", applicationName);
         }
     }
@@ -155,6 +120,40 @@ public class AmqpClient extends AbstractPubSubClient implements PubSubClient {
     @PreDestroy
     protected void destroy() {
         listeners.forEach(AbstractMessageListenerContainer::destroy);
+    }
+
+    @AllArgsConstructor
+    static class InternalMessageHandler {
+
+        public static final Method HANDLER;
+
+        static {
+            try {
+                HANDLER = InternalMessageHandler.class.getMethod("handle", org.springframework.amqp.core.Message.class);
+            } catch (NoSuchMethodException e) {
+                throw new TechnicalException(e);
+            }
+        }
+
+        private MessageHandler handler;
+
+        public String handle(org.springframework.amqp.core.Message message) {
+            boolean hasReply = TextUtil.isNotEmpty(message.getMessageProperties().getReplyTo());
+            try {
+                Object result = handler.handle(Mappers.JSON_DEFAULT.deserialize(message.getBody(), Message.class)).orElse(null);
+                if (hasReply) {
+                    return Mappers.JSON_DEFAULT.serialize(MessageResponse.ok(result));
+                }
+                return null;
+            } catch (Exception e) {
+                if (hasReply) {
+                    return Mappers.JSON_DEFAULT.serialize(MessageResponse.error(e));
+                } else {
+                    throw e;
+                }
+            }
+        }
+
     }
 
 

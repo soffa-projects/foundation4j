@@ -8,6 +8,11 @@ import java.util.List;
 
 public class NoopTimeSeriesProvider implements TimeSeriesProvider {
 
+    @Override
+    public Writer getWriter(String buket) {
+        return new LocalWriter();
+    }
+
     static class LocalWriter implements Writer {
 
         @Override
@@ -20,11 +25,6 @@ public class NoopTimeSeriesProvider implements TimeSeriesProvider {
         public void close() {
             // Nothing to do here
         }
-    }
-
-    @Override
-    public Writer getWriter(String buket) {
-        return new LocalWriter();
     }
 
 

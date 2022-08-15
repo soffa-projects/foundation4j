@@ -15,6 +15,7 @@ import java.util.Objects;
 public final class EmailSenderFactory {
 
     private static final Logger LOG = LoggerFactory.getLogger(EmailSenderFactory.class);
+
     private EmailSenderFactory() {
     }
 

@@ -27,6 +27,7 @@ import javax.sql.DataSource;
 public class JobSchedulingConfig {
 
     private static final Logger LOG = Logger.get(JobSchedulingConfig.class);
+
     @SneakyThrows
     @Bean
     @SuppressWarnings("PMD.CloseResource")
@@ -50,7 +51,7 @@ public class JobSchedulingConfig {
 
         if (TextUtil.isEmpty(dashboardPort)) {
             LOG.info("Scheduler dashboard is disabled (because port is empty)");
-        }else {
+        } else {
             config.useDashboard(Integer.parseInt(dashboardPort));
             LOG.info("Scheduler dashboard will be available on port %s", dashboardPort);
         }

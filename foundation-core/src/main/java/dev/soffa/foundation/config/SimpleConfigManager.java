@@ -9,7 +9,7 @@ import java.util.Objects;
 @AllArgsConstructor
 public class SimpleConfigManager implements ConfigManager {
 
-    private Map<String,Object> properties;
+    private Map<String, Object> properties;
 
     @Override
     public <T> T bind(String prefix, Class<T> kind) {
@@ -18,7 +18,7 @@ public class SimpleConfigManager implements ConfigManager {
 
     @Override
     public String require(String name) {
-        return (String)Objects.requireNonNull(properties.get(name));
+        return (String) Objects.requireNonNull(properties.get(name));
     }
 
 }

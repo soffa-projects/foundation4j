@@ -45,7 +45,7 @@ public class Journal implements EntityModel {
     }
 
     public void setContext(Context context) {
-        if (context==null) {
+        if (context == null) {
             return;
         }
         /*

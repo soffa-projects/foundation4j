@@ -115,7 +115,7 @@ public final class TenantHolder {
             if (TextUtil.isNotEmpty(current)) {
                 LOG.trace("Tenant restored %s --> %s", lTenant, current);
                 set(current);
-            }else {
+            } else {
                 clear();
             }
         }

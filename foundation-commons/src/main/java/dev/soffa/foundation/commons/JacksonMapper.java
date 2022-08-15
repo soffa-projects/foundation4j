@@ -23,6 +23,26 @@ public class JacksonMapper implements Mapper {
     private final ObjectMapper mapper;
 
     @SuppressWarnings("unchecked")
+    public static <E> Map<String, E> toMap(ObjectMapper mapper, Object input, Class<E> valueClass) {
+        if (input == null) {
+            return new HashMap<>();
+        }
+        if (input instanceof Map) {
+            return (Map<String, E>) input;
+        }
+        MapLikeType type = mapper.getTypeFactory().constructMapLikeType(Map.class, String.class, valueClass);
+        if (input instanceof String) {
+            try {
+                return mapper.readValue((String) input, type);
+            } catch (IOException e) {
+                return new HashMap<>();
+            }
+        } else {
+            return mapper.convertValue(input, type);
+        }
+    }
+
+    @SuppressWarnings("unchecked")
     @SneakyThrows
     @Override
     public <T> T convert(Object data, Class<T> type) {
@@ -77,7 +97,6 @@ public class JacksonMapper implements Mapper {
         }
         return mapper.readValue(data, type);
     }
-
 
     @SneakyThrows
     @Override
@@ -186,25 +205,5 @@ public class JacksonMapper implements Mapper {
     @SuppressWarnings("unchecked")
     public <E> Map<String, E> toMap(Object input, Class<E> valueClass) {
         return toMap(mapper, input, valueClass);
-    }
-
-    @SuppressWarnings("unchecked")
-    public static <E> Map<String, E> toMap(ObjectMapper mapper, Object input, Class<E> valueClass) {
-        if (input == null) {
-            return new HashMap<>();
-        }
-        if (input instanceof Map) {
-            return (Map<String, E>) input;
-        }
-        MapLikeType type = mapper.getTypeFactory().constructMapLikeType(Map.class, String.class, valueClass);
-        if (input instanceof String) {
-            try {
-                return mapper.readValue((String) input, type);
-            } catch (IOException e) {
-                return new HashMap<>();
-            }
-        } else {
-            return mapper.convertValue(input, type);
-        }
     }
 }

@@ -24,7 +24,7 @@ public interface OperationContext extends BaseContext {
 
     void activity(@NonNull String event, String subject, Object data);
 
-    <E, O, T extends Operation<E,O>> void delayed(String uuid, Class<T> operationClass, E input);
+    <E, O, T extends Operation<E, O>> void delayed(String uuid, Class<T> operationClass, E input);
 
     Context getInternal();
 }

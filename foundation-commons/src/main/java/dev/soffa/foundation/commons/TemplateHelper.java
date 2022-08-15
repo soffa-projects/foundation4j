@@ -21,6 +21,7 @@ public final class TemplateHelper {
     public static String render(TemplateMessage message) {
         return render(message.getTemplate(), message.getValues());
     }
+
     public static String render(InputStream template, Map<String, Object> context) {
         String content = IOUtil.toString(template).orElseThrow(() -> new TechnicalException("Error while opening template"));
         return render(content, context);

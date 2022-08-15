@@ -21,7 +21,7 @@ class CronJobScheduling implements ApplicationLifecycle {
 
     @Override
     public void onApplicationReady() {
-        Map<String,ServiceWorker> workers = context.getBeansOfType(ServiceWorker.class);
+        Map<String, ServiceWorker> workers = context.getBeansOfType(ServiceWorker.class);
 
         if (workers.isEmpty()) {
             Logger.platform.info("No ServiceWorker found in current context");
@@ -46,7 +46,6 @@ class CronJobScheduling implements ApplicationLifecycle {
             Logger.platform.info("No @Cron annotated method found in service workers");
         }
     }
-
 
 
 }

@@ -74,7 +74,7 @@ public class DefaultSideEffectsHandler implements SideEffectsHandler {
                 pubSub.publish(event.getTarget(), MessageFactory.create(event.getOperation(), event.getPayload()));
             }
         }
-        if (tsp!=null) {
+        if (tsp != null) {
             tsp.getWriter().write(sideEffects.getDataPoints());
         }
     }

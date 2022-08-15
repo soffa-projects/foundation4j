@@ -31,13 +31,12 @@ import java.util.logging.Logger;
 @SuppressWarnings("PMD.GodClass")
 public class ExtDataSource implements DataSource {
 
-    private static final Map<String, DataSource> UNIQDS = new ConcurrentHashMap<>();
     public static final String TENANT_PLACEHOLDER = "__tenant__";
-
     public static final String H2_DRIVER = "org.h2.Driver";
     public static final String PG_DRIVER = "org.postgresql.Driver";
     public static final String H2 = "h2";
     public static final String PG = "postgresql";
+    private static final Map<String, DataSource> UNIQDS = new ConcurrentHashMap<>();
     private String applicationName;
     private String name;
     private String id;
@@ -65,9 +64,11 @@ public class ExtDataSource implements DataSource {
 
     // private PlatformTransactionManager tx;
 
-    @JsonIgnore
-    public boolean isDefault() {
-        return TenantId.DEFAULT_VALUE.equalsIgnoreCase(baseName);
+    private static String replaceTenantPlaceHolder(String input, String value) {
+        if (TextUtil.isEmpty(input)) {
+            return input;
+        }
+        return input.replace(TENANT_PLACEHOLDER, value).replace(TENANT_PLACEHOLDER.toUpperCase(), value);
     }
 
     /*
@@ -78,45 +79,6 @@ public class ExtDataSource implements DataSource {
         // this.tx = new JpaTransactionManager(Objects.requireNonNull(this.em.getObject()));
     }
      */
-
-
-    public boolean isTenantTemplate() {
-        return hasTenantPlaceHolder(this.url) || hasTenantPlaceHolder(schema);
-    }
-
-    public ExtDataSource ofTenant(String tenant) {
-        if (!isTenantTemplate()) {
-            return this;
-        }
-
-        return ExtDataSource.builder()
-            .name(applicationName + "_" + tenant)
-            .baseName(this.baseName)
-            .id(tenant)
-            .baseUrl(baseUrl)
-            .applicationName(applicationName)
-            .username(replaceTenantPlaceHolder(this.username, tenant))
-            .password(replaceTenantPlaceHolder(this.password, tenant))
-            .tablesPrefix(replaceTenantPlaceHolder(this.tablesPrefix, tenant))
-            .changeLogPath(replaceTenantPlaceHolder(this.changeLogPath, tenant))
-            .schema(replaceTenantPlaceHolder(this.schema, tenant))
-            .url(replaceTenantPlaceHolder(this.url, tenant))
-            .driverClassName(this.driverClassName)
-            .properties(this.properties)
-            .build()
-            .afterPropertiesSet();
-    }
-
-    public void setMigrated(boolean value) {
-        this.migrated = value;
-    }
-
-    private static String replaceTenantPlaceHolder(String input, String value) {
-        if (TextUtil.isEmpty(input)) {
-            return input;
-        }
-        return input.replace(TENANT_PLACEHOLDER, value).replace(TENANT_PLACEHOLDER.toUpperCase(), value);
-    }
 
     private static boolean hasTenantPlaceHolder(String input) {
         if (TextUtil.isEmpty(input)) {
@@ -136,33 +98,6 @@ public class ExtDataSource implements DataSource {
         return create(config.getApplicationName(), entry);
     }
 
-    private DataSource getDataSource() {
-        if (this.url.contains(TENANT_PLACEHOLDER) || TENANT_PLACEHOLDER.equalsIgnoreCase(schema)) {
-            throw new TechnicalException("This datasource cannot be called directly, use ofTenant() instead");
-        }
-        if (this.dataSource == null) {
-            String fingerprint = DigestUtil.md5(applicationName + ":" + baseUrl);
-            if (UNIQDS.containsKey(fingerprint)) {
-                this.dataSource = UNIQDS.get(fingerprint);
-            } else {
-                this.dataSource = DBHelper.createDataSource(this.name, this);
-                UNIQDS.put(fingerprint, this.dataSource);
-            }
-            createSchema(this.dataSource, this.getSchema());
-        }
-        return this.dataSource;
-    }
-
-    private ExtDataSource afterPropertiesSet() {
-        if (isTenantTemplate()) {
-            initialized = true;
-            return this;
-        }
-        createSchema(this.getDataSource(), this.getSchema());
-        initialized = true;
-        return this;
-    }
-
     private static void createSchema(DataSource ds, String schema) {
         if (TextUtil.isEmpty(schema)) {
             return;
@@ -170,7 +105,6 @@ public class ExtDataSource implements DataSource {
         JdbcTemplate jdbcTemplate = new JdbcTemplate(ds);
         jdbcTemplate.execute("create schema if not exists " + schema);
     }
-
 
     public static ExtDataSource create(@NonNull final String applicationName, @NonNull final DataSourceConfig entry) {
 
@@ -252,6 +186,69 @@ public class ExtDataSource implements DataSource {
     }
 
     @JsonIgnore
+    public boolean isDefault() {
+        return TenantId.DEFAULT_VALUE.equalsIgnoreCase(baseName);
+    }
+
+    public boolean isTenantTemplate() {
+        return hasTenantPlaceHolder(this.url) || hasTenantPlaceHolder(schema);
+    }
+
+    public ExtDataSource ofTenant(String tenant) {
+        if (!isTenantTemplate()) {
+            return this;
+        }
+
+        return ExtDataSource.builder()
+            .name(applicationName + "_" + tenant)
+            .baseName(this.baseName)
+            .id(tenant)
+            .baseUrl(baseUrl)
+            .applicationName(applicationName)
+            .username(replaceTenantPlaceHolder(this.username, tenant))
+            .password(replaceTenantPlaceHolder(this.password, tenant))
+            .tablesPrefix(replaceTenantPlaceHolder(this.tablesPrefix, tenant))
+            .changeLogPath(replaceTenantPlaceHolder(this.changeLogPath, tenant))
+            .schema(replaceTenantPlaceHolder(this.schema, tenant))
+            .url(replaceTenantPlaceHolder(this.url, tenant))
+            .driverClassName(this.driverClassName)
+            .properties(this.properties)
+            .build()
+            .afterPropertiesSet();
+    }
+
+    public void setMigrated(boolean value) {
+        this.migrated = value;
+    }
+
+    private DataSource getDataSource() {
+        if (this.url.contains(TENANT_PLACEHOLDER) || TENANT_PLACEHOLDER.equalsIgnoreCase(schema)) {
+            throw new TechnicalException("This datasource cannot be called directly, use ofTenant() instead");
+        }
+        if (this.dataSource == null) {
+            String fingerprint = DigestUtil.md5(applicationName + ":" + baseUrl);
+            if (UNIQDS.containsKey(fingerprint)) {
+                this.dataSource = UNIQDS.get(fingerprint);
+            } else {
+                this.dataSource = DBHelper.createDataSource(this.name, this);
+                UNIQDS.put(fingerprint, this.dataSource);
+            }
+            createSchema(this.dataSource, this.getSchema());
+        }
+        return this.dataSource;
+    }
+
+    private ExtDataSource afterPropertiesSet() {
+        if (isTenantTemplate()) {
+            initialized = true;
+            return this;
+        }
+        createSchema(this.getDataSource(), this.getSchema());
+        initialized = true;
+        return this;
+    }
+
+    @JsonIgnore
     public boolean hasSchema() {
         return TextUtil.isNotEmpty(schema);
     }
@@ -303,14 +300,14 @@ public class ExtDataSource implements DataSource {
     }
 
     @Override
-    public void setLoginTimeout(int seconds) throws SQLException {
-        this.getDataSource().setLoginTimeout(seconds);
-    }
-
-    @Override
     @JsonIgnore
     public int getLoginTimeout() throws SQLException {
         return this.getDataSource().getLoginTimeout();
+    }
+
+    @Override
+    public void setLoginTimeout(int seconds) throws SQLException {
+        this.getDataSource().setLoginTimeout(seconds);
     }
 
     @Override

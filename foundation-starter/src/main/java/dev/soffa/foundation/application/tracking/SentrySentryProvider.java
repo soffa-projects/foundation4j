@@ -27,7 +27,7 @@ public class SentrySentryProvider implements SentryProvider {
     @Override
     public void captureEvent(Context context, @Nullable String messageId, String message, EventLevel level) {
         SentryEvent e = new SentryEvent(DateUtil.now());
-        if (messageId!=null && TextUtil.isNotEmpty(messageId)) {
+        if (messageId != null && TextUtil.isNotEmpty(messageId)) {
             e.setEventId(new SentryId(DigestUtil.makeUUID(messageId)));
         }
         if (context != null) {

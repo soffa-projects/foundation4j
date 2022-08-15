@@ -54,7 +54,7 @@ public class HttpRequest {
     }
 
     public HttpRequest bearer(String token) {
-        return authorization( "Bearer " + token);
+        return authorization("Bearer " + token);
     }
 
     public HttpRequest authorization(String value) {

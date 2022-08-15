@@ -17,8 +17,8 @@ import org.springframework.context.annotation.Primary;
 @Configuration
 public class HazelcastConfiguration {
 
-    private static final Logger LOG = Logger.get(HazelcastConfiguration.class);
     public static final String EMBEDDED = "embedded";
+    private static final Logger LOG = Logger.get(HazelcastConfiguration.class);
 
     @Bean
     @ConfigurationProperties(prefix = "app.hazelcast")

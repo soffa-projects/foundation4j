@@ -31,14 +31,12 @@ import java.util.Optional;
 public class SideEffectProcessor implements ProcessSideEffect {
 
     private final ApplicationContext context;
+    private final PendingJobRepo pendingJobs;
     private ActivityService activities;
     private OperationScheduler scheduler;
     private Hooks hooks;
     private PubSubMessenger pubSub;
     private TimeSeriesProvider tsp;
-
-    private final PendingJobRepo pendingJobs;
-
     private boolean initialized;
 
     public SideEffectProcessor(ApplicationContext context, PendingJobRepo pendingJobs) {

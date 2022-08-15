@@ -32,6 +32,16 @@ public class OperationsMapping {
         register(registry);
     }
 
+    @SneakyThrows
+    public static Class<?> resolveClass(Object op) {
+        Class<?> targetClass = op instanceof Class<?> ? (Class<?>) op : op.getClass();
+        if (AopUtils.isAopProxy(op) && op instanceof Advised) {
+            Object target = ((Advised) op).getTargetSource().getTarget();
+            targetClass = Objects.requireNonNull(target).getClass();
+        }
+        return targetClass;
+    }
+
     public boolean isEmpty() {
         return registry.isEmpty();
     }
@@ -42,12 +52,12 @@ public class OperationsMapping {
 
     @SuppressWarnings("unchecked")
     public <I, O, T extends Operation<I, O>> T invoke(String name) {
-        Operation<I,O> op = require(name);
+        Operation<I, O> op = require(name);
         return (T) op.handle(null, DefaultOperationContext.create(op.getClass()));
     }
 
     public void send(String name) {
-        Operation<?,?> op = require(name);
+        Operation<?, ?> op = require(name);
         op.handle(null, DefaultOperationContext.create(op.getClass()));
     }
 
@@ -56,19 +66,8 @@ public class OperationsMapping {
         return (T) lookup(name).orElseThrow(() -> new TechnicalException("Operation not found: " + name));
     }
 
-
     public <I, O, T extends Operation<I, O>> T require(Class<T> operationClass) {
         return require(resolveClass(operationClass).getName());
-    }
-
-    @SneakyThrows
-    public static Class<?> resolveClass(Object op) {
-        Class<?> targetClass = op instanceof Class<?> ? (Class<?>) op : op.getClass();
-        if (AopUtils.isAopProxy(op) && op instanceof Advised) {
-            Object target = ((Advised) op).getTargetSource().getTarget();
-            targetClass = Objects.requireNonNull(target).getClass();
-        }
-        return targetClass;
     }
 
     private Optional<String> registerAnyBinding(Class<?> targetClass, Object operation) {
@@ -112,7 +111,7 @@ public class OperationsMapping {
         Class<?> resolvedClass = resolveClass(operation);
         Type[] signature = ClassUtil.lookupGeneric(resolvedClass, Operation.class);
 
-        if (signature==null || signature.length == 0) {
+        if (signature == null || signature.length == 0) {
             throw new ConfigurationException("%s is not a valid operation definition", operation.getClass().getName());
         }
         Type inputType = signature[0];

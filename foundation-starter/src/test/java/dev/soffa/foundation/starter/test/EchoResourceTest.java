@@ -52,7 +52,7 @@ public class EchoResourceTest {
 
         HttpExpect client = new HttpExpect(mockMvc);
         client.get("/v3/api-docs")
-                .expect().isOK().hasJson("paths./v1/echo");
+            .expect().isOK().hasJson("paths./v1/echo");
 
         String content = "Hello World!";
 
@@ -63,29 +63,29 @@ public class EchoResourceTest {
         assertEquals(content, input.getMessage());
 
         client.post("/v1/echo")
-                .withJson(input)
-                .expect().isOK().json("content", content);
+            .withJson(input)
+            .expect().isOK().json("content", content);
 
         client.get("/v1/echo")
-                .withJson(input)
-                .expect().isOK().json(jsonExpect -> {
-                    jsonExpect.eq("content", "Echo");
-                    jsonExpect.exists("message_id");
-                    jsonExpect.exists("links.self.href");
-                });
+            .withJson(input)
+            .expect().isOK().json(jsonExpect -> {
+                jsonExpect.eq("content", "Echo");
+                jsonExpect.exists("message_id");
+                jsonExpect.exists("links.self.href");
+            });
 
         client.patch("/v1/messages/123456")
-                .withJson(ImmutableMap.of("content", content))
-                .expect().isCreated().json("$.content", "123456/" + content);
+            .withJson(ImmutableMap.of("content", content))
+            .expect().isCreated().json("$.content", "123456/" + content);
 
         client.patch("/v1.1/messages/123456")
-                .expect().isOK().json("content", "123456");
+            .expect().isOK().json("content", "123456");
 
         client.get("/v1.1/messages")
-                .expect().isOK();
+            .expect().isOK();
 
         client.get("/v1.2/messages")
-                .expect().isOK();
+            .expect().isOK();
     }
 
     @SneakyThrows
@@ -99,22 +99,22 @@ public class EchoResourceTest {
         String requestBody = Mappers.JSON_DEFAULT.serialize(new EchoInput(content));
         EchoInput input = Mappers.JSON_DEFAULT.deserialize(requestBody, EchoInput.class);
         Token bearerToken = tokenProvider.create(
-                TokenType.JWT, "user",
-                ImmutableMap.of("permissions", "foo")
+            TokenType.JWT, "user",
+            ImmutableMap.of("permissions", "foo")
         );
         client.post("/v1/echo/secured")
-                .bearerAuth(bearerToken.getValue())
-                .withJson(input)
-                .expect().isForbidden();
+            .bearerAuth(bearerToken.getValue())
+            .withJson(input)
+            .expect().isForbidden();
 
         bearerToken = tokenProvider.create(
-                TokenType.JWT, "user",
-                ImmutableMap.of("permissions", "admin")
+            TokenType.JWT, "user",
+            ImmutableMap.of("permissions", "admin")
         );
         client.post("/v1/echo/secured")
-                .bearerAuth(bearerToken.getValue())
-                .withJson(input)
-                .expect().isOK();
+            .bearerAuth(bearerToken.getValue())
+            .withJson(input)
+            .expect().isOK();
 
     }
 

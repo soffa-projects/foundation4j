@@ -18,23 +18,6 @@ public class QuestDBPgProvider implements TimeSeriesProvider {
         this.ds = SimpleDataStore.create(url);
     }
 
-    @AllArgsConstructor
-    static class LocalWriter implements Writer {
-
-        private final DataStore ds;
-        private final String bucket;
-
-        @Override
-        public <E> void writeRecords(@NonNull List<E> records) {
-            ds.batch(bucket, records);
-        }
-
-        @Override
-        public void close() {
-            // Nothing to do
-        }
-    }
-
     @Override
     public TimeSeriesProvider.Writer getWriter(String bucket) {
         return new LocalWriter(ds, bucket);
@@ -46,7 +29,7 @@ public class QuestDBPgProvider implements TimeSeriesProvider {
         int index = 0;
         for (TSField field : table.getFields().values()) {
             StringBuilder lb = new StringBuilder();
-            if (index>0) {
+            if (index > 0) {
                 lb.append(", ");
             }
             lb.append(field.getName()).append(' ').append(field.getType().name());
@@ -63,6 +46,23 @@ public class QuestDBPgProvider implements TimeSeriesProvider {
     @Override
     public void close() {
         //Nothing to do
+    }
+
+    @AllArgsConstructor
+    static class LocalWriter implements Writer {
+
+        private final DataStore ds;
+        private final String bucket;
+
+        @Override
+        public <E> void writeRecords(@NonNull List<E> records) {
+            ds.batch(bucket, records);
+        }
+
+        @Override
+        public void close() {
+            // Nothing to do
+        }
     }
 
 }

@@ -31,7 +31,8 @@ public final class MessageFactory {
         }
         return Mappers.JSON_DEFAULT.deserialize(message.getPayload(), type);
     }
-  @SneakyThrows
+
+    @SneakyThrows
     public static <T> T getPayload(final Message message, Type type) {
         if (type == Void.class) {
             return null;

@@ -38,7 +38,6 @@ public class ApplicationLifecycleManager implements ApplicationListener<ContextR
     }
 
 
-
     @Override
     public void onApplicationEvent(@NotNull ContextRefreshedEvent event) {
         Map<String, ApplicationLifecycle> candidates = context.getBeansOfType(ApplicationLifecycle.class);

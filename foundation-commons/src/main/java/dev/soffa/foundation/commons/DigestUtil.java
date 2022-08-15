@@ -15,7 +15,7 @@ public final class DigestUtil {
         }
         try {
             return UUID.fromString(raw);
-        }catch (Exception e) {
+        } catch (Exception e) {
             String uuid0 = DigestUtil.md5(raw);
             uuid0 = uuid0.substring(0, 8) + "-" + uuid0.substring(8, 12) + "-" + uuid0.substring(12, 16) + "-" + uuid0.substring(16, 20) + "-" + uuid0.substring(20);
             return UUID.fromString(uuid0);

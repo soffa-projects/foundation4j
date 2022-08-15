@@ -18,7 +18,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @SpringBootTest(properties = {"app.test.scheduler=mocked", "app.name=docker-test"})
 @EnabledIfEnvironmentVariable(named = "DOCKER_AVAILABLE", matches = "true")
 @Testcontainers
-public class EntityRepositoryIntegrationTest extends EntityRepositoryTest{
+public class EntityRepositoryIntegrationTest extends EntityRepositoryTest {
 
 
     @SuppressWarnings("rawtypes")
@@ -48,7 +48,6 @@ public class EntityRepositoryIntegrationTest extends EntityRepositoryTest{
             ).applyTo(configurableApplicationContext.getEnvironment());
         }
     }
-
 
 
 }

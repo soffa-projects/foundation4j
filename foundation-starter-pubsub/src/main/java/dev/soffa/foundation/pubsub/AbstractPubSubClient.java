@@ -16,10 +16,9 @@ import java.util.concurrent.CompletableFuture;
 
 public abstract class AbstractPubSubClient implements PubSubClient {
 
+    private final Set<String> subscritpions = new HashSet<>();
     protected Set<String> broadcasting = new HashSet<>();
     protected String applicationName;
-
-    private final Set<String> subscritpions = new HashSet<>();
 
     public AbstractPubSubClient(String applicationName, PubSubClientConfig config, String broadcasting) {
         this.applicationName = applicationName;

@@ -138,7 +138,7 @@ public interface DataStore {
 
     long loadCsvFile(TenantId tenant, String tableName, InputStream input, String delimiter);
 
-    long exportToCsvFile(TenantId tenant, String tableName, String query, File file, String delimiter);
+    long exportToCsvFile(TenantId tenant, String tableName, String query, Map<String, Object> binding, File file, char delimiter, boolean headers);
 
     <E> int truncate(TenantId resolveTenant, Class<E> entityClass);
 

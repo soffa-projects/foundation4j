@@ -4,6 +4,6 @@ import java.util.Map;
 
 public interface Notifier {
 
-    void sendNotification(String uuid, String template, Map<String,Object> vars);
+    void sendNotification(String uuid, String template, Map<String, Object> vars);
 
 }

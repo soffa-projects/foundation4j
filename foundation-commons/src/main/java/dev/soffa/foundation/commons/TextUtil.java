@@ -91,7 +91,7 @@ public final class TextUtil {
             }
             if (i == values.length - 1) {
                 res.append(value);
-            }else {
+            } else {
                 res.append(StringUtils.removeEnd(value, glue));
             }
         }

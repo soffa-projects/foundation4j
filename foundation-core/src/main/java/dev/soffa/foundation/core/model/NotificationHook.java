@@ -8,6 +8,6 @@ import java.util.Map;
 public class NotificationHook {
 
     private String message;
-    private Map<String,String> context;
+    private Map<String, String> context;
 
 }

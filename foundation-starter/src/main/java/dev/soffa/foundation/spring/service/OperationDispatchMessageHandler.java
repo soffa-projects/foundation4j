@@ -45,7 +45,7 @@ public class OperationDispatchMessageHandler implements DispatchMessageHandler {
     @SuppressWarnings("PMD.CyclomaticComplexity")
     public Optional<Object> handle(Message message) {
 
-        if (message==null) {
+        if (message == null) {
             Logger.platform.error("Invalid pubsubs message received");
             return Optional.empty();
         }
@@ -53,7 +53,7 @@ public class OperationDispatchMessageHandler implements DispatchMessageHandler {
         if (dispatcher.get() == null) {
             try {
                 dispatcher.set(this.context.getBean(Dispatcher.class));
-            }catch (Exception e) {
+            } catch (Exception e) {
                 Logger.platform.error("Unable to locate Dispatcher bean in current context");
                 return Optional.empty();
             }
@@ -101,8 +101,8 @@ public class OperationDispatchMessageHandler implements DispatchMessageHandler {
             if (payload.get() == null) {
                 LOG.debug("Deserializing message content into %s", inputType.getTypeName());
                 if (inputType instanceof Class<?>) {
-                    payload.set(MessageFactory.getPayload(message, (Class<?>)inputType));
-                }else {
+                    payload.set(MessageFactory.getPayload(message, (Class<?>) inputType));
+                } else {
                     throw new NotImplementedException("TYPE_NOT_IMEPLEMENTED: Please contact the developer");
                 }
             }

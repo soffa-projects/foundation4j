@@ -24,15 +24,17 @@ import java.util.function.Consumer;
 public class Migrator implements Observer<MigrationJob> {
 
     private static final ResourceLoader RL = new DefaultResourceLoader();
+    private static final Migrator INSTANCE = new Migrator();
     private final PublishSubject<MigrationJob> subject = PublishSubject.create();
     private final Queue<String> pendingJobs = new java.util.concurrent.LinkedBlockingQueue<>();
-
-    private static final Migrator INSTANCE = new Migrator();
-
     private final AtomicInteger counter = new AtomicInteger(0);
 
     public Migrator() {
         subject.subscribe(this);
+    }
+
+    public static Migrator getInstance() {
+        return INSTANCE;
     }
 
     public void submit(ExtDataSource job) {
@@ -45,7 +47,7 @@ public class Migrator implements Observer<MigrationJob> {
     public void execute(ExtDataSource job) {
         synchronized (counter) {
             if (pendingJobs.contains(job.getName())) {
-                Logger.platform.warn("Migration job already submitted: %s",  job.getName());
+                Logger.platform.warn("Migration job already submitted: %s", job.getName());
                 return;
             }
             counter.incrementAndGet();
@@ -57,19 +59,15 @@ public class Migrator implements Observer<MigrationJob> {
     }
 
     public void submit(ExtDataSource job, Consumer<ExtDataSource> callback) {
-        synchronized(counter) {
+        synchronized (counter) {
             if (pendingJobs.contains(job.getName())) {
-                Logger.platform.warn("Migration job already submitted: %s",  job.getName());
+                Logger.platform.warn("Migration job already submitted: %s", job.getName());
                 return;
             }
             counter.incrementAndGet();
             pendingJobs.add(job.getName());
             subject.onNext(new MigrationJob(job, callback));
         }
-    }
-
-    public static Migrator getInstance() {
-        return INSTANCE;
     }
 
     public int getCounter() {
@@ -127,7 +125,7 @@ public class Migrator implements Observer<MigrationJob> {
             lookup.add("classpath:/db/changelog/" + changeLogPath + ".xml");
             lookup.add("classpath:/db/changelog/" + appicationName + "/" + changeLogPath + ".xml");
 
-            boolean found= false;
+            boolean found = false;
             for (String candidate : lookup) {
                 res = RL.getResource(candidate);
                 if (res.exists()) {
@@ -146,7 +144,6 @@ public class Migrator implements Observer<MigrationJob> {
     }
 
     private void doApplyMigration(ExtDataSource ds, String name, SpringLiquibase lqb, Map<String, String> changeLogParams) {
-
 
 
         @SuppressWarnings("PMD.CloseResource")
@@ -204,7 +201,7 @@ public class Migrator implements Observer<MigrationJob> {
         Logger.platform.info("Migration: %s", job.getInfo().getName());
         try {
             applyMigrations(job.getInfo());
-        }catch (Exception e) {
+        } catch (Exception e) {
             Logger.platform.error("Migrations [%s] has failed [%s]", job.getInfo().getChangeLogPath(), job.getInfo().getName());
             Logger.platform.error(e);
             return;

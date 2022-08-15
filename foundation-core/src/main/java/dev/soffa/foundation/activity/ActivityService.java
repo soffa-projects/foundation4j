@@ -9,7 +9,7 @@ public interface ActivityService {
 
     void record(Activity activity, Context context);
 
-    default void record( @NonNull String event, @Nullable Object data, Context context) {
+    default void record(@NonNull String event, @Nullable Object data, Context context) {
         record(new Activity(event, null, Mappers.JSON_DEFAULT.serialize(data)), context);
     }
 

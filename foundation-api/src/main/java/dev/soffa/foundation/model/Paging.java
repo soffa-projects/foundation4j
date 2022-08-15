@@ -14,9 +14,9 @@ import lombok.NoArgsConstructor;
 public class Paging {
 
     public static final int BASE_INDEX = 1;
+    public static final int DEFAULT_MAX_SIZE = 10_000;
     private static final int DEFAULT_FETCH_SIZE = 25;
     public static final Paging DEFAULT = new Paging(BASE_INDEX, DEFAULT_FETCH_SIZE);
-    public static final int DEFAULT_MAX_SIZE = 10_000;
     @Schema(defaultValue = "1", nullable = true)
     @Parameter(in = ParameterIn.QUERY)
     private int page;
@@ -33,18 +33,6 @@ public class Paging {
         this.size = Math.min(size, DEFAULT_MAX_SIZE);
     }
 
-    public Paging cap() {
-        if (size > DEFAULT_MAX_SIZE) {
-            size = DEFAULT_MAX_SIZE;
-        } else if (size < BASE_INDEX) {
-            size = DEFAULT_FETCH_SIZE;
-        }
-        if (page < BASE_INDEX) {
-            page = BASE_INDEX;
-        }
-        return this;
-    }
-
     public static Paging of(Paging paging) {
         return of(paging, "id");
     }
@@ -58,5 +46,17 @@ public class Paging {
             p.sort = defautlSort;
         }
         return p.cap();
+    }
+
+    public Paging cap() {
+        if (size > DEFAULT_MAX_SIZE) {
+            size = DEFAULT_MAX_SIZE;
+        } else if (size < BASE_INDEX) {
+            size = DEFAULT_FETCH_SIZE;
+        }
+        if (page < BASE_INDEX) {
+            page = BASE_INDEX;
+        }
+        return this;
     }
 }

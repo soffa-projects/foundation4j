@@ -25,6 +25,8 @@ public final class EntityInfo<T> {
 
     //private static final Map<String, EntityInfo<?>> REGISTRY = new HashMap<>();
     private static final Map<String, String> CUSTOM_TABLES = new HashMap<>();
+    private static final Logger LOG = Logger.get(EntityInfo.class);
+    private static final Map<String, EntityInfo<?>> CACHE = new HashMap<>();
     private final Class<T> entityClass;
     private final Map<String, String> propertiesToColumnsMapping = new HashMap<>();
     private final List<String> columnsEscaped = new ArrayList<>();
@@ -35,8 +37,6 @@ public final class EntityInfo<T> {
     private String tableName;
     private String idProperty;
     private List<String> updatePairs;
-    private static final Logger LOG = Logger.get(EntityInfo.class);
-    private static final Map<String, EntityInfo<?>> CACHE = new HashMap<>();
 
     private EntityInfo(Class<T> entityClass, String tablePrefix, boolean checkTable) {
         this.entityClass = entityClass;

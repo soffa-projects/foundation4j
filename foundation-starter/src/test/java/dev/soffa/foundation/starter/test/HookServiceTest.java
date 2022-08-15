@@ -25,10 +25,9 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 })
 public class HookServiceTest {
 
+    public static final String CREATED_ACCOUNT = "create_account";
     @Autowired
     private HookService hookService;
-
-    public static final String CREATED_ACCOUNT = "create_account";
 
     @Test
     public void testHooks() {

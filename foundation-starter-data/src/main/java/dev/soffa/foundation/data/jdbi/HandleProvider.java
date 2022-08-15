@@ -8,9 +8,9 @@ import java.util.function.Function;
 
 public interface HandleProvider {
 
-     void useHandle(TenantId tenant, Consumer<Handle> consumer);
+    void useHandle(TenantId tenant, Consumer<Handle> consumer);
 
-     <T> T withHandle(TenantId tenant, Function<Handle, T> consumer);
+    <T> T withHandle(TenantId tenant, Function<Handle, T> consumer);
 
     <T> T inTransaction(TenantId tenant, Function<Handle, T> consumer);
 }

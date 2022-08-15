@@ -17,8 +17,6 @@ import java.util.Optional;
 @SuppressWarnings("PMD.GodClass")
 public class Context implements BaseContext {
 
-    private static boolean production;
-
     public static final String TENANT_ID = "X-TenantId";
     public static final String TENANT_NAME = "X-TenantName";
     public static final String APPLICATION_ID = "X-ApplicationId";
@@ -28,7 +26,7 @@ public class Context implements BaseContext {
     // public static final String SPAN_ID = "X-SpanId";
     public static final String SERVICE_NAME = "X-ServiceName";
     public static final String AUTHORIZATION = "Authorization";
-
+    private static boolean production;
     private static String serviceName = "app";
     @JsonIgnore
     private String authorization;
@@ -51,29 +49,12 @@ public class Context implements BaseContext {
         this.sender = serviceName;
     }
 
-    public static void setProduction(boolean production) {
-        Context.production = production;
-    }
-
-    @Override
-    public boolean isProduction() {
-        return Context.production;
-    }
-
     public static Context create(String tenantId) {
         return new Context().withTenant(tenantId);
     }
 
     public static Context create() {
         return new Context();
-    }
-
-    @SneakyThrows
-    public static void setServiceName(String value) {
-        if (isEmpty(value)) {
-            throw new IllegalArgumentException("Service name cannot be empty");
-        }
-        serviceName = value;
     }
 
     @SneakyThrows
@@ -93,12 +74,12 @@ public class Context implements BaseContext {
                     context.setApplicationName(value);
                 }
                 context.setApplicationId(value);
-            }else if (key.equalsIgnoreCase(Context.APPLICATION_NAME)) {
+            } else if (key.equalsIgnoreCase(Context.APPLICATION_NAME)) {
                 if (isEmpty(context.getApplicationId())) {
                     context.setApplicationId(value);
                 }
                 context.setApplicationName(value);
-            }else if (key.equalsIgnoreCase(Context.APPLICATION)) {
+            } else if (key.equalsIgnoreCase(Context.APPLICATION)) {
                 if (isEmpty(context.getApplicationId())) {
                     context.setApplicationId(value);
                 }
@@ -136,6 +117,15 @@ public class Context implements BaseContext {
     }
 
     @Override
+    public boolean isProduction() {
+        return Context.production;
+    }
+
+    public static void setProduction(boolean production) {
+        Context.production = production;
+    }
+
+    @Override
     public boolean hasAuthorization() {
         return isNotEmpty(authorization);
     }
@@ -148,6 +138,14 @@ public class Context implements BaseContext {
     @Override
     public String getServiceName() {
         return sender;
+    }
+
+    @SneakyThrows
+    public static void setServiceName(String value) {
+        if (isEmpty(value)) {
+            throw new IllegalArgumentException("Service name cannot be empty");
+        }
+        serviceName = value;
     }
 
     @Override

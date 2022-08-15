@@ -12,5 +12,4 @@ public class EmailHookSpec {
     private String body;
 
 
-
 }

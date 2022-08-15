@@ -44,7 +44,7 @@ public final class TokenUtil {
             token.setIssuer(decodedJwt.getIssuer());
             token.setType(decodedJwt.getType());
             return Optional.of(token);
-        }catch (JWTDecodeException e) {
+        } catch (JWTDecodeException e) {
             LOG.error("Error decoding JWT", e);
             return Optional.empty();
         }
@@ -69,7 +69,7 @@ public final class TokenUtil {
         JWTCreator.Builder builder = JWT.create()
             .withIssuedAt(issuedAt)
             .withSubject(subject)
-            .withExpiresAt(DateUtil.plusMinutes(issuedAt, (int)duration.toMinutes()))
+            .withExpiresAt(DateUtil.plusMinutes(issuedAt, (int) duration.toMinutes()))
             .withIssuer(issuer);
         if (claims != null) {
             for (Map.Entry<String, Object> claim : claims.entrySet()) {

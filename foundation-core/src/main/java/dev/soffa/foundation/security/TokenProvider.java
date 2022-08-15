@@ -15,6 +15,7 @@ public interface TokenProvider {
     }
 
     Token create(TokenType type, String subject, Map<String, Object> claims);
+
     default Token createJwt(String subject, Map<String, Object> claims, Duration duration) {
         return create(TokenType.JWT, subject, claims, duration);
     }

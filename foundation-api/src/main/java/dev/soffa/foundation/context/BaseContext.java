@@ -9,6 +9,7 @@ public interface BaseContext {
     boolean isProduction();
 
     boolean isLiveMode();
+
     boolean hasAuthorization();
 
     String getSender();

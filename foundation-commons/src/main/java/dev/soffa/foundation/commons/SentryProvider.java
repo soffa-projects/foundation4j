@@ -14,7 +14,7 @@ public interface SentryProvider {
     void captureException(Throwable e);
 
     default void watch(String label, Runnable runnable) {
-       watch(label, runnable, true);
+        watch(label, runnable, true);
     }
 
     default void watch(String label, Runnable runnable, boolean errorPropagation) {
@@ -31,7 +31,7 @@ public interface SentryProvider {
     default <T> T watch(String label, Supplier<T> runnable, boolean errorPropagation) {
         try {
             return runnable.get();
-        }catch (Exception e) {
+        } catch (Exception e) {
             Logger.platform.error(e, "%s has failed with error: %s", label, ErrorUtil.loookupOriginalMessage(e));
             captureTechnical(e);
             if (errorPropagation) {
@@ -107,7 +107,7 @@ public interface SentryProvider {
                 Logger.platform.error(message);
             } else if (level == EventLevel.WARNING) {
                 Logger.platform.warn(message);
-            }else {
+            } else {
                 Logger.platform.info(message);
             }
         }

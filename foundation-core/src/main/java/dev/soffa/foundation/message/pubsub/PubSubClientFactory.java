@@ -22,9 +22,9 @@ public final class PubSubClientFactory {
     }
 
     @SuppressWarnings({"unchecked"})
-    public static <I, O, T extends Operation<I, O>> RemoteOperation<I,O> of(PubSubClient client, @NotNull Class<T> operationClass, @NonNull String channel) {
+    public static <I, O, T extends Operation<I, O>> RemoteOperation<I, O> of(PubSubClient client, @NotNull Class<T> operationClass, @NonNull String channel) {
         Type returnType = Objects.requireNonNull(ClassUtil.lookupGeneric(operationClass, Operation.class))[1];
-        return (RemoteOperation<I,O>) java.lang.reflect.Proxy.newProxyInstance(
+        return (RemoteOperation<I, O>) java.lang.reflect.Proxy.newProxyInstance(
             Thread.currentThread().getContextClassLoader(),
             new Class[]{RemoteOperation.class},
             (proxy, method, args) -> {
@@ -50,7 +50,7 @@ public final class PubSubClientFactory {
                     } else {
                         throw new NotImplementedException("Return type is not a class (Type type not implemented yet, please contact the developer)");
                     }
-                }else {
+                } else {
                     throw new NotImplementedException("Method not implemented yet, please contact the developer");
                 }
             });

@@ -34,6 +34,7 @@ import java.util.stream.Stream;
 @SuppressWarnings("PMD.GodClass")
 public class SimpleDataStore implements DataStore {
 
+    public static final int COPY_BUFFER_SIZE = 65_536 * 4;
     private static final String TABLE = "table";
     private static final String ORDER = "order";
     private static final String LIMIT = "limit";
@@ -46,9 +47,6 @@ public class SimpleDataStore implements DataStore {
     private static final String BINDING = "binding";
     private static final String COLUMNS = "columns";
     private static final String VALUES = "values";
-
-    public static final int COPY_BUFFER_SIZE = 65_536 * 4;
-
     // private DB db;
     // private Jdbi dbi;
     private final HandleProvider hp;
@@ -63,12 +61,6 @@ public class SimpleDataStore implements DataStore {
         this.tablesPrefix = TextUtil.trimToEmpty(tablesPrefix);
     }
 
-
-    @Override
-    public String getTablesPrefix() {
-        return tablesPrefix;
-    }
-
     /*public SimpleDataStore(@NonNull DB db) {
                 this.db = db;
                 this.dataStoreHandle = new DataStoreHandle(this);
@@ -81,6 +73,11 @@ public class SimpleDataStore implements DataStore {
         boolean isPG = dbUrl.startsWith("pg://") || dbUrl.startsWith("postgres");
         JdbiUtil.configure(dbi, isPG);
         return new SimpleDataStore(new DBIHandleProvider(dbi));
+    }
+
+    @Override
+    public String getTablesPrefix() {
+        return tablesPrefix;
     }
 
     @Override
@@ -234,7 +231,7 @@ public class SimpleDataStore implements DataStore {
     public <T> List<T> query(TenantId tenant, String query, Map<String, Object> binding, Class<T> resultClass) {
         return hp.withHandle(tenant, handle -> {
             Query q = handle.createQuery(query);
-            if (binding!=null && !binding.isEmpty()) {
+            if (binding != null && !binding.isEmpty()) {
                 q.bindMap(binding);
             }
             return q.map(BeanMapper.of(EntityInfo.of(resultClass, null, false))).list();
@@ -322,15 +319,16 @@ public class SimpleDataStore implements DataStore {
 
 
     @Override
-    public long exportToCsvFile(TenantId tenant, String tableName, String query, File file, String delimiter) {
+    public long exportToCsvFile(TenantId tenant, String tableName, String query, Map<String, Object> binding, File file, char delimiter, boolean headers) {
         final String lQuery = TextUtil.isEmpty(query) ? "SELECT *  from %table%" : query;
         return hp.withHandle(tenant, handle -> {
             try {
                 CopyManager cm = new CopyManager(handle.getConnection().unwrap(BaseConnection.class));
                 String sql = String.format(
-                    "COPY (%s) TO STDOUT ( DELIMITER '%s' )",
+                    "COPY (%s) TO STDOUT DELIMITER '%s' %s",
                     lQuery.replace("%table%", tablesPrefix + tableName),
-                    delimiter
+                    delimiter,
+                    (headers) ? "CSV HEADER" : ""
                 );
                 try (OutputStream writer = new BufferedOutputStream(Files.newOutputStream(file.toPath()))) {
                     return cm.copyOut(sql, writer);

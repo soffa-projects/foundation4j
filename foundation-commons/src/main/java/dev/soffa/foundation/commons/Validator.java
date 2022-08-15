@@ -21,6 +21,10 @@ public class Validator implements ValidationResult {
 
     private final Map<String, String> errors = new HashMap<>();
 
+    public static <T> Validator check(T subject) {
+        return new Validator().validate(subject);
+    }
+
     public Validator checkNotNull(String field, Object value) {
         return checkNotNull(field, value, "is required");
     }
@@ -63,10 +67,6 @@ public class Validator implements ValidationResult {
     @Override
     public boolean hasErrors() {
         return !errors.isEmpty();
-    }
-
-    public static <T> Validator check(T subject) {
-        return new Validator().validate(subject);
     }
 
     public <T> Validator validate(T subject) {

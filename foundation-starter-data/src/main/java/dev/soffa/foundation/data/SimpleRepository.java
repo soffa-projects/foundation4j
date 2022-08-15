@@ -25,9 +25,8 @@ public class SimpleRepository<E, I> implements EntityRepository<E, I> {
 
     private final DataStore ds;
     private final Class<E> entityClass;
-    private TenantId lockedTenant = TenantId.CONTEXT;
-
     private final String tableName;
+    private TenantId lockedTenant = TenantId.CONTEXT;
 
     public SimpleRepository(DataStore ds, Class<E> entityClass) {
         this(ds, entityClass, null);
@@ -136,13 +135,14 @@ public class SimpleRepository<E, I> implements EntityRepository<E, I> {
     public DataStore getDataStore() {
         return ds;
     }
+
     @Override
     public int truncate(TenantId tenant) {
         return ds.truncate(resolveTenant(tenant), entityClass);
     }
 
     @Override
-    public <T> List<T> query(TenantId tenant, String query, Map<String,Object> binding, Class<T> resultClass) {
+    public <T> List<T> query(TenantId tenant, String query, Map<String, Object> binding, Class<T> resultClass) {
         return ds.query(resolveTenant(tenant), query.replace(PH_TABLE, ds.getTableName(this.tableName)), binding, resultClass);
     }
 
@@ -197,8 +197,8 @@ public class SimpleRepository<E, I> implements EntityRepository<E, I> {
     }
 
     @Override
-    public long exportToCsvFile(TenantId tenant, File file, String query, String delimiter) {
-        return ds.exportToCsvFile(tenant, tableName, query, file, delimiter);
+    public long exportToCsvFile(TenantId tenant, String query, Map<String, Object> binding, File file, char delimiter, boolean headers) {
+        return ds.exportToCsvFile(tenant, tableName, query, binding, file, delimiter, headers);
     }
 
     @Override

@@ -18,7 +18,7 @@ public class PlatformHealthCheck {
         boolean isProduction = env.acceptsProfiles(Profiles.of("prod", "production"));
         if (isProduction) {
             return health.health();
-        }else {
+        } else {
             return health.health();
         }
     }

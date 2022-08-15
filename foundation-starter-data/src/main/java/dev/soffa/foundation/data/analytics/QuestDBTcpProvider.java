@@ -26,6 +26,16 @@ public class QuestDBTcpProvider implements TimeSeriesProvider {
         this.port = info.getPort();
     }
 
+    @Override
+    public Writer getWriter(String ignore) {
+        return new LocalWriter(new LineTcpSender(host, port, BUFFER_CAPACITY));
+    }
+
+    @Override
+    public void close() {
+        //Nothing to do
+    }
+
     @AllArgsConstructor
     static class LocalWriter implements Writer {
         private LineTcpSender sender;
@@ -60,16 +70,6 @@ public class QuestDBTcpProvider implements TimeSeriesProvider {
         public void close() {
             sender.close();
         }
-    }
-
-    @Override
-    public Writer getWriter(String ignore) {
-        return new LocalWriter(new LineTcpSender(host, port, BUFFER_CAPACITY));
-    }
-
-    @Override
-    public void close() {
-        //Nothing to do
     }
 
 }

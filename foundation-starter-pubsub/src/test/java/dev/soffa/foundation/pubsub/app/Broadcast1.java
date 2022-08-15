@@ -12,13 +12,13 @@ public class Broadcast1 implements EventHandler<Void, String> {
 
     private static final AtomicLong COUNTER = new AtomicLong(0);
 
+    public static long count() {
+        return COUNTER.get();
+    }
+
     @Override
     public String handle(Void input, @NonNull OperationContext ctx) {
         COUNTER.incrementAndGet();
         return "Broadcaster";
-    }
-
-    public static long count() {
-        return COUNTER.get();
     }
 }

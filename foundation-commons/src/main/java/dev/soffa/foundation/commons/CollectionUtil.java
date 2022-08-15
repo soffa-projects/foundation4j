@@ -36,8 +36,9 @@ public final class CollectionUtil {
     }
 
     public static boolean isNotEmpty(Iterator<?> array) {
-        return array!=null && array.hasNext();
+        return array != null && array.hasNext();
     }
+
     public static boolean isNotEmpty(Object... array) {
         return array != null && array.length > 0;
     }

@@ -22,7 +22,7 @@ public class PagedList<T> {
             pages++;
         }
         List<T> elements = items;
-        if (elements==null) {
+        if (elements == null) {
             elements = new ArrayList<>();
         }
         Pagination p = new Pagination(hasMore, total, pages, paging.getSize(), paging.getPage(), elements.size());

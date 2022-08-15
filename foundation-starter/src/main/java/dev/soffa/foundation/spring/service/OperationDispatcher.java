@@ -35,9 +35,9 @@ import java.util.concurrent.atomic.AtomicReference;
 @AllArgsConstructor
 public class OperationDispatcher implements Dispatcher, Resource {
 
+    private static final Map<String, Boolean> DEFAULT_TENANT = new ConcurrentHashMap<>();
     private final ApplicationContext context;
     private final SideEffectsHandler sideEffectsHandler;
-    private static final Map<String, Boolean> DEFAULT_TENANT = new ConcurrentHashMap<>();
     private final AtomicReference<OperationsMapping> operationsMapping = new AtomicReference<>(null);
 
     private OperationsMapping getOperations() {
@@ -60,7 +60,7 @@ public class OperationDispatcher implements Dispatcher, Resource {
             }
             Context context = Mappers.JSON_DEFAULT.deserialize(serializedContext, Context.class);
             return invoke(op, deserialized, context);
-        }catch (Exception e) {
+        } catch (Exception e) {
             Logger.platform.error("Error while dispatching operation: %s", operationName, e);
             throw e;
         }
@@ -99,7 +99,7 @@ public class OperationDispatcher implements Dispatcher, Resource {
             return TenantHolder.useDefault(() -> apply(operation, input, ctx));
         } else {
             TenantId tenant = ctx.getTenant();
-            if (tenant==null) {
+            if (tenant == null) {
                 tenant = TenantId.DEFAULT;
             }
             TenantId override = operation.getTenant(input, ctx);
@@ -136,7 +136,7 @@ public class OperationDispatcher implements Dispatcher, Resource {
             );
         }
 
-        boolean shouldEnqueue = operation instanceof Command &&  !(operation instanceof ServiceWorker) &&
+        boolean shouldEnqueue = operation instanceof Command && !(operation instanceof ServiceWorker) &&
             !opContext.getSideEffects().isEmpty() && !(operation instanceof OnServiceStarted);
 
         if (shouldEnqueue) {

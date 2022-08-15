@@ -70,7 +70,7 @@ public class ClassUtil {
                 ParameterizedType ptype = (ParameterizedType) candidate;
                 result = lookupGeneric(ptype, genericClass);
             } else if (candidate instanceof Class<?>) {
-                result = lookupGeneric((Class<?>)candidate, genericClass);
+                result = lookupGeneric((Class<?>) candidate, genericClass);
             } else {
                 throw new TechnicalException("Unsupported type: " + candidate);
             }
@@ -89,7 +89,7 @@ public class ClassUtil {
         }
         if (candidate.getRawType() instanceof Class<?>) {
             Class<?> rawType = (Class<?>) candidate.getRawType();
-            if (((Class<?>)genericClass).isAssignableFrom(rawType)) {
+            if (((Class<?>) genericClass).isAssignableFrom(rawType)) {
                 return new Type[]{candidate};
             }
         }

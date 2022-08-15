@@ -107,11 +107,11 @@ public interface EntityRepository<E, I> {
         return query(TenantId.CONTEXT, query, null, resultClass);
     }
 
-    default <T> List<T> query(String query, Map<String,Object> binding, Class<T> resultClass) {
+    default <T> List<T> query(String query, Map<String, Object> binding, Class<T> resultClass) {
         return query(TenantId.CONTEXT, query, binding, resultClass);
     }
 
-    <T> List<T> query(TenantId context, String query, Map<String,Object> binding, Class<T> resultClass);
+    <T> List<T> query(TenantId context, String query, Map<String, Object> binding, Class<T> resultClass);
 
     default PagedList<E> find(Criteria criteria, Paging paging) {
         return find(TenantId.CONTEXT, criteria, paging);
@@ -128,7 +128,7 @@ public interface EntityRepository<E, I> {
     default void forEach(TenantId context, Map<String, Object> filter, int fetchSize, Consumer<E> consumer) {
         int page = 1;
         Preconditions.checkArgument(fetchSize >= 1);
-        while (true){
+        while (true) {
             PagedList<E> res = find(context, Criteria.of(filter), new Paging(page++, fetchSize));
             for (E record : res.getData()) {
                 consumer.accept(record);
@@ -196,11 +196,19 @@ public interface EntityRepository<E, I> {
         return loadCsvFile(TenantId.CONTEXT, file, delimiter);
     }
 
-    default long exportToCsvFile(File file, String query, String delimiter) {
-        return exportToCsvFile(TenantId.CONTEXT, file, query, delimiter);
+    default long exportToCsvFile(String query, File file, char delimiter, boolean headers) {
+        return exportToCsvFile(query, null, file, delimiter, headers);
     }
 
-    long exportToCsvFile(TenantId context, File file, String query, String delimiter);
+    default long exportToCsvFile(String query, Map<String, Object> binding, File file, char delimiter, boolean headers) {
+        return exportToCsvFile(TenantId.CONTEXT, query, binding, file, delimiter, headers);
+    }
+
+    long exportToCsvFile(TenantId context, String query, Map<String, Object> binding, File file, char delimiter, boolean headers);
+
+    default long exportToCsvFile(TenantId context, String query, File file, char delimiter, boolean headers) {
+        return exportToCsvFile(context, query, null, file, delimiter, headers);
+    }
 
     long loadCsvFile(TenantId tenant, File file, String delimiter);
 

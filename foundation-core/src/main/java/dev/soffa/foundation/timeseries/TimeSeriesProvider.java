@@ -10,6 +10,20 @@ import java.util.List;
 
 public interface TimeSeriesProvider {
 
+    default void createTable(TSTable table) {
+        throw new TodoException();
+    }
+
+    Writer getWriter(String buket);
+
+    default Writer getWriter() {
+        return getWriter(null);
+    }
+
+    default void close() {
+        // Nothing to do
+    }
+
     interface Writer extends Closeable {
         default void write(@NonNull DataPoint point) {
             write(Collections.singletonList(point));
@@ -28,19 +42,5 @@ public interface TimeSeriesProvider {
         }
 
 
-    }
-
-    default void createTable(TSTable table) {
-        throw new TodoException();
-    }
-
-    Writer getWriter(String buket);
-
-    default Writer getWriter() {
-        return getWriter(null);
-    }
-
-    default void close() {
-        // Nothing to do
     }
 }

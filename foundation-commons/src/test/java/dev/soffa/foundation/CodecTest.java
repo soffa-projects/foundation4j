@@ -18,7 +18,7 @@ public class CodecTest {
             UUID.fromString(raw);
         });
         String uuid0 = DigestUtil.md5(raw);
-        uuid0 = uuid0.substring(0,8) + "-" + uuid0.substring(8,12) + "-" + uuid0.substring(12,16) + "-" + uuid0.substring(16,20) + "-" + uuid0.substring(20);
+        uuid0 = uuid0.substring(0, 8) + "-" + uuid0.substring(8, 12) + "-" + uuid0.substring(12, 16) + "-" + uuid0.substring(16, 20) + "-" + uuid0.substring(20);
         UUID uuid = UUID.fromString(uuid0);
         assertNotNull(uuid);
 

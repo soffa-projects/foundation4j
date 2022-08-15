@@ -5,7 +5,8 @@ public final class Sentry {
 
     private static SentryProvider instance = new SentryProvider.DefaultAdapter();
 
-    private Sentry() {}
+    private Sentry() {
+    }
 
     public static void setInstance(SentryProvider instance) {
         Sentry.instance = instance;

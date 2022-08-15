@@ -22,11 +22,10 @@ import java.util.concurrent.atomic.AtomicLong;
 @ConditionalOnProperty(value = "app.scheduler.provider", havingValue = "simple")
 public class SimpleExecutorOperationScheduler implements OperationScheduler {
 
+    public static final AtomicLong COUNTER = new AtomicLong(0);
     private final ApplicationContext context;
     private final ScheduledExecutorService executorService = Executors.newScheduledThreadPool(6);
     private Dispatcher dispatcher;
-
-    public static final AtomicLong COUNTER = new AtomicLong(0);
 
     public SimpleExecutorOperationScheduler(ApplicationContext context) {
         this.context = context;
@@ -46,7 +45,7 @@ public class SimpleExecutorOperationScheduler implements OperationScheduler {
             COUNTER.decrementAndGet();
             try {
                 dispatcher.dispatch(operationName, input, serializedContext);
-            }catch (Exception e) {
+            } catch (Exception e) {
                 Logger.platform.error(e);
             }
         }, 500, TimeUnit.MILLISECONDS);

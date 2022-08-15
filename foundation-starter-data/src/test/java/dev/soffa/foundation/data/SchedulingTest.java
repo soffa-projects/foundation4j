@@ -26,10 +26,11 @@ public class SchedulingTest {
         assertNotNull(scheduler);
         Awaitility.await().atMost(12, TimeUnit.SECONDS).until(() -> SimpleJobHandler.getCount() > 0);
     }
-   @Test
+
+    @Test
     public void testEnqueue() {
-       scheduler.enqueue(JobAction1.class, "foo");
-       Awaitility.await().atMost(15, TimeUnit.SECONDS).until(JobAction1Handler.FLAG::get);
+        scheduler.enqueue(JobAction1.class, "foo");
+        Awaitility.await().atMost(15, TimeUnit.SECONDS).until(JobAction1Handler.FLAG::get);
     }
 
 }

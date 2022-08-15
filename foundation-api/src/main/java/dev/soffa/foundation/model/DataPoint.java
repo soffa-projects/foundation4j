@@ -12,9 +12,9 @@ import java.util.Map;
 public class DataPoint {
 
     private final String metric;
-    private Date time;
     private final Map<String, String> tags = new HashMap<>();
     private final Map<String, Object> fields = new HashMap<>();
+    private Date time;
 
     public DataPoint(String metric) {
         this.time = Date.from(Instant.now());

@@ -18,6 +18,7 @@ public class ValidationException extends Exception implements ManagedException {
         this.message = message;
         errors = ImmutableMap.of();
     }
+
     public ValidationException(Map<String, String> errors) {
         this("Validation's failed", errors);
     }

@@ -18,7 +18,7 @@ public class Serialized implements Serializable {
 
     public static Serialized of(Object input) {
         if (input instanceof Serialized) {
-            return (Serialized)input;
+            return (Serialized) input;
         }
         if (input.getClass() == Object.class) {
             throw new IllegalArgumentException("Cannot serialize object of type " + input.getClass());

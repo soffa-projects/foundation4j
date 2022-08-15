@@ -19,9 +19,8 @@ import java.util.stream.Collectors;
 public class SlackNotificationAgent implements NotificationAgent {
 
     private static final String TYPE = "type";
-
-    private String webhook;
     private final HttpClient client = DefaultHttpClient.newInstance();
+    private String webhook;
 
     public SlackNotificationAgent(String webhook) {
         this.webhook = webhook;

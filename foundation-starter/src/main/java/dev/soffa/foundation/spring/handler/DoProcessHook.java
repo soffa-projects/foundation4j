@@ -13,6 +13,7 @@ import org.springframework.stereotype.Component;
 public class DoProcessHook implements ProcessHook {
 
     private HookService hooks;
+
     @Override
     public Void handle(ProcessHookInput input, @NonNull OperationContext ctx) {
         hooks.process(ctx.getInternal(), input);

@@ -13,7 +13,8 @@ public final class ErrorTrackingFactory {
     public static final String SENTRY_PROVIDER = "sentry";
     private static final Logger LOG = Logger.get(ApplicationLifecycleManager.class);
 
-    private ErrorTrackingFactory() {}
+    private ErrorTrackingFactory() {
+    }
 
     public static void configure(AppConfig appConfig, String provider) {
         if (NOOP_ERROR_TRACKING.equalsIgnoreCase(provider) || TextUtil.isEmpty(provider)) {

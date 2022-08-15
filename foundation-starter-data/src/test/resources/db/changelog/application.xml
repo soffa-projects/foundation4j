@@ -10,7 +10,7 @@
             <column name="id" type="varchar(64)">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
-            <column name="content" type="varchar" />
+            <column name="content" type="varchar"/>
         </createTable>
     </changeSet>
 

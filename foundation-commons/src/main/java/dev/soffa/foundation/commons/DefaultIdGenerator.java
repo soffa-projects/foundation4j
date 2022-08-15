@@ -9,15 +9,10 @@ import java.util.Base64;
 import java.util.UUID;
 
 @SuppressWarnings("PMD.ClassNamingConventions")
-public  class DefaultIdGenerator implements IdGenerator {
+public class DefaultIdGenerator implements IdGenerator {
 
     private static final Base64.Encoder ENCODER = Base64.getUrlEncoder().withoutPadding();
     private static final SecureRandom RANDOM = new SecureRandom();
-
-    @Override
-    public String nextId(String prefix) {
-        return uuid(prefix);
-    }
 
     public static String secret() {
         return secret("");
@@ -90,6 +85,11 @@ public  class DefaultIdGenerator implements IdGenerator {
         }
 
         return TextUtil.prefix(res, prefix);
+    }
+
+    @Override
+    public String nextId(String prefix) {
+        return uuid(prefix);
     }
 
 

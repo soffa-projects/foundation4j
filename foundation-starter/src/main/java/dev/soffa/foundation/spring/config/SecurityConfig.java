@@ -25,7 +25,7 @@ public class SecurityConfig {
     private final String openApiAccess;
 
     public SecurityConfig(
-            @Value("${app.openapi.access:permitAll}") String openApiAccess, PlatformAuthManager authManager
+        @Value("${app.openapi.access:permitAll}") String openApiAccess, PlatformAuthManager authManager
     ) {
         super();
         this.authManager = authManager;
@@ -49,21 +49,21 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) {
         http.cors().and().csrf().disable()
-                .sessionManagement()
-                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                //.and().exceptionHandling()
-                //.authenticationEntryPoint((request, response, ex) -> response.sendError(HttpServletResponse.SC_UNAUTHORIZED, ex.getMessage()))
-                .and()
-                .authorizeRequests()
-                .antMatchers("/v3/api-docs").access(openApiAccess)
-                .antMatchers("/swagger/*").access(openApiAccess)
-                .antMatchers("/actuator/**").permitAll()
-                .antMatchers("/health").permitAll()
-                .antMatchers("/**").permitAll()
-                .and().addFilterBefore(
-                        new RequestFilter(authManager),
-                        UsernamePasswordAuthenticationFilter.class
-                );
+            .sessionManagement()
+            .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+            //.and().exceptionHandling()
+            //.authenticationEntryPoint((request, response, ex) -> response.sendError(HttpServletResponse.SC_UNAUTHORIZED, ex.getMessage()))
+            .and()
+            .authorizeRequests()
+            .antMatchers("/v3/api-docs").access(openApiAccess)
+            .antMatchers("/swagger/*").access(openApiAccess)
+            .antMatchers("/actuator/**").permitAll()
+            .antMatchers("/health").permitAll()
+            .antMatchers("/**").permitAll()
+            .and().addFilterBefore(
+                new RequestFilter(authManager),
+                UsernamePasswordAuthenticationFilter.class
+            );
         return http.build();
 
     }

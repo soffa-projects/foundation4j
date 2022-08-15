@@ -16,7 +16,7 @@ public class DefaultIdGeneratorTest {
     public void test() {
         Set<String> uniq = new HashSet<>();
         for (int i = 0; i < 100_000; i++) {
-            String id = ID.generate( "tok_");
+            String id = ID.generate("tok_");
             if (uniq.contains(id)) {
                 throw new IllegalStateException("Duplicate id: " + id);
             }

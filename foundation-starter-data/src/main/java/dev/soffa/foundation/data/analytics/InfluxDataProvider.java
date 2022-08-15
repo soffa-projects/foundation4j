@@ -20,16 +20,27 @@ public class InfluxDataProvider implements TimeSeriesProvider {
     private final WriteApiBlocking writeApi;
     private final String org;
 
-    public static InfluxDataProvider create(@NonNull String url) {
-        UrlInfo info = UrlInfo.parse(url);
-        return new InfluxDataProvider(info.getUrl(), info.getUsername(), info.getPassword());
-    }
-
     public InfluxDataProvider(@NonNull String url, @NonNull String org, @NonNull String token) {
         client = InfluxDBClientFactory.create(url, token.toCharArray(), org);
         client.enableGzip();
         writeApi = client.getWriteApiBlocking();
         this.org = org;
+    }
+
+    public static InfluxDataProvider create(@NonNull String url) {
+        UrlInfo info = UrlInfo.parse(url);
+        return new InfluxDataProvider(info.getUrl(), info.getUsername(), info.getPassword());
+    }
+
+    @PreDestroy
+    @Override
+    public void close() {
+        client.close();
+    }
+
+    @Override
+    public Writer getWriter(String bucket) {
+        return new LocalWriter(writeApi, this.org, bucket);
     }
 
     @AllArgsConstructor
@@ -55,17 +66,5 @@ public class InfluxDataProvider implements TimeSeriesProvider {
         public void close() {
             // nothing to do, writer is a singleont
         }
-    }
-
-
-    @PreDestroy
-    @Override
-    public void close() {
-        client.close();
-    }
-
-    @Override
-    public Writer getWriter(String bucket) {
-        return new LocalWriter(writeApi, this.org, bucket);
     }
 }

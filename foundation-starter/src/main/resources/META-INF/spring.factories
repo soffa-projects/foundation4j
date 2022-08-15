@@ -3,6 +3,5 @@ org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
     ext.springboot.FoundationAutoConfiguration,\
     ext.springboot.EmailAutoConfiguration, \
     ext.springboot.ObjectStorageAutoConfig
-
 #ext.springboot.RabbitMQConnectionFactory
 

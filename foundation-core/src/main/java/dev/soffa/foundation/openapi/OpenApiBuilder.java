@@ -67,7 +67,7 @@ public class OpenApiBuilder {
             .summary("Returns the health status of the service")
             .operationId("healthCheck");
 
-        MediaType mediaType = new MediaType().schema(new Schema<Map<String,Object>>().type("object"));
+        MediaType mediaType = new MediaType().schema(new Schema<Map<String, Object>>().type("object"));
         Content content = new Content()
             .addMediaType("application/json", mediaType);
 

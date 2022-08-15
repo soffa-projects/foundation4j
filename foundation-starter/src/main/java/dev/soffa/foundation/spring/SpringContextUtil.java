@@ -8,7 +8,7 @@ import java.util.Optional;
 public class SpringContextUtil {
 
     public static <T> Optional<T> findBean(ApplicationContext context, Class<T> clazz) {
-        Map<String,T> beans = context.getBeansOfType(clazz);
+        Map<String, T> beans = context.getBeansOfType(clazz);
         if (beans.isEmpty()) {
             return Optional.empty();
         }

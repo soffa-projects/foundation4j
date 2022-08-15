@@ -12,8 +12,8 @@ import java.util.Map;
 @NoArgsConstructor
 public class TSTable {
 
-    private String name;
     private final Map<String, TSField> fields = new LinkedHashMap<>();
+    private String name;
     private String timestampField;
 
     public TSTable(String name) {
@@ -23,6 +23,7 @@ public class TSTable {
     public TSTable field(String name) {
         return field(name, TSFieldType.STRING);
     }
+
     public TSTable field(String name, TSFieldType type) {
         return field(name, type, false);
     }

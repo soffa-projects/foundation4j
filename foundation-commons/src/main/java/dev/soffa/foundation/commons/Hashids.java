@@ -107,6 +107,65 @@ public class Hashids {
         this.seps = seps;
     }
 
+    public static int checkedCast(long value) {
+        final int result = (int) value;
+        if (result != value) {
+            // don't use checkArgument here, to avoid boxing
+            throw new IllegalArgumentException("Out of range: " + value);
+        }
+        return result;
+    }
+
+    @SuppressWarnings({"PMD.AvoidReassigningLoopVariables", "PMD.ForLoopVariableCount"})
+    private static String consistentShuffle(final String alphabet, final String salt) {
+        if (salt.length() <= 0) {
+            return alphabet;
+        }
+
+        int ascVal;
+        int j;
+        final char[] tmpArr = alphabet.toCharArray();
+        for (int i = tmpArr.length - 1, v = 0, p = 0; i > 0; i--, v++) {
+            v %= salt.length();
+            ascVal = salt.charAt(v);
+            p += ascVal;
+            j = (ascVal + v + p) % i;
+            final char tmp = tmpArr[j];
+            tmpArr[j] = tmpArr[i];
+            tmpArr[i] = tmp;
+        }
+
+        return new String(tmpArr);
+    }
+
+    private static String hash(final long value, final String alphabet) {
+        StringBuilder hash = new StringBuilder();
+        final int alphabetLen = alphabet.length();
+        long input = value;
+
+        do {
+            final int index = (int) (input % alphabetLen);
+            if (index >= 0 && index < alphabet.length()) {
+                hash.insert(0, alphabet.charAt(index));
+            }
+            input /= alphabetLen;
+        } while (input > 0);
+
+        return hash.toString();
+    }
+
+    private static Long unhash(String input, String alphabet) {
+        long number = 0;
+        long pos;
+
+        for (int i = 0; i < input.length(); i++) {
+            pos = alphabet.indexOf(input.charAt(i));
+            number = number * alphabet.length() + pos;
+        }
+
+        return number;
+    }
+
     /**
      * Encrypt numbers to string
      *
@@ -125,6 +184,8 @@ public class Hashids {
         }
         return this.internalEncode(numbers);
     }
+
+    /* Private methods */
 
     /**
      * Decrypt string to numbers
@@ -190,17 +251,6 @@ public class Hashids {
 
         return result.toString();
     }
-
-    public static int checkedCast(long value) {
-        final int result = (int) value;
-        if (result != value) {
-            // don't use checkArgument here, to avoid boxing
-            throw new IllegalArgumentException("Out of range: " + value);
-        }
-        return result;
-    }
-
-    /* Private methods */
 
     private String internalEncode(long... numbers) {
         long numberHashInt = 0;
@@ -310,56 +360,6 @@ public class Hashids {
         }
 
         return arr;
-    }
-
-    @SuppressWarnings({"PMD.AvoidReassigningLoopVariables", "PMD.ForLoopVariableCount"})
-    private static String consistentShuffle(final String alphabet, final String salt) {
-        if (salt.length() <= 0) {
-            return alphabet;
-        }
-
-        int ascVal;
-        int j;
-        final char[] tmpArr = alphabet.toCharArray();
-        for (int i = tmpArr.length - 1, v = 0, p = 0; i > 0; i--, v++) {
-            v %= salt.length();
-            ascVal = salt.charAt(v);
-            p += ascVal;
-            j = (ascVal + v + p) % i;
-            final char tmp = tmpArr[j];
-            tmpArr[j] = tmpArr[i];
-            tmpArr[i] = tmp;
-        }
-
-        return new String(tmpArr);
-    }
-
-    private static String hash(final long value, final String alphabet) {
-        StringBuilder hash = new StringBuilder();
-        final int alphabetLen = alphabet.length();
-        long input = value;
-
-        do {
-            final int index = (int) (input % alphabetLen);
-            if (index >= 0 && index < alphabet.length()) {
-                hash.insert(0, alphabet.charAt(index));
-            }
-            input /= alphabetLen;
-        } while (input > 0);
-
-        return hash.toString();
-    }
-
-    private static Long unhash(String input, String alphabet) {
-        long number = 0;
-        long pos;
-
-        for (int i = 0; i < input.length(); i++) {
-            pos = alphabet.indexOf(input.charAt(i));
-            number = number * alphabet.length() + pos;
-        }
-
-        return number;
     }
 
     /**
