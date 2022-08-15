@@ -11,6 +11,7 @@ import dev.soffa.foundation.multitenancy.TenantHolder;
 
 import java.io.File;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.lang.reflect.Type;
 import java.util.List;
 import java.util.Map;
@@ -199,6 +200,11 @@ public class SimpleRepository<E, I> implements EntityRepository<E, I> {
     @Override
     public long exportToCsvFile(TenantId tenant, String query, Map<String, Object> binding, File file, char delimiter, boolean headers) {
         return ds.exportToCsvFile(tenant, tableName, query, binding, file, delimiter, headers);
+    }
+
+    @Override
+    public long exportToCsvFile(TenantId tenant, String query, Map<String, Object> binding, OutputStream out, char delimiter, boolean headers) {
+        return ds.exportToCsvFile(tenant, tableName, query, binding, out, delimiter, headers);
     }
 
     @Override

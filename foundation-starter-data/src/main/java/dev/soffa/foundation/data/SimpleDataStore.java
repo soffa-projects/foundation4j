@@ -12,6 +12,7 @@ import dev.soffa.foundation.model.PagedList;
 import dev.soffa.foundation.model.Paging;
 import dev.soffa.foundation.model.TenantId;
 import dev.soffa.foundation.multitenancy.TenantHolder;
+import lombok.SneakyThrows;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.jdbi.v3.core.Handle;
@@ -318,8 +319,16 @@ public class SimpleDataStore implements DataStore {
     }
 
 
+    @SneakyThrows
     @Override
     public long exportToCsvFile(TenantId tenant, String tableName, String query, Map<String, Object> binding, File file, char delimiter, boolean headers) {
+        try (OutputStream writer = new BufferedOutputStream(Files.newOutputStream(file.toPath()))) {
+            return exportToCsvFile(tenant, tableName, query, binding, writer, delimiter, headers);
+        }
+    }
+
+    @Override
+    public long exportToCsvFile(TenantId tenant, String tableName, String query, Map<String, Object> binding, OutputStream out, char delimiter, boolean headers) {
         final String lQuery = TextUtil.isEmpty(query) ? "SELECT *  from %table%" : query;
         return hp.withHandle(tenant, handle -> {
             try {
@@ -330,9 +339,7 @@ public class SimpleDataStore implements DataStore {
                     delimiter,
                     (headers) ? "CSV HEADER" : ""
                 );
-                try (OutputStream writer = new BufferedOutputStream(Files.newOutputStream(file.toPath()))) {
-                    return cm.copyOut(sql, writer);
-                }
+                return cm.copyOut(sql,out);
             } catch (Exception e) {
                 throw new DatabaseException(e);
             }

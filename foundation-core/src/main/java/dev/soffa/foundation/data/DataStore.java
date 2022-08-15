@@ -9,6 +9,7 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 
 import java.io.File;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -117,6 +118,8 @@ public interface DataStore {
         return findAll(tenant, entityClass, Paging.DEFAULT);
     }
 
+
+    long exportToCsvFile(TenantId tenant, String tableName, String query, Map<String, Object> binding, OutputStream out, char delimiter, boolean headers);
 
     <E> PagedList<E> findAll(TenantId tenant, Class<E> entityClass, Paging paging);
 

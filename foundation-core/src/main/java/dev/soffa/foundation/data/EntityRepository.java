@@ -9,6 +9,7 @@ import dev.soffa.foundation.model.TenantId;
 
 import java.io.File;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -213,6 +214,15 @@ public interface EntityRepository<E, I> {
     long loadCsvFile(TenantId tenant, File file, String delimiter);
 
     long loadCsvFile(TenantId tenant, InputStream source, String delimiter);
+
+    long exportToCsvFile(TenantId tenant, String query, Map<String, Object> binding, OutputStream out, char delimiter, boolean headers);
+
+    default long exportToCsvFile(TenantId tenant, String query, OutputStream out, char delimiter, boolean headers) {
+        return exportToCsvFile(tenant, query, null, out, delimiter, headers);
+    }
+ default long exportToCsvFile(TenantId tenant, String query, OutputStream out, char delimiter, boolean headers) {
+        return exportToCsvFile(tenant, query, null, out, delimiter, headers);
+    }
 
     E update(TenantId tenant, E entity, String... fields);
 
