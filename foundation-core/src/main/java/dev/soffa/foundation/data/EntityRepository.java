@@ -220,9 +220,6 @@ public interface EntityRepository<E, I> {
     default long exportToCsvFile(TenantId tenant, String query, OutputStream out, char delimiter, boolean headers) {
         return exportToCsvFile(tenant, query, null, out, delimiter, headers);
     }
- default long exportToCsvFile(TenantId tenant, String query, OutputStream out, char delimiter, boolean headers) {
-        return exportToCsvFile(tenant, query, null, out, delimiter, headers);
-    }
 
     E update(TenantId tenant, E entity, String... fields);
 
