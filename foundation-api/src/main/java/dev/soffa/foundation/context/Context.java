@@ -58,6 +58,7 @@ public class Context implements BaseContext {
     }
 
     @SneakyThrows
+    @SuppressWarnings("PMD.CyclomaticComplexity")
     public static Context fromHeaders(Map<String, String> headers) {
         Context context = new Context();
         if (headers == null) {

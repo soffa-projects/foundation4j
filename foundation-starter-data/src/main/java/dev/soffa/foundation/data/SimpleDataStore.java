@@ -337,7 +337,7 @@ public class SimpleDataStore implements DataStore {
                     "COPY (%s) TO STDOUT DELIMITER '%s' %s",
                     lQuery.replace("%table%", tablesPrefix + tableName),
                     delimiter,
-                    (headers) ? "CSV HEADER" : ""
+                    headers ? "CSV HEADER" : ""
                 );
                 return cm.copyOut(sql,out);
             } catch (Exception e) {
