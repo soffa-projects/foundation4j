@@ -38,7 +38,7 @@ class CronJobScheduling implements ApplicationLifecycle {
                 cron = annotation.value();
             }
             String cronId = OperationsMapping.resolveClass(worker.getClass()).getSimpleName().split("\\$")[0];
-            Logger.platform.info("Scheduling worker %s.%s", worker.getClass(), cronId);
+            Logger.platform.info("Scheduling worker %s[%s]", cronId, worker.getClass());
             count++;
             scheduler.scheduleRecurrently(cronId, cron, worker);
         }

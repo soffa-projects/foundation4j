@@ -32,6 +32,7 @@ class JobRunrOperationScheduler implements OperationScheduler {
 
     @Override
     public void scheduleRecurrently(String cronId, String cron, ServiceWorker worker) {
+        jobScheduler.delete(cronId);
         jobScheduler.scheduleRecurrently(cronId, cron, worker::tick);
     }
 
@@ -45,7 +46,7 @@ class JobRunrOperationScheduler implements OperationScheduler {
             // EL
             return jobScheduler.enqueue(uuid, () -> dispatcher.dispatch(operationName, input, serialzedContext));
         });
-        Logger.platform.info("Operation scheduled: %s --> %s | context=%s", operationName, jobId, serialzedContext);
+        Logger.platform.debug("Operation scheduled: %s --> %s | context=%s", operationName, jobId, serialzedContext);
     }
 
 

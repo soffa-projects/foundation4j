@@ -35,13 +35,13 @@ public class SimpleExecutorOperationScheduler implements OperationScheduler {
     @Override
     public void enqueue(UUID uuid, String operationName, Serialized input, Context ctx) {
         COUNTER.incrementAndGet();
-        Logger.platform.info("Operation scheduled: %s", operationName);
+        Logger.platform.debug("Operation scheduled: %s", operationName);
         if (dispatcher == null) {
             dispatcher = context.getBeansOfType(Dispatcher.class).values().iterator().next();
         }
         final String serializedContext = Mappers.JSON_DEFAULT.serialize(ctx);
         executorService.schedule(() -> {
-            Logger.platform.info("Processing scheduled operation: %s", operationName);
+            Logger.platform.debug("Processing scheduled operation: %s", operationName);
             COUNTER.decrementAndGet();
             try {
                 dispatcher.dispatch(operationName, input, serializedContext);

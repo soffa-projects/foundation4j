@@ -79,7 +79,7 @@ public class SideEffectProcessor implements ProcessSideEffect {
 
     @Override
     public Void handle(ProcessSideEffectInput input, @NonNull OperationContext ctx) {
-        Logger.platform.info("Processing side effect: %s", input.getId());
+        Logger.platform.debug("Processing side effect: %s", input.getId());
         bootstrap();
         pendingJobs.consume(input.getId(), pendingJob -> {
 
@@ -135,7 +135,7 @@ public class SideEffectProcessor implements ProcessSideEffect {
 
             return true;
         });
-        Logger.platform.info("Side effect %s processed successfully", input.getId());
+        Logger.platform.debug("Side effect %s processed successfully", input.getId());
 
         return null;
     }

@@ -13,7 +13,7 @@ public class DefaultActivityService implements ActivityService {
     @Override
     public void record(Activity activity, Context context) {
         queue.add(activity);
-        Logger.platform.info("New activity record: %s -- %s", activity.getEvent(), activity.getData());
+        Logger.platform.debug("New activity record: %s -- %s", activity.getEvent(), activity.getData());
     }
 
     @Override
