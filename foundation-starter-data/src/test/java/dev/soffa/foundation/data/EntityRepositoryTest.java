@@ -7,6 +7,7 @@ import dev.soffa.foundation.data.app.TenantMessageDao;
 import dev.soffa.foundation.data.app.model.Message;
 import dev.soffa.foundation.extra.jobs.PendingJobRepo;
 import dev.soffa.foundation.model.Paging;
+import dev.soffa.foundation.model.PagingConstants;
 import dev.soffa.foundation.model.TenantId;
 import dev.soffa.foundation.multitenancy.TenantHolder;
 import dev.soffa.foundation.multitenancy.TenantsLoader;
@@ -54,7 +55,7 @@ public class EntityRepositoryTest extends BaseTest {
         }
         assertEquals(generatedMessagesCount, messages.count());
 
-        assertEquals(Paging.DEFAULT.getSize(), messages.findAll().getData().size());
+        assertEquals(PagingConstants.DEFAULT.getSize(), messages.findAll().getData().size());
         assertEquals(10, messages.findAll(new Paging(1, 10)).getData().size());
 
         assertEquals(30, messages.findAll(new Paging(6, 194)).getData().size());

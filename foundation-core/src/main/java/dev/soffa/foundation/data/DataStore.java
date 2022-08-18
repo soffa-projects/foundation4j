@@ -4,6 +4,7 @@ package dev.soffa.foundation.data;
 import dev.soffa.foundation.commons.TextUtil;
 import dev.soffa.foundation.model.PagedList;
 import dev.soffa.foundation.model.Paging;
+import dev.soffa.foundation.model.PagingConstants;
 import dev.soffa.foundation.model.TenantId;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
@@ -85,7 +86,7 @@ public interface DataStore {
     <E> int delete(TenantId tenant, E entity);
 
     default <E> PagedList<E> find(Class<E> entityClass, Criteria criteria) {
-        return find(TenantId.CONTEXT, entityClass, criteria, Paging.DEFAULT);
+        return find(TenantId.CONTEXT, entityClass, criteria, PagingConstants.DEFAULT);
     }
 
     <E> PagedList<E> find(TenantId tenant, Class<E> entityClass, Criteria criteria, Paging paging);
@@ -101,7 +102,7 @@ public interface DataStore {
     int execute(TenantId tenant, String command);
 
     default <E> PagedList<E> find(TenantId tenant, Class<E> entityClass, Criteria criteria) {
-        return find(tenant, entityClass, criteria, Paging.DEFAULT);
+        return find(tenant, entityClass, criteria, PagingConstants.DEFAULT);
     }
 
     default <E> Optional<E> get(Class<E> entityClass, Criteria criteria) {
@@ -115,7 +116,7 @@ public interface DataStore {
     }
 
     default <E> PagedList<E> findAll(TenantId tenant, Class<E> entityClass) {
-        return findAll(tenant, entityClass, Paging.DEFAULT);
+        return findAll(tenant, entityClass, PagingConstants.DEFAULT);
     }
 
 

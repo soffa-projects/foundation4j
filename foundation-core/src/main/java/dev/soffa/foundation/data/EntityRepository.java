@@ -5,6 +5,7 @@ import com.google.common.collect.ImmutableMap;
 import dev.soffa.foundation.error.ResourceNotFoundException;
 import dev.soffa.foundation.model.PagedList;
 import dev.soffa.foundation.model.Paging;
+import dev.soffa.foundation.model.PagingConstants;
 import dev.soffa.foundation.model.TenantId;
 
 import java.io.File;
@@ -53,7 +54,7 @@ public interface EntityRepository<E, I> {
     long count(TenantId tennant, Criteria criteria);
 
     default PagedList<E> findAll() {
-        return findAll(Paging.DEFAULT);
+        return findAll(PagingConstants.DEFAULT);
     }
 
     default PagedList<E> findAll(Paging paging) {
@@ -83,11 +84,11 @@ public interface EntityRepository<E, I> {
     void pluckStream(TenantId tenant, String field, int page, int count, Consumer<Stream<String>> consumer);
 
     default PagedList<E> find(TenantId tenant, Criteria criteria) {
-        return find(tenant, criteria, Paging.DEFAULT);
+        return find(tenant, criteria, PagingConstants.DEFAULT);
     }
 
     default PagedList<E> findAll(TenantId tenantId) {
-        return findAll(tenantId, Paging.DEFAULT);
+        return findAll(tenantId, PagingConstants.DEFAULT);
     }
 
     PagedList<E> find(TenantId tenant, Criteria criteria, Paging paging);
@@ -101,7 +102,7 @@ public interface EntityRepository<E, I> {
     }
 
     default PagedList<E> find(Criteria criteria) {
-        return find(criteria, Paging.DEFAULT);
+        return find(criteria, PagingConstants.DEFAULT);
     }
 
     default <T> List<T> query(String query, Class<T> resultClass) {
@@ -119,7 +120,7 @@ public interface EntityRepository<E, I> {
     }
 
     default PagedList<E> find(Map<String, Object> filter) {
-        return find(filter, Paging.DEFAULT);
+        return find(filter, PagingConstants.DEFAULT);
     }
 
     default void forEach(Map<String, Object> filter, int fetchSize, Consumer<E> consumer) {
