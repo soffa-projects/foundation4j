@@ -10,6 +10,11 @@ public class FakeObjectStorageClient implements ObjectStorageClient {
     private static final Logger LOG = Logger.get(FakeObjectStorageClient.class);
 
     @Override
+    public String getDefaultBucket() {
+        return "fake";
+    }
+
+    @Override
     public void upload(InputStream source, String bucket, String objectName, String contentType) {
         LOG.info("FakeS3: upload to %s/%s", bucket, objectName);
     }

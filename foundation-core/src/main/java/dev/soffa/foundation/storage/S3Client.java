@@ -30,6 +30,10 @@ public class S3Client implements ObjectStorageClient {
     private final AmazonS3 client;
     private String defaultBucketName;
 
+    public String getDefaultBucket() {
+        return defaultBucketName;
+    }
+
     public S3Client(String endpoint, String accessKey, String secretKey, String defaultBucketName) {
         this(endpoint, accessKey, secretKey);
         this.defaultBucketName = defaultBucketName;

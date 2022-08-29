@@ -5,6 +5,8 @@ import java.io.InputStream;
 
 public interface ObjectStorageClient {
 
+    String getDefaultBucket();
+
     void upload(InputStream source, String bucket, String objectName, String contentType);
 
     void upload(File source, String bucket, String objectName);

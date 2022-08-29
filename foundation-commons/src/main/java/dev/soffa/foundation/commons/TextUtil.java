@@ -122,13 +122,13 @@ public final class TextUtil {
         return String.format(pattern, args);
     }
 
-    public static String takeLast(String token, int count) {
-        if (TextUtil.isEmpty(token)) {
-            return token;
+    public static String takeLast(String value, int count) {
+        if (TextUtil.isEmpty(value)) {
+            return value;
         }
-        if (token.length() >= count) {
-            return token.substring(token.length() - count);
+        if (value.length() >= count) {
+            return value.substring(value.length() - count);
         }
-        return token;
+        return value;
     }
 }

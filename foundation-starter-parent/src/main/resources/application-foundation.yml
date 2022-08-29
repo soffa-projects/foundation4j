@@ -111,6 +111,8 @@ app.openapi:
   title: ${spring.application.name}
   servers: ${OPENAPI_SERVERS:}
 
+app.s3.url: ${S3_URL:}
+
 app.health.root.enabled: false
 
 org.jobrunr:
