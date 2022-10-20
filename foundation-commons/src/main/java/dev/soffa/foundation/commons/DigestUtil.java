@@ -1,7 +1,9 @@
 package dev.soffa.foundation.commons;
 
+import lombok.SneakyThrows;
 import org.apache.commons.codec.digest.DigestUtils;
 
+import java.io.InputStream;
 import java.util.UUID;
 
 public final class DigestUtil {
@@ -27,6 +29,14 @@ public final class DigestUtil {
             return "";
         }
         return DigestUtils.md5Hex(value);
+    }
+
+    @SneakyThrows
+    public static String md5(InputStream io) {
+        if (io==null) {
+            return "";
+        }
+        return DigestUtils.md5Hex(io);
     }
 
 }

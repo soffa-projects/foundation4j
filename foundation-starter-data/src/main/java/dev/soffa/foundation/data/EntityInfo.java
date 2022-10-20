@@ -19,6 +19,7 @@ import javax.persistence.Transient;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Getter
 public final class EntityInfo<T> {
@@ -49,6 +50,14 @@ public final class EntityInfo<T> {
 
     public static <T> EntityInfo<T> of(@NonNull Class<T> entityClass, @Nullable String tablePrefix) {
         return of(entityClass, tablePrefix, true);
+    }
+
+    public List<String> getUpdatePairs(String... fields) {
+        if (fields != null && fields.length > 0) {
+            Set<String> filtered = Arrays.stream(fields).map(TextUtil::snakeCase).collect(Collectors.toSet());
+            return updatePairs.stream().filter(pair -> filtered.contains(pair.split("=")[0].trim())).collect(Collectors.toList());
+        }
+        return updatePairs;
     }
 
     public static <T> EntityInfo<T> of(@NonNull Class<T> entityClass) {

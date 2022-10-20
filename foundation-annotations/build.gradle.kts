@@ -4,7 +4,7 @@ plugins {
 }
 
 dependencies {
-    compileOnly("org.springframework:spring-web:5.3.20")
+    compileOnly("org.springframework:spring-web:5.3.23")
     compileOnly("javax.inject:javax.inject:1")
 }
 

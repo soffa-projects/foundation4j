@@ -1,6 +1,5 @@
 package dev.soffa.foundation.data;
 
-
 import dev.soffa.foundation.commons.TextUtil;
 import dev.soffa.foundation.model.PagedList;
 import dev.soffa.foundation.model.Paging;
@@ -18,8 +17,8 @@ import java.util.Set;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
+@SuppressWarnings("PMD.ExcessivePublicCount")
 public interface DataStore {
-
 
     default <E> Optional<E> findById(Class<E> entityClass, Object value) {
         return findById(TenantId.CONTEXT, entityClass, value);
@@ -51,6 +50,10 @@ public interface DataStore {
         return insert(TenantId.CONTEXT, entity);
     }
 
+    default <E> int[] insertBatch(List<E> entities) {
+        return batch(TenantId.CONTEXT, entities);
+    }
+
     default <E> int[] batch(List<E> entity) {
         return batch(TenantId.CONTEXT, entity);
     }
@@ -64,6 +67,10 @@ public interface DataStore {
     <E> int[] batch(TenantId tenantId, String table, List<E> entity);
 
     <E> E insert(TenantId tenant, E entity);
+
+    default <E> int[] insertBatch(TenantId tenant, List<E> entities) {
+        return batch(tenant, entities);
+    }
 
     String getTablesPrefix();
 
@@ -81,6 +88,12 @@ public interface DataStore {
 
     default <E> int delete(E entity) {
         return delete(TenantId.CONTEXT, entity);
+    }
+
+    <E> int[] updateBatch(TenantId tenant, @NonNull List<E> models, String... fields);
+
+    default <E> int[] updateBatch(@NonNull List<E> models, String... fields) {
+        return updateBatch(TenantId.CONTEXT, models, fields);
     }
 
     <E> int delete(TenantId tenant, E entity);

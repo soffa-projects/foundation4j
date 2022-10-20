@@ -1,6 +1,11 @@
 package dev.soffa.foundation.data;
 
-import dev.soffa.foundation.commons.CollectionUtil;
+import com.healthmarketscience.sqlbuilder.BinaryCondition;
+import com.healthmarketscience.sqlbuilder.UpdateQuery;
+import com.healthmarketscience.sqlbuilder.dbspec.basic.DbColumn;
+import com.healthmarketscience.sqlbuilder.dbspec.basic.DbSchema;
+import com.healthmarketscience.sqlbuilder.dbspec.basic.DbSpec;
+import com.healthmarketscience.sqlbuilder.dbspec.basic.DbTable;
 import dev.soffa.foundation.commons.Logger;
 import dev.soffa.foundation.commons.TextUtil;
 import dev.soffa.foundation.data.common.ExtDataSource;
@@ -13,10 +18,12 @@ import dev.soffa.foundation.model.Paging;
 import dev.soffa.foundation.model.TenantId;
 import dev.soffa.foundation.multitenancy.TenantHolder;
 import lombok.SneakyThrows;
+import org.apache.commons.beanutils.BeanMap;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.jdbi.v3.core.Handle;
 import org.jdbi.v3.core.Jdbi;
+import org.jdbi.v3.core.statement.Batch;
 import org.jdbi.v3.core.statement.PreparedBatch;
 import org.jdbi.v3.core.statement.Query;
 import org.postgresql.copy.CopyManager;
@@ -177,11 +184,7 @@ public class SimpleDataStore implements DataStore {
             if (TextUtil.isEmpty(info.getIdProperty())) {
                 throw new TechnicalException("No @Id field defined for Entity %s", model.getClass());
             }
-            List<String> columns = info.getUpdatePairs();
-            if (CollectionUtil.isNotEmpty((Object[]) fields)) {
-                Set<String> filtered = Arrays.stream(fields).map(TextUtil::snakeCase).collect(Collectors.toSet());
-                columns = columns.stream().filter(pair -> filtered.contains(pair.split("=")[0].trim())).collect(Collectors.toList());
-            }
+            List<String> columns = info.getUpdatePairs(fields);
             h.createUpdate("UPDATE <table> SET <columns> WHERE <idColumn> = :<idField>")
                 .define(TABLE, info.getTableName())
                 .defineList(COLUMNS, columns)
@@ -192,6 +195,57 @@ public class SimpleDataStore implements DataStore {
             return model;
         });
     }
+
+    @Override
+    public <E> int[] updateBatch(TenantId tenant, @NonNull List<E> models, String... fields) {
+
+        for (E model : models) {
+            if (model instanceof EntityLifecycle) {
+                EntityLifecycle lc = (EntityLifecycle) model;
+                lc.onUpdate();
+                lc.onSave();
+            }
+        }
+
+        return inTransaction(tenant, models.get(0).getClass(), (h, info) -> {
+            if (TextUtil.isEmpty(info.getIdProperty())) {
+                throw new TechnicalException("No @Id field defined for Entity %s", models.get(0).getClass());
+            }
+
+            Batch batch = h.createBatch();
+            DbSpec spec = new DbSpec();
+            DbSchema schema = spec.addDefaultSchema();
+            DbTable table = new DbTable(schema, info.getTableName());
+            List<String> columns = info.getUpdatePairs(fields);
+            Map<DbColumn,String> setFields = new HashMap<>();
+            DbColumn idColumn = table.addColumn(info.getIdColumn());
+            for (String column : columns) {
+                String[] parts = column.trim().split("=");
+                String field = parts[1].trim().replace(":", "");
+                setFields.put(table.addColumn(parts[0].trim()), field);
+            }
+
+            for (E model : models) {
+                UpdateQuery query = new UpdateQuery(info.getTableName());
+                try {
+                    @SuppressWarnings("MismatchedQueryAndUpdateOfCollection") BeanMap beanMap = new BeanMap(model);
+                    Object idValue = beanMap.get(info.getIdProperty());
+                    query.addCondition(BinaryCondition.equalTo(idColumn, idValue));
+                    for (Map.Entry<DbColumn, String> e : setFields.entrySet()) {
+                        Object value = beanMap.get(e.getValue());
+                        query.addSetClause(e.getKey(), value);
+                    }
+                    String sql = query.toString();
+                    batch.add(sql);
+                } catch (Exception e) {
+                    throw new TechnicalException(e);
+                }
+            }
+
+            return batch.execute();
+        });
+    }
+
 
     @Override
     public <E> int delete(TenantId tenant, E model) {
@@ -339,7 +393,7 @@ public class SimpleDataStore implements DataStore {
                     delimiter,
                     headers ? "CSV HEADER" : ""
                 );
-                return cm.copyOut(sql,out);
+                return cm.copyOut(sql, out);
             } catch (Exception e) {
                 throw new DatabaseException(e);
             }
@@ -442,7 +496,7 @@ public class SimpleDataStore implements DataStore {
         Query q = define(
             info,
             paging,
-            handle.createQuery(createBaseQuery(baseQuery, paging != null, criteria != null))
+            handle.createQuery(createBaseQuery(baseQuery, paging, criteria != null))
         );
         if (criteria != null) {
             q.define(WHERE, criteria.getWhere())
@@ -452,13 +506,16 @@ public class SimpleDataStore implements DataStore {
         return q;
     }
 
-    private String createBaseQuery(String base, boolean paging, boolean criteria) {
+    private String createBaseQuery(String base, Paging paging, boolean criteria) {
         StringBuilder sb = new StringBuilder(base).append(" FROM <table>");
         if (criteria) {
             sb.append(" WHERE <where>");
         }
-        if (paging) {
-            sb.append(" ORDER BY <order> LIMIT <limit> OFFSET <offset>");
+        if (paging != null && TextUtil.isNotEmpty(paging.getSort())) {
+            sb.append(" ORDER BY <order>");
+        }
+        if (paging != null && paging.getSize() > 0) {
+            sb.append(" LIMIT <limit> OFFSET <offset>");
         }
         return sb.toString();
     }
