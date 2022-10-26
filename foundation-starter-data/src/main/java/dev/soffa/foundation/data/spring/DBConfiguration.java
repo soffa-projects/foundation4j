@@ -2,6 +2,8 @@ package dev.soffa.foundation.data.spring;
 
 import dev.soffa.foundation.config.AppConfig;
 import dev.soffa.foundation.data.DB;
+import dev.soffa.foundation.data.DistributedLock;
+import dev.soffa.foundation.error.TechnicalException;
 import dev.soffa.foundation.multitenancy.TenantsLoader;
 import org.jdbi.v3.core.Jdbi;
 import org.jdbi.v3.sqlobject.SqlObjectPlugin;
@@ -29,6 +31,15 @@ public class DBConfiguration {
         appConfig.configure();
         return new DBImpl(context, appConfig);
     }
+
+    @Bean
+    public DistributedLock createDistributedLock(DB db) {
+        if (db instanceof DBImpl) {
+            return (DBImpl)db;
+        }
+        throw new TechnicalException("Distributed lock is not supported by current database impl");
+    }
+
 
     @Bean
     @Primary

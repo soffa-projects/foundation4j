@@ -33,7 +33,7 @@ import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 @SuppressWarnings("PMD.GodClass")
-public final class DBImpl extends AbstractDataSource implements ApplicationListener<ContextRefreshedEvent>, DB {
+public final class DBImpl extends AbstractDataSource implements ApplicationListener<ContextRefreshedEvent>, DB, DistributedLock {
 
     public static final String AUTO_MIGRATE = "auto";
     private static final Logger LOG = Logger.get(DBImpl.class);

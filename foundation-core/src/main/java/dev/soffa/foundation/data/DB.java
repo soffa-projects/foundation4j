@@ -8,7 +8,7 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.function.Consumer;
 
-public interface DB extends DistributedLock {
+public interface DB {
 
     void createSchema(String linkId, String schema);
 
@@ -57,4 +57,14 @@ public interface DB extends DistributedLock {
     }
 
     DataSource getDefaultDataSource();
+
+    default void forEachTenant(Consumer<String> consumer) {
+        Set<String> tenants = getTenantList();
+        if (tenants == null || tenants.isEmpty()) {
+            return;
+        }
+        for (String tenant : tenants) {
+            consumer.accept(tenant.toLowerCase());
+        }
+    }
 }
