@@ -75,9 +75,9 @@ public final class DBImpl extends AbstractDataSource implements ApplicationListe
     @Override
     public Set<String> getTenantList() {
         return registry.keySet().stream().filter(id -> {
-            // EL
+            // EL/
             return !(id.equals(TENANT_PLACEHOLDER) || id.equals(TenantId.DEFAULT_VALUE));
-        }).collect(Collectors.toSet());
+        }).map(s -> s.toLowerCase().trim()).collect(Collectors.toSet());
     }
 
     @Override

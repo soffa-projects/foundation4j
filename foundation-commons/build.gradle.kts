@@ -11,7 +11,7 @@ dependencies {
     api("commons-beanutils:commons-beanutils:1.9.4")
     // api("io.github.openfeign:feign-core:11.8")
     api("joda-time:joda-time:2.12.0")
-    api("com.github.michaelgantman:MgntUtils:1.6.0.3")
+    api("com.github.michaelgantman:MgntUtils:1.6.0.5")
     api("com.joestelmach:natty:0.13")
     api("org.json:json:20220924")
     api("com.jayway.jsonpath:json-path:2.7.0")

@@ -4,12 +4,11 @@ import dev.soffa.foundation.error.TodoException;
 import dev.soffa.foundation.model.TenantId;
 
 import javax.sql.DataSource;
-import java.time.Duration;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.function.Consumer;
 
-public interface DB {
+public interface DB extends DistributedLock {
 
     void createSchema(String linkId, String schema);
 
@@ -47,14 +46,7 @@ public interface DB {
         // Implementation not required
     }
 
-
-    default void withLock(String name, int atMostSeconds, int atLeastSeconds, Runnable runnable) {
-        withLock(name, Duration.ofSeconds(atMostSeconds), Duration.ofSeconds(atLeastSeconds), runnable);
-    }
-
     boolean isTenantReady(String tenant);
-
-    void withLock(String name, Duration atMost, Duration atLeast, Runnable runnable);
 
     /*default DataStore newStore() {
         throw new TodoException("Implement me");

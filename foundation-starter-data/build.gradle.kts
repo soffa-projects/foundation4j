@@ -17,10 +17,10 @@ dependencies {
             strictly("2.9.3")
         }
     }
-    implementation("org.jobrunr:jobrunr:5.2.0") {
+    implementation("org.jobrunr:jobrunr:5.3.0") {
         exclude(group = "com.zaxxer")
     }
-    implementation("org.questdb:questdb:6.5.3-jdk8")
+    implementation("org.questdb:questdb:6.5.4-jdk8")
     implementation("com.influxdb:influxdb-client-java:6.6.0")
 
     implementation("org.postgresql:postgresql:42.5.0")
@@ -37,7 +37,7 @@ dependencies {
         exclude(group = "com.github.ben-manes.caffeine")
     }
     implementation("com.healthmarketscience.sqlbuilder:sqlbuilder:3.0.2")
-    implementation("org.liquibase:liquibase-core:4.17.0")
+    implementation("org.liquibase:liquibase-core:4.17.1")
     implementation("org.jdbi:jdbi3-postgres:3.34.0")
     implementation("org.jdbi:jdbi3-sqlobject:3.34.0")
     testImplementation(project(":foundation-starter"))

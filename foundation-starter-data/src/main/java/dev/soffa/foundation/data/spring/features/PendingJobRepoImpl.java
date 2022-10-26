@@ -64,7 +64,7 @@ public class PendingJobRepoImpl extends SimpleRepository<PendingJob, PendingJobI
         }
         try {
             if (consumer.apply(job)) {
-                Logger.platform.info("Pending job [%s] consumed, removing from database", id);
+                Logger.platform.debug("Pending job [%s] consumed, removing from database", id);
                 delete(TenantId.DEFAULT, job);
             }
         } catch (Exception e) {
