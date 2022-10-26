@@ -35,7 +35,7 @@ import java.util.concurrent.atomic.AtomicReference;
 @AllArgsConstructor
 public class OperationDispatcher implements Dispatcher, Resource {
 
-    private static final Map<String, Boolean> DEFAULT_TENANT = new ConcurrentHashMap<>();
+    private static final Map<String, Boolean> DEFAULT_TENANT_OPERATIONS = new ConcurrentHashMap<>();
     private final ApplicationContext context;
     private final SideEffectsHandler sideEffectsHandler;
     private final AtomicReference<OperationsMapping> operationsMapping = new AtomicReference<>(null);
@@ -90,12 +90,12 @@ public class OperationDispatcher implements Dispatcher, Resource {
 
         Logger.platform.debug("Invoking operation %s [livemode=%s]", className, ctx.isLiveMode());
 
-        if (!DEFAULT_TENANT.containsKey(className)) {
-            DEFAULT_TENANT.put(className, AnnotationUtils.findAnnotation(operation.getClass(), DefaultTenant.class) != null);
+        if (!DEFAULT_TENANT_OPERATIONS.containsKey(className)) {
+            DEFAULT_TENANT_OPERATIONS.put(className, AnnotationUtils.findAnnotation(operation.getClass(), DefaultTenant.class) != null);
         }
 
 
-        if (DEFAULT_TENANT.get(className)) {
+        if (DEFAULT_TENANT_OPERATIONS.get(className)) {
             return TenantHolder.useDefault(() -> apply(operation, input, ctx));
         } else {
             TenantId tenant = ctx.getTenant();
