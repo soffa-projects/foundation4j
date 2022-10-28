@@ -6,7 +6,6 @@ import com.healthmarketscience.sqlbuilder.dbspec.basic.DbColumn;
 import com.healthmarketscience.sqlbuilder.dbspec.basic.DbSchema;
 import com.healthmarketscience.sqlbuilder.dbspec.basic.DbSpec;
 import com.healthmarketscience.sqlbuilder.dbspec.basic.DbTable;
-import dev.soffa.foundation.commons.Logger;
 import dev.soffa.foundation.commons.TextUtil;
 import dev.soffa.foundation.data.common.ExtDataSource;
 import dev.soffa.foundation.data.jdbi.*;
