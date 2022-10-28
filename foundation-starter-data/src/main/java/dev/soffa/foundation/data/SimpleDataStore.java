@@ -543,7 +543,6 @@ public class SimpleDataStore implements DataStore {
                 EntityInfo<E> info = EntityInfo.of(entityClass, tablesPrefix);
                 return hp.inTransaction(tenant, handle -> consumer.apply(handle, info));
             } catch (Exception e) {
-                Logger.platform.error("Current tenant is: %s", tenant);
                 throw new DatabaseException(e);
             }
         });
@@ -558,7 +557,6 @@ public class SimpleDataStore implements DataStore {
                 EntityInfo<E> info = EntityInfo.of(entityClass, tablesPrefix);
                 return hp.withHandle(tenant, handle -> consumer.apply(handle, info));
             } catch (Exception e) {
-                Logger.platform.error("Current tenant is: %s", tenant);
                 throw new DatabaseException(e);
             }
         });

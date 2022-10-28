@@ -4,6 +4,7 @@ import dev.soffa.foundation.commons.TextUtil;
 import lombok.Data;
 
 import javax.ws.rs.HttpMethod;
+import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -53,8 +54,18 @@ public class HttpRequest {
         return new HttpRequest(HttpMethod.DELETE, url);
     }
 
+    @Deprecated
     public HttpRequest bearer(String token) {
+        return bearerAuth(token);
+    }
+
+    public HttpRequest bearerAuth(String token) {
         return authorization("Bearer " + token);
+    }
+
+    public HttpRequest basicAuth(String username, String password) {
+        String encoding = Base64.getEncoder().encodeToString((username + ":" + password).getBytes());
+        return authorization("Basic " + encoding);
     }
 
     public HttpRequest authorization(String value) {
