@@ -41,17 +41,11 @@ public class DefaultSideEffectsHandler implements SideEffectsHandler {
             initialized = true;
             this.activities = SpringContextUtil.findBean(context, ActivityService.class).orElse(null);
             this.pubSub = SpringContextUtil.findBean(context, PubSubMessenger.class).orElse(null);
-            if (pubSub == null) {
-                Logger.platform.warn("[sideffect] No PubSubClient registered, events will not be sent");
-            }
             this.hooks = SpringContextUtil.findBean(context, Hooks.class).orElse(null);
             if (this.hooks == null) {
                 Logger.platform.warn("[sideffect] No HookProvider registered, hooks will be discarded");
             }
             this.tsp = SpringContextUtil.findBean(context, TimeSeriesProvider.class).orElse(null);
-            if (this.tsp == null) {
-                Logger.platform.warn("[sideffect] No TimeSeriesProvider registered, dataPoints will be discarded");
-            }
             this.scheduler = SpringContextUtil.findBean(context, OperationScheduler.class).orElse(null);
 
         }

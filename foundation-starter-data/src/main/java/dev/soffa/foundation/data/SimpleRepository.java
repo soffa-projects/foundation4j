@@ -95,11 +95,7 @@ public class SimpleRepository<E, I> implements EntityRepository<E, I> {
 
     @Override
     public int execute(TenantId tenant, String command) {
-        String cmd = command;
-        if (TextUtil.isNotEmpty(tableName)) {
-            cmd = command.replace(PH_TABLE, ds.getTableName(this.tableName));
-        }
-        return ds.execute(tenant, cmd);
+        return ds.execute(tenant, evaluateQuery(command));
     }
 
     @Override
@@ -144,7 +140,7 @@ public class SimpleRepository<E, I> implements EntityRepository<E, I> {
 
     @Override
     public <T> List<T> query(TenantId tenant, String query, Map<String, Object> binding, Class<T> resultClass) {
-        return ds.query(resolveTenant(tenant), query.replace(PH_TABLE, ds.getTableName(this.tableName)), binding, resultClass);
+        return ds.query(resolveTenant(tenant), evaluateQuery(query), binding, resultClass);
     }
 
     @Override
@@ -199,12 +195,12 @@ public class SimpleRepository<E, I> implements EntityRepository<E, I> {
 
     @Override
     public long exportToCsvFile(TenantId tenant, String query, Map<String, Object> binding, File file, char delimiter, boolean headers) {
-        return ds.exportToCsvFile(tenant, tableName, query, binding, file, delimiter, headers);
+        return ds.exportToCsvFile(tenant, evaluateQuery(query), binding, file, delimiter, headers);
     }
 
     @Override
     public long exportToCsvFile(TenantId tenant, String query, Map<String, Object> binding, OutputStream out, char delimiter, boolean headers) {
-        return ds.exportToCsvFile(tenant, tableName, query, binding, out, delimiter, headers);
+        return ds.exportToCsvFile(tenant, evaluateQuery(query), binding, out, delimiter, headers);
     }
 
     @Override
@@ -251,5 +247,11 @@ public class SimpleRepository<E, I> implements EntityRepository<E, I> {
         return tenant;
     }
 
+    private String evaluateQuery(String query) {
+        if (TextUtil.isNotEmpty(tableName)) {
+            return query.replace(PH_TABLE, ds.getTableName(this.tableName));
+        }
+        return query;
+    }
 
 }

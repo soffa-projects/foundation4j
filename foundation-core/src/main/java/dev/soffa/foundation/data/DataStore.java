@@ -75,7 +75,11 @@ public interface DataStore {
     String getTablesPrefix();
 
     default String getTableName(String name) {
-        return TextUtil.join("_", getTablesPrefix(), name);
+        String prefix =  getTablesPrefix();
+        if (TextUtil.isEmpty(prefix)) {
+            return name;
+        }
+        return TextUtil.join("_", prefix, name);
     }
 
     <E> int[] insert(TenantId tenant, List<E> entities);
@@ -133,7 +137,7 @@ public interface DataStore {
     }
 
 
-    long exportToCsvFile(TenantId tenant, String tableName, String query, Map<String, Object> binding, OutputStream out, char delimiter, boolean headers);
+    long exportToCsvFile(TenantId tenant, String query, Map<String, Object> binding, OutputStream out, char delimiter, boolean headers);
 
     <E> PagedList<E> findAll(TenantId tenant, Class<E> entityClass, Paging paging);
 
@@ -155,7 +159,7 @@ public interface DataStore {
 
     long loadCsvFile(TenantId tenant, String tableName, InputStream input, String delimiter);
 
-    long exportToCsvFile(TenantId tenant, String tableName, String query, Map<String, Object> binding, File file, char delimiter, boolean headers);
+    long exportToCsvFile(TenantId tenant, String query, Map<String, Object> binding, File file, char delimiter, boolean headers);
 
     <E> int truncate(TenantId resolveTenant, Class<E> entityClass);
 

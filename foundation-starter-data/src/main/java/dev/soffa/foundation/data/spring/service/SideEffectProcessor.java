@@ -50,7 +50,7 @@ public class SideEffectProcessor implements ProcessSideEffect {
             this.activities = findBean(ActivityService.class).orElse(null);
             this.pubSub = findBean(PubSubMessenger.class).orElse(null);
             if (pubSub == null) {
-                Logger.platform.warn("[sideffect] No PubSubClient registered, events will not be sent");
+                Logger.platform.info("[sideffect] No PubSubClient registered, events will not be sent");
             }
             this.hooks = findBean(Hooks.class).orElse(null);
             if (this.hooks == null) {
@@ -58,7 +58,7 @@ public class SideEffectProcessor implements ProcessSideEffect {
             }
             this.tsp = findBean(TimeSeriesProvider.class).orElse(null);
             if (this.tsp == null) {
-                Logger.platform.warn("[sideffect] No TimeSeriesProvider registered, dataPoints will be discarded");
+                Logger.platform.info("[sideffect] No TimeSeriesProvider registered, dataPoints will be discarded");
             }
             this.scheduler = findBean(OperationScheduler.class).orElse(null);
 

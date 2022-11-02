@@ -4,6 +4,7 @@ import com.google.common.base.Preconditions;
 import dev.soffa.foundation.data.DB;
 import dev.soffa.foundation.data.common.ExtDataSource;
 import dev.soffa.foundation.error.DatabaseException;
+import dev.soffa.foundation.error.ErrorUtil;
 import dev.soffa.foundation.model.TenantId;
 import dev.soffa.foundation.multitenancy.TenantHolder;
 import lombok.AllArgsConstructor;
@@ -63,7 +64,8 @@ public class DBHandleProvider implements HandleProvider {
             try {
                 return getLink(tenant).inTransaction(consumer::apply);
             } catch (Exception e) {
-                if (e.getMessage().contains("deadlock")) {
+                String msg = ErrorUtil.loookupOriginalMessage(e);
+                if (msg!=null && msg.contains("deadlock")) {
                     retries--;
                     if (retries == 0) {
                         return getLink(tenant).inTransaction(consumer::apply);

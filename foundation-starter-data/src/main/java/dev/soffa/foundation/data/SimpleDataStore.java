@@ -6,10 +6,12 @@ import com.healthmarketscience.sqlbuilder.dbspec.basic.DbColumn;
 import com.healthmarketscience.sqlbuilder.dbspec.basic.DbSchema;
 import com.healthmarketscience.sqlbuilder.dbspec.basic.DbSpec;
 import com.healthmarketscience.sqlbuilder.dbspec.basic.DbTable;
+import dev.soffa.foundation.commons.Logger;
 import dev.soffa.foundation.commons.TextUtil;
 import dev.soffa.foundation.data.common.ExtDataSource;
 import dev.soffa.foundation.data.jdbi.*;
 import dev.soffa.foundation.error.DatabaseException;
+import dev.soffa.foundation.error.ErrorUtil;
 import dev.soffa.foundation.error.TechnicalException;
 import dev.soffa.foundation.helper.ID;
 import dev.soffa.foundation.model.PagedList;
@@ -261,7 +263,7 @@ public class SimpleDataStore implements DataStore {
 
     @Override
     public int execute(TenantId tenant, String command) {
-        if (command.toUpperCase().contains("VACUUM")) {
+        if (command.toUpperCase().startsWith("VACUUM")) {
             return hp.withHandle(tenant, (handle) -> handle.createUpdate(command).execute());
         } else {
             return hp.inTransaction(tenant, (handle) -> handle.createUpdate(command).execute());
@@ -374,27 +376,32 @@ public class SimpleDataStore implements DataStore {
 
     @SneakyThrows
     @Override
-    public long exportToCsvFile(TenantId tenant, String tableName, String query, Map<String, Object> binding, File file, char delimiter, boolean headers) {
+    public long exportToCsvFile(TenantId tenant, String query, Map<String, Object> binding, File file, char delimiter, boolean headers) {
         try (OutputStream writer = new BufferedOutputStream(Files.newOutputStream(file.toPath()))) {
-            return exportToCsvFile(tenant, tableName, query, binding, writer, delimiter, headers);
+            return exportToCsvFile(tenant, query, binding, writer, delimiter, headers);
         }
     }
 
     @Override
-    public long exportToCsvFile(TenantId tenant, String tableName, String query, Map<String, Object> binding, OutputStream out, char delimiter, boolean headers) {
-        final String lQuery = TextUtil.isEmpty(query) ? "SELECT *  from %table%" : query;
+    public long exportToCsvFile(TenantId tenant, String query, Map<String, Object> binding, OutputStream out, char delimiter, boolean headers) {
         return hp.withHandle(tenant, handle -> {
             try {
                 CopyManager cm = new CopyManager(handle.getConnection().unwrap(BaseConnection.class));
                 String sql = String.format(
                     "COPY (%s) TO STDOUT DELIMITER '%s' %s",
-                    lQuery.replace("%table%", tablesPrefix + tableName),
+                    query,
                     delimiter,
                     headers ? "CSV HEADER" : ""
                 );
                 return cm.copyOut(sql, out);
             } catch (Exception e) {
                 throw new DatabaseException(e);
+            } finally {
+                try {
+                    out.flush();
+                } catch (IOException e) {
+                    Logger.platform.warn("Error while flushing output stream: %s", ErrorUtil.loookupOriginalMessage(e));
+                }
             }
         });
     }
