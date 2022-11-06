@@ -137,6 +137,9 @@ public class SimpleDataStore implements DataStore {
 
     @Override
     public <E> int[] batch(TenantId tenant, @NonNull List<E> entities) {
+        if (entities.isEmpty()) {
+            return new int[0];
+        }
         for (E model : entities) {
             prepare(model);
         }
@@ -155,6 +158,9 @@ public class SimpleDataStore implements DataStore {
 
     @Override
     public <E> int[] batch(TenantId tenant, @NonNull String table, @NonNull List<E> entities) {
+        if (entities.isEmpty()) {
+            return new int[0];
+        }
         for (E model : entities) {
             prepare(model);
         }
@@ -199,6 +205,10 @@ public class SimpleDataStore implements DataStore {
 
     @Override
     public <E> int[] updateBatch(TenantId tenant, @NonNull List<E> models, String... fields) {
+
+        if (models.isEmpty()) {
+            return new int[0];
+        }
 
         for (E model : models) {
             if (model instanceof EntityLifecycle) {
