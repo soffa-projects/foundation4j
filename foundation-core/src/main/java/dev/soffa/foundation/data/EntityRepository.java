@@ -115,6 +115,8 @@ public interface EntityRepository<E, I> {
 
     <T> List<T> query(TenantId context, String query, Map<String, Object> binding, Class<T> resultClass);
 
+    <T> void withStream(TenantId tenant, String query, Map<String, Object> binding, Class<T> resultClass, Consumer<Stream<T>> handler);
+
     default PagedList<E> find(Criteria criteria, Paging paging) {
         return find(TenantId.CONTEXT, criteria, paging);
     }

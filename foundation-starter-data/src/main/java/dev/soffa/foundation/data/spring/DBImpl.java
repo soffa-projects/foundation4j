@@ -103,6 +103,7 @@ public final class DBImpl extends AbstractDataSource implements ApplicationListe
     }
 
     @Override
+    @SuppressWarnings("PMD.CloseResource")
     public void withTenantsAsync(Consumer<String> consumer) {
         ExecutorService scheduler = Executors.newFixedThreadPool(registry.size());
         Set<String> tenants = getTenantList();
@@ -112,6 +113,7 @@ public final class DBImpl extends AbstractDataSource implements ApplicationListe
                 scheduler.execute(() -> TenantHolder.use(id, () -> consumer.accept(id)));
             }
         });
+        scheduler.shutdown();
     }
 
     private void createDatasources(String tablesPrerix, Map<String, DataSourceConfig> datasources) {

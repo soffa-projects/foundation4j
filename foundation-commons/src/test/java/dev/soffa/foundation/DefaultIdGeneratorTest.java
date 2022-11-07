@@ -25,6 +25,7 @@ public class DefaultIdGeneratorTest {
         final int count = 10_000;
         int threads = 100;
         final Map<String, Boolean> consumed = new ConcurrentHashMap<>();
+        @SuppressWarnings("PMD.CloseResource")
         ExecutorService executor = Executors.newFixedThreadPool(20);
         CountDownLatch latch = new CountDownLatch(threads * count);
         for (int t = 0; t < threads; t++) {

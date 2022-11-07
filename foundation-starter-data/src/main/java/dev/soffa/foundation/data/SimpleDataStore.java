@@ -305,6 +305,20 @@ public class SimpleDataStore implements DataStore {
     }
 
     @Override
+    public <T> void withStream(TenantId tenant, String query, Map<String, Object> binding, Class<T> resultClass, Consumer<Stream<T>> handler) {
+        hp.useHandle(tenant, handle -> {
+            Query q = handle.createQuery(query);
+            if (binding != null && !binding.isEmpty()) {
+                q.bindMap(binding);
+            }
+            q.map(BeanMapper.of(EntityInfo.of(resultClass, null, false))).withStream(stream -> {
+                handler.accept(stream);
+                return null;
+            });
+        });
+    }
+
+    @Override
     public void useTransaction(TenantId tenant, Consumer<DataStore> consumer) {
         hp.inTransaction(tenant, (handle) -> {
             consumer.accept(new SimpleDataStore(new HandleHandleProvider(handle), tablesPrefix));
