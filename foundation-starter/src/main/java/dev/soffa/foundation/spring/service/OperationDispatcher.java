@@ -10,11 +10,9 @@ import dev.soffa.foundation.context.Context;
 import dev.soffa.foundation.context.ContextHolder;
 import dev.soffa.foundation.context.DefaultOperationContext;
 import dev.soffa.foundation.core.*;
-import dev.soffa.foundation.core.action.PublishEvent;
 import dev.soffa.foundation.core.model.Serialized;
 import dev.soffa.foundation.error.ForbiddenException;
 import dev.soffa.foundation.events.OnServiceStarted;
-import dev.soffa.foundation.model.Event;
 import dev.soffa.foundation.model.TenantId;
 import dev.soffa.foundation.multitenancy.TenantHolder;
 import dev.soffa.foundation.resource.Resource;
@@ -127,14 +125,14 @@ public class OperationDispatcher implements Dispatcher, Resource {
             opContext.activity(operationName, null, input);
         }
 
-        if (operation instanceof Broadcast) {
+        /*if (operation instanceof Broadcast) {
             String pubSubOperation = ctx.getServiceName() + "." + TextUtil.snakeCase(operationName) + ".success";
             opContext.delayed(
                 DefaultIdGenerator.uuid(operationName),
                 PublishEvent.class,
                 new Event(pubSubOperation, Mappers.JSON_DEFAULT.serialize(res))
             );
-        }
+        }*/
 
         boolean shouldEnqueue = operation instanceof Command && !(operation instanceof ServiceWorker) &&
             !opContext.getSideEffects().isEmpty() && !(operation instanceof OnServiceStarted);

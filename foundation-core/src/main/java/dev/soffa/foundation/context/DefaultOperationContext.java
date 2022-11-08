@@ -3,10 +3,7 @@ package dev.soffa.foundation.context;
 import dev.soffa.foundation.activity.Activity;
 import dev.soffa.foundation.commons.Logger;
 import dev.soffa.foundation.commons.Mappers;
-import dev.soffa.foundation.core.Operation;
-import dev.soffa.foundation.core.model.Serialized;
 import dev.soffa.foundation.model.*;
-import dev.soffa.foundation.scheduling.DelayedOperation;
 import lombok.Getter;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
@@ -67,10 +64,10 @@ public class DefaultOperationContext implements OperationContext {
         sideEffects.getActivities().add(new Activity(event, subject, Mappers.JSON_DEFAULT.serialize(data)));
     }
 
-    @Override
-    public <E, O, T extends Operation<E, O>> void delayed(String uuid, Class<T> operationClass, E input) {
-        sideEffects.getDelayedJobs().add(new DelayedOperation<E>(uuid, operationClass.getSimpleName(), Serialized.of(input)));
-    }
+    //@Override
+    //public <E, O, T extends Operation<E, O>> void delayed(String uuid, Class<T> operationClass, E input) {
+    //    sideEffects.getDelayedJobs().add(new DelayedOperation<E>(uuid, operationClass.getSimpleName(), Serialized.of(input)));
+    //}
 
     @Override
     public boolean isProduction() {
