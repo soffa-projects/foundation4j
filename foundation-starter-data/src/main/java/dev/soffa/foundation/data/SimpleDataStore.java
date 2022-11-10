@@ -303,6 +303,16 @@ public class SimpleDataStore implements DataStore {
             return q.map(BeanMapper.of(EntityInfo.of(resultClass, null, false))).list();
         });
     }
+    @Override
+    public <T>  T queryOne(TenantId tenant, String query, Map<String, Object> binding, Class<T> resultClass) {
+        return hp.withHandle(tenant, handle -> {
+            Query q = handle.createQuery(query);
+            if (binding != null && !binding.isEmpty()) {
+                q.bindMap(binding);
+            }
+            return q.map(BeanMapper.of(EntityInfo.of(resultClass, null, false))).one();
+        });
+    }
 
     @Override
     public <T> void withStream(TenantId tenant, String query, Map<String, Object> binding, Class<T> resultClass, Consumer<Stream<T>> handler) {

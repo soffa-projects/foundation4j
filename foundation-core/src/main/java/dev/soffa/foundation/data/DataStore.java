@@ -147,6 +147,8 @@ public interface DataStore {
 
     <T> List<T> query(TenantId tenant, String query, Map<String, Object> binding, Class<T> resultClass);
 
+    <T>  T queryOne(TenantId tenant, String query, Map<String, Object> binding, Class<T> resultClass);
+
     <T> void withStream(TenantId tenant, String query, Map<String, Object> binding, Class<T> resultClass, Consumer<Stream<T>> handler);
 
     void useTransaction(TenantId tenant, Consumer<DataStore> consumer);

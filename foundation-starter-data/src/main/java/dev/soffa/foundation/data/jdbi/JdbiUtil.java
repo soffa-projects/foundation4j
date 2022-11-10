@@ -1,6 +1,7 @@
 package dev.soffa.foundation.data.jdbi;
 
 import org.jdbi.v3.core.Jdbi;
+import org.jdbi.v3.core.statement.SqlStatements;
 import org.jdbi.v3.postgres.PostgresPlugin;
 import org.jdbi.v3.sqlobject.SqlObjectPlugin;
 
@@ -25,6 +26,10 @@ public final class JdbiUtil {
         jdbi.registerArgument(new Map04ArgumentFactory());
         jdbi.registerArgument(new List01ArgumentFactory());
         jdbi.registerArgument(new ObjectArgumentFactory());
+
+        jdbi.configure(SqlStatements.class, stmt -> {
+            stmt.setQueryTimeout(60 * 5);
+        });
     }
 
     public static Jdbi create(DataSource ds, boolean isPG) {

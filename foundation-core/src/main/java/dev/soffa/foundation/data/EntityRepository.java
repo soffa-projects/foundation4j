@@ -109,11 +109,21 @@ public interface EntityRepository<E, I> {
         return query(TenantId.CONTEXT, query, null, resultClass);
     }
 
+    default <T> T queryOne(String query, Class<T> resultClass) {
+        return queryOne(TenantId.CONTEXT, query, null, resultClass);
+    }
+
     default <T> List<T> query(String query, Map<String, Object> binding, Class<T> resultClass) {
         return query(TenantId.CONTEXT, query, binding, resultClass);
     }
 
+    default <T> T queryOne(String query, Map<String, Object> binding, Class<T> resultClass) {
+        return queryOne(TenantId.CONTEXT, query, binding, resultClass);
+    }
+
     <T> List<T> query(TenantId context, String query, Map<String, Object> binding, Class<T> resultClass);
+
+    <T> T queryOne(TenantId context, String query, Map<String, Object> binding, Class<T> resultClass);
 
     <T> void withStream(TenantId tenant, String query, Map<String, Object> binding, Class<T> resultClass, Consumer<Stream<T>> handler);
 

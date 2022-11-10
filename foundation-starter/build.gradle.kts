@@ -24,12 +24,12 @@ dependencies {
     implementation("net.logstash.logback:logstash-logback-encoder:7.2")
     api("org.springframework.cloud:spring-cloud-starter-consul-discovery")
     api("com.hazelcast:hazelcast-all:4.2.5")
-    implementation("io.sentry:sentry:6.5.0")
+    implementation("io.sentry:sentry:6.7.0")
     implementation("io.micrometer:micrometer-registry-prometheus")
-    implementation("org.springdoc:springdoc-openapi-ui:1.6.11") {
+    implementation("org.springdoc:springdoc-openapi-ui:1.6.12") {
         exclude(group = "io.github.classgraph")
     }
-    api("com.amazonaws:aws-java-sdk-s3:1.12.322") {
+    api("com.amazonaws:aws-java-sdk-s3:1.12.338") {
         exclude(group = "com.github.ben-manes.caffeine")
     }
 

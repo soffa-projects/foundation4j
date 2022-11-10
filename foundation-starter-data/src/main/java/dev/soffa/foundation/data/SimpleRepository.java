@@ -144,6 +144,11 @@ public class SimpleRepository<E, I> implements EntityRepository<E, I> {
     }
 
     @Override
+    public <T> T queryOne(TenantId tenant, String query, Map<String, Object> binding, Class<T> resultClass) {
+        return ds.queryOne(resolveTenant(tenant), evaluateQuery(query), binding, resultClass);
+    }
+
+    @Override
     public <T> void withStream(TenantId tenant, String query, Map<String, Object> binding, Class<T> resultClass, Consumer<Stream<T>> handler) {
         ds.withStream(resolveTenant(tenant), evaluateQuery(query), binding, resultClass, handler);
     }

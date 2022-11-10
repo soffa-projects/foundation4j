@@ -160,7 +160,7 @@ public class Migrator implements Observer<MigrationJob> {
         lqb.setChangeLogParameters(changeLogParams);
 
         if (System.getenv("LIQUIBASE_RELEASE_LOCK") != null) {
-            Logger.platform.info("LIQUIBASE_RELEASE_LOCK detected");
+            Logger.app.info("LIQUIBASE_RELEASE_LOCK detected");
             Jdbi jdbi = Jdbi.create(ds);
             jdbi.useTransaction(handle -> {
                 String table = lqb.getDatabaseChangeLogLockTable();
