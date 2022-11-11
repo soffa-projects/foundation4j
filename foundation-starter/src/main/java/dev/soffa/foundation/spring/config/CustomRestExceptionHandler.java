@@ -27,10 +27,8 @@ import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
-import java.util.Date;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.Optional;
+import java.io.IOException;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Order(Ordered.HIGHEST_PRECEDENCE)
@@ -57,6 +55,21 @@ class CustomRestExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler({Throwable.class, Exception.class})
     public ResponseEntity<Object> handleGlobalErrors(Throwable ex, WebRequest request) {
+
+        String accept = request.getHeader("accept");
+
+        if (ex instanceof IOException || TextUtil.isNotEmpty(accept) && accept.contains("octet-stream")) {
+            Logger.app.error(ErrorUtil.loookupOriginalMessage(ex));
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, ErrorUtil.loookupOriginalMessage(ex), ex);
+        }
+
+        Iterator<String> itr = request.getHeaderNames();
+        while(itr.hasNext()) {
+            String hd = itr.next();
+            Logger.platform.error(hd + " --> " + request.getHeader(hd));
+        }
+
+
         boolean isProduction = environment.acceptsProfiles(Profiles.of("prod", "production"));
         Throwable error = ErrorUtil.unwrap(ex);
         HttpStatus status = deriveStatus(error);
