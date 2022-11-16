@@ -67,6 +67,14 @@ public final class ErrorUtil {
         return error;
     }
 
+    public static String getError(Throwable error) {
+        return loookupOriginalMessage(error, null);
+    }
+
+    /**
+     * See <code>getError</>
+     */
+    @Deprecated
     public static String loookupOriginalMessage(Throwable error) {
         return loookupOriginalMessage(error, null);
     }

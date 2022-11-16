@@ -17,6 +17,7 @@ dependencies {
     api("com.jayway.jsonpath:json-path:2.7.0")
     api("org.apache.commons:commons-text:1.10.0")
     implementation("com.github.f4b6a3:uuid-creator:5.2.0")
+    implementation("com.graphql-java:graphql-java:19.2")
     api("org.glassfish:javax.el:3.0.0")
     api("commons-io:commons-io:2.11.0")
     api("com.squareup.okhttp3:okhttp:4.10.0")

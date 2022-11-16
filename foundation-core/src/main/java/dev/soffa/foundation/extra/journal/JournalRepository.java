@@ -33,7 +33,7 @@ public interface JournalRepository extends EntityRepository<Journal, String> {
                     .event(event)
                     .subject(subject)
                     .kind(kind)
-                    .error(ErrorUtil.loookupOriginalMessage(e))
+                    .error(ErrorUtil.getError(e))
                     .status("failed")
                     .build()
                     .withContext(context)

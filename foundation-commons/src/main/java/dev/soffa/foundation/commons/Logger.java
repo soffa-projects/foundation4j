@@ -162,7 +162,7 @@ public final class Logger {
     }
 
     public void error(Throwable e) {
-        error(ErrorUtil.loookupOriginalMessage(e), e);
+        error(ErrorUtil.getError(e), e);
     }
 
     public void error(Throwable error, String message, Object... args) {

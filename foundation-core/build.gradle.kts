@@ -14,6 +14,8 @@ dependencies {
     implementation("com.auth0:java-jwt:4.2.1")
     implementation("com.nimbusds:nimbus-jose-jwt:9.25.6")
     implementation("commons-validator:commons-validator:1.7")
+    implementation("com.jcraft:jsch:0.1.55")
+    api("de.siegmar:fastcsv:2.2.1")
     api("io.reactivex.rxjava3:rxjava:3.1.5")
     implementation("com.amazonaws:aws-java-sdk-s3:1.12.338")
     @Suppress("GradlePackageUpdate")

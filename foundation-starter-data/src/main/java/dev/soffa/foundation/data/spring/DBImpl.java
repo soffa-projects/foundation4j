@@ -162,7 +162,7 @@ public final class DBImpl extends AbstractDataSource implements ApplicationListe
                     applyMigrations(sourceId, lconfig);
                 } catch (Exception e) {
                     LOG.error("Error applying migrations for datasource %s, skipping registration", id);
-                    LOG.error(ErrorUtil.loookupOriginalMessage(e));
+                    LOG.error(ErrorUtil.getError(e));
                     Sentry.get().captureException(e);
                 }
             } else {

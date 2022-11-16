@@ -8,6 +8,9 @@ import org.joda.time.DateTime;
 
 import java.text.SimpleDateFormat;
 import java.time.Instant;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.ResolverStyle;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -109,6 +112,29 @@ public class DateUtil {
 
     public static boolean isAfter(Date date1, Date date2) {
         return new DateTime(date1).isAfter(new DateTime(date2));
+    }
+
+    public static boolean isValid(Date value) {
+        try {
+            SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH);
+            return isValid(formatter.format(value));
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    public static boolean isValid(String value) {
+        return isValid(value, "uuuu-M-d");
+    }
+
+    public static boolean isValid(String value, String pattern) {
+        DateTimeFormatter validationFormatter = DateTimeFormatter.ofPattern(pattern).withResolverStyle(ResolverStyle.STRICT);
+        try {
+            LocalDate.parse(value, validationFormatter);
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
     }
 
     @SneakyThrows

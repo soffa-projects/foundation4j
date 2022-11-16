@@ -59,14 +59,14 @@ class CustomRestExceptionHandler extends ResponseEntityExceptionHandler {
         String accept = request.getHeader("accept");
 
         if (TextUtil.isNotEmpty(accept) && accept.contains("octet-stream")) {
-            Logger.app.error(ErrorUtil.loookupOriginalMessage(ex));
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, ErrorUtil.loookupOriginalMessage(ex), ex);
+            Logger.app.error(ErrorUtil.getError(ex));
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, ErrorUtil.getError(ex), ex);
         }
 
         boolean isProduction = environment.acceptsProfiles(Profiles.of("prod", "production"));
         Throwable error = ErrorUtil.unwrap(ex);
         HttpStatus status = deriveStatus(error);
-        String message = ErrorUtil.loookupOriginalMessage(error);
+        String message = ErrorUtil.getError(error);
 
         Map<String, Object> body = new LinkedHashMap<>();
         body.put("timestamp", new Date());

@@ -2,7 +2,6 @@ package dev.soffa.foundation.commons;
 
 
 import dev.soffa.foundation.error.NotImplementedException;
-import lombok.SneakyThrows;
 
 import java.io.File;
 import java.io.InputStream;
@@ -17,7 +16,6 @@ public interface Mapper {
 
     String fromXml(String xmlInput);
 
-    @SneakyThrows
     <T> T fromXml(String xmlInput, String root, Class<T> kind);
 
     String serialize(Object data);
@@ -41,28 +39,20 @@ public interface Mapper {
 
     String prettyPrint(Object data);
 
-    @SneakyThrows
     void serializeToFile(Object content, File file);
 
-    @SneakyThrows
     <T> Map<String, T> deserializeMap(String input);
 
-    @SneakyThrows
     <T> Map<String, T> deserializeMap(InputStream input);
 
-    @SneakyThrows
     <T> Map<String, T> deserializeMap(InputStream input, Class<T> type);
 
-    @SneakyThrows
     <T> Map<String, T> deserializeMap(String input, Class<T> type);
 
-    @SneakyThrows
     <T> T deserializeParametricType(String input, Class<?> rawType, Class<?>... parameterClasses);
 
-    @SneakyThrows
     <T> List<T> deserializeList(String input, Class<T> type);
 
-    @SneakyThrows
     <T> List<T> deserializeList(InputStream input, Class<T> type);
 
     @SuppressWarnings("unchecked")

@@ -20,8 +20,6 @@ dependencies {
     implementation("org.jobrunr:jobrunr:5.3.1") {
         exclude(group = "com.zaxxer")
     }
-    implementation("org.questdb:questdb:6.5.4-jdk8")
-    implementation("com.influxdb:influxdb-client-java:6.7.0")
 
     implementation("org.postgresql:postgresql:42.5.0")
     @Suppress("GradlePackageUpdate")

@@ -64,6 +64,7 @@ public final class EntityInfo<T> {
         return of(entityClass, null, true);
     }
 
+    @SuppressWarnings("unchecked")
     public static <T> EntityInfo<T> of(@NonNull Class<T> entityClass, @Nullable String tablePrefix, boolean checkTable) {
 
         String cacheId = entityClass.getName();
@@ -73,7 +74,6 @@ public final class EntityInfo<T> {
         cacheId = cacheId.toLowerCase();
 
         if (CACHE.containsKey(cacheId)) {
-            //noinspection unchecked
             return (EntityInfo<T>) CACHE.get(cacheId);
         }
 
@@ -121,11 +121,6 @@ public final class EntityInfo<T> {
     private static String escapeColumnName(String value) {
         return TextUtil.format("%s", TextUtil.snakeCase(value));
     }
-
-    /*
-    private static String escapeTableName(String value) {
-        return TextUtil.format("%s", value);
-    }*/
 
     @SneakyThrows
     public void addProperty(String property, Class<?> type) {

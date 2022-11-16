@@ -32,7 +32,7 @@ public interface SentryProvider {
         try {
             return runnable.get();
         } catch (Exception e) {
-            Logger.platform.error(e, "%s has failed with error: %s", label, ErrorUtil.loookupOriginalMessage(e));
+            Logger.platform.error(e, "%s has failed with error: %s", label, ErrorUtil.getError(e));
             captureTechnical(e);
             if (errorPropagation) {
                 throw e;

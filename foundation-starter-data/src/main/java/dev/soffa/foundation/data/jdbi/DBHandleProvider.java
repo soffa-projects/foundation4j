@@ -64,7 +64,7 @@ public class DBHandleProvider implements HandleProvider {
             try {
                 return getLink(tenant).inTransaction(consumer::apply);
             } catch (Exception e) {
-                String msg = ErrorUtil.loookupOriginalMessage(e);
+                String msg = ErrorUtil.getError(e);
                 if (msg!=null && msg.contains("deadlock")) {
                     retries--;
                     if (retries == 0) {

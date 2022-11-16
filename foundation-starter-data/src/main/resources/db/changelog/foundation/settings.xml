@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd"
+    logicalFilePath="foundations/settings">
+
+    <changeSet id="20221116_settings" author="core-team">
+        <createTable tableName="${prefix}f_settings">
+            <column name="id" type="varchar">
+                <constraints primaryKey="true" primaryKeyName="${prefix}f_settings_pk"/>
+            </column>
+            <column name="key" type="varchar">
+                <constraints nullable="false" unique="true"/>
+            </column>
+            <column name="type" type="varchar" />
+            <column name="value" type="varchar" />
+        </createTable>
+        <createIndex tableName="${prefix}f_settings" indexName="${prefix}f_settings__type__idx">
+            <column name="type"/>
+        </createIndex>
+    </changeSet>
+
+</databaseChangeLog>

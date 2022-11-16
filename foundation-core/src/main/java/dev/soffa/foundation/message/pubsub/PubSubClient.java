@@ -45,7 +45,6 @@ public interface PubSubClient {
         throw new TodoException("Not implemented");
     }
 
-    @SneakyThrows
     void broadcast(@NonNull String target, @NotNull Message message);
 
     void broadcast(@NotNull Message message);

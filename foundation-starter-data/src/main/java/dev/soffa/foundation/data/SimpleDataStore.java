@@ -434,7 +434,7 @@ public class SimpleDataStore implements DataStore {
                 try {
                     out.flush();
                 } catch (IOException e) {
-                    Logger.platform.warn("Error while flushing output stream: %s", ErrorUtil.loookupOriginalMessage(e));
+                    Logger.platform.warn("Error while flushing output stream: %s", ErrorUtil.getError(e));
                 }
             }
         });
