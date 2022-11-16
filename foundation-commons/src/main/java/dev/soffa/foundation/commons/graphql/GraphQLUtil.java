@@ -15,7 +15,7 @@ import java.util.Locale;
 import java.util.Map;
 
 @SuppressWarnings("unchecked")
-public class GraphQLUtil {
+public final class GraphQLUtil {
 
     private GraphQLUtil() {}
 

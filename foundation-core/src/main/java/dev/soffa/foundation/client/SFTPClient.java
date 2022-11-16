@@ -14,10 +14,10 @@ import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
-import java.util.Vector;
 
-public class SFTPClient implements RemoteFileClient {
+public final class SFTPClient implements RemoteFileClient {
 
     private final String sshKey;
     private final String passphrase;
@@ -27,9 +27,9 @@ public class SFTPClient implements RemoteFileClient {
 
     private final String workdir;
 
-    private Session session = null;
-    private Channel channel = null;
-    private ChannelSftp sftp = null;
+    private Session session;
+    private Channel channel;
+    private ChannelSftp sftp;
 
     private SFTPClient(String hostname, int port, String username, String sshKey, String passphrase, String workdir) {
         this.sshKey = sshKey;
@@ -61,10 +61,11 @@ public class SFTPClient implements RemoteFileClient {
     @SuppressWarnings("unchecked")
     public List<RemoteFile> listFiles(String filter) {
         List<RemoteFile> files = new ArrayList<>();
-        Vector<ChannelSftp.LsEntry> vector = sftp.ls(filter);
-        vector.forEach(entry -> {
+        Iterator<ChannelSftp.LsEntry> itr = sftp.ls(filter).iterator();
+        while (itr.hasNext()) {
+            ChannelSftp.LsEntry entry = itr.next();
             files.add(new RemoteFile(entry.getFilename(), entry.getLongname()));
-        });
+        }
         return files;
     }
 
