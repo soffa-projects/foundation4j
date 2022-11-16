@@ -72,7 +72,7 @@ public final class ErrorUtil {
     }
 
     /**
-     * See <code>getError</>
+     * See <code>getError</code>
      */
     @Deprecated
     public static String loookupOriginalMessage(Throwable error) {
