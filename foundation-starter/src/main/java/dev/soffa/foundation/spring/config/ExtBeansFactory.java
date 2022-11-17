@@ -21,7 +21,7 @@ public class ExtBeansFactory {
             Logger.app.info("Using VaultApplicationSettingTemplate with backend: %s", backend);
             return new VaultApplicationSettingTemplate(vault, backend);
         } else {
-            Logger.platform.warn("No ApplicationSettingTemplate configured");
+            Logger.app.warn("No ApplicationSettingTemplate configured");
             return new NoApplicationSettingTemplate();
         }
     }
