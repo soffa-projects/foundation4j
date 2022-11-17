@@ -1,6 +1,7 @@
 package dev.soffa.foundation.spring.config;
 
 import dev.soffa.foundation.commons.Logger;
+import dev.soffa.foundation.commons.TextUtil;
 import dev.soffa.foundation.config.ApplicationSettingTemplate;
 import lombok.AllArgsConstructor;
 import org.springframework.vault.core.VaultTemplate;
@@ -18,16 +19,23 @@ public class VaultApplicationSettingTemplate implements ApplicationSettingTempla
     @Override
     public Optional<Map<String, Object>> get(String path) {
         String p = path;
-        if (p.startsWith("backend://")) {
-            p = p.replace("backend://", backend);
+        if (TextUtil.isNotEmpty(backend) && !p.startsWith(backend)) {
+            p = backend + (p.startsWith("/") ? "" : "/") + p;
         }
         try {
             VaultResponse response = vault.read(p);
-            if (response==null) {
+            if (response == null) {
+                Logger.platform.warn("No secret found @ %s", p);
                 return Optional.empty();
             }
-            return Optional.ofNullable(response.getData());
-        }catch (Exception e) {
+            Map<String, Object> data = response.getData();
+            if (data == null) {
+                Logger.platform.warn("No secret found @ %s", p);
+            }else {
+                Logger.app.info("Secret retrieved @ %s", p);
+            }
+            return Optional.ofNullable(data);
+        } catch (Exception e) {
             Logger.app.error(e);
         }
         return Optional.empty();
