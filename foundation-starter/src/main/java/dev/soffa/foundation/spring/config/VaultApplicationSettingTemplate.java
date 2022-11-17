@@ -3,30 +3,36 @@ package dev.soffa.foundation.spring.config;
 import dev.soffa.foundation.commons.Logger;
 import dev.soffa.foundation.config.ApplicationSettingTemplate;
 import lombok.AllArgsConstructor;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
-import org.springframework.stereotype.Component;
 import org.springframework.vault.core.VaultTemplate;
 import org.springframework.vault.support.VaultResponse;
 
 import java.util.Map;
 import java.util.Optional;
 
-@ConditionalOnBean(VaultTemplate.class)
-@Component
 @AllArgsConstructor
-public class VaultApplicationSettingTemplateImpl implements ApplicationSettingTemplate {
+public class VaultApplicationSettingTemplate implements ApplicationSettingTemplate {
 
     private final VaultTemplate vault;
+    private final String backend;
 
     @Override
     public Optional<Map<String, Object>> get(String path) {
+        Logger.app.info("vault.backend: %s", backend);
+        String p = path;
+        if (p.startsWith("backend://")) {
+            p = p.replace("backend://", backend);
+        }
         try {
-            VaultResponse response = vault.read(path);
-            return Optional.of(response.getData());
+            VaultResponse response = vault.read(p);
+            if (response==null) {
+                return Optional.empty();
+            }
+            return Optional.ofNullable(response.getData());
         }catch (Exception e) {
             Logger.app.error(e);
         }
         return Optional.empty();
     }
+
 
 }
