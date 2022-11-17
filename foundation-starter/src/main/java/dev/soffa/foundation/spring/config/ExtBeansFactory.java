@@ -18,7 +18,7 @@ public class ExtBeansFactory {
                                                                        @Value("${spring.cloud.vault.kv.backend:secret/}") String backend) {
 
         if (vault != null) {
-            Logger.app.info("Using VaultApplicationSettingTemplate");
+            Logger.app.info("Using VaultApplicationSettingTemplate wit backend: %s", backend);
             return new VaultApplicationSettingTemplate(vault, backend);
         } else {
             Logger.platform.warn("No ApplicationSettingTemplate configured");

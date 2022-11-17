@@ -17,7 +17,6 @@ public class VaultApplicationSettingTemplate implements ApplicationSettingTempla
 
     @Override
     public Optional<Map<String, Object>> get(String path) {
-        Logger.app.info("vault.backend: %s", backend);
         String p = path;
         if (p.startsWith("backend://")) {
             p = p.replace("backend://", backend);
