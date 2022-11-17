@@ -4,8 +4,8 @@ import dev.soffa.foundation.commons.Logger;
 import dev.soffa.foundation.commons.TextUtil;
 import dev.soffa.foundation.config.ApplicationSettingTemplate;
 import lombok.AllArgsConstructor;
-import org.springframework.vault.core.VaultTemplate;
-import org.springframework.vault.support.VaultResponse;
+import org.springframework.vault.core.VaultVersionedKeyValueTemplate;
+import org.springframework.vault.support.Versioned;
 
 import java.util.Map;
 import java.util.Optional;
@@ -13,7 +13,7 @@ import java.util.Optional;
 @AllArgsConstructor
 public class VaultApplicationSettingTemplate implements ApplicationSettingTemplate {
 
-    private final VaultTemplate vault;
+    private final VaultVersionedKeyValueTemplate kv;
     private final String backend;
 
     @Override
@@ -23,7 +23,7 @@ public class VaultApplicationSettingTemplate implements ApplicationSettingTempla
             p = backend + (p.startsWith("/") ? "" : "/") + p;
         }
         try {
-            VaultResponse response = vault.read(p);
+            Versioned<Map<String,Object>> response = kv.get(p);
             if (response == null) {
                 Logger.platform.warn("No secret found @ %s", p);
                 return Optional.empty();
