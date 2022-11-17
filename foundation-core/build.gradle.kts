@@ -17,7 +17,7 @@ dependencies {
     implementation("com.jcraft:jsch:0.1.55")
     api("de.siegmar:fastcsv:2.2.1")
     api("io.reactivex.rxjava3:rxjava:3.1.5")
-    implementation("com.amazonaws:aws-java-sdk-s3:1.12.338")
+    implementation("com.amazonaws:aws-java-sdk-s3:1.12.342")
     @Suppress("GradlePackageUpdate")
     api("com.github.ben-manes.caffeine:caffeine") {  // Don't use version 3, it's not compatible with Java8
         version {

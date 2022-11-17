@@ -1,5 +1,6 @@
 package dev.soffa.foundation.config;
 
+@Deprecated
 public interface ConfigManager {
 
     <T> T bind(String prefix, Class<T> kind);
