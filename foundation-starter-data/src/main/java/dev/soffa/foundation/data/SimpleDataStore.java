@@ -70,18 +70,16 @@ public class SimpleDataStore implements DataStore {
         this.tablesPrefix = TextUtil.trimToEmpty(tablesPrefix);
     }
 
-    /*public SimpleDataStore(@NonNull DB db) {
-                this.db = db;
-                this.dataStoreHandle = new DataStoreHandle(this);
-            }
-
-             */
-    public static SimpleDataStore create(@NonNull String dbUrl) {
+    public SimpleDataStore(@NonNull String dbUrl) {
         ExtDataSource props = ExtDataSource.create("default", "default", dbUrl);
         Jdbi dbi = Jdbi.create(props.getUrl(), props.getUsername(), props.getPassword());
         boolean isPG = dbUrl.startsWith("pg://") || dbUrl.startsWith("postgres");
         JdbiUtil.configure(dbi, isPG);
-        return new SimpleDataStore(new DBIHandleProvider(dbi));
+        this.tablesPrefix = "";
+        this.hp = new DBIHandleProvider(dbi);
+    }
+    public static SimpleDataStore create(@NonNull String dbUrl) {
+       return new SimpleDataStore(dbUrl);
     }
 
     @Override

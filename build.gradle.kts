@@ -1,4 +1,4 @@
-ext["caffeine.version"] = "2.9.3"
+ext["caffeine.version"] = "2.9.3" // Java 8 compatibility (don't upgrade to 3.x)
 
 buildscript {
     repositories {
