@@ -148,7 +148,7 @@ public class DefaultTokenProvider implements TokenProvider, ClaimsExtractor {
             }
         });
 
-        String liveMode = token.lookupClaim("live", "liveMode", "live_mode").orElse("false");
+        String liveMode = token.lookupClaim("live", "liveMode", "live_mode").orElse("true");
 
         return Authentication.builder().
             claims(token.getClaims()).

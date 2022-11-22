@@ -72,7 +72,14 @@ public class SimpleDataStore implements DataStore {
 
     public SimpleDataStore(@NonNull String dbUrl) {
         ExtDataSource props = ExtDataSource.create("default", "default", dbUrl);
-        Jdbi dbi = Jdbi.create(props.getUrl(), props.getUsername(), props.getPassword());
+        Jdbi dbi;
+        String username = props.getUsername();
+        String password = props.getPassword();
+        if (TextUtil.isNotEmpty(username) && TextUtil.isNotEmpty(password)) {
+            dbi = Jdbi.create(props.getUrl(), username, password);
+        }else {
+             dbi = Jdbi.create(props.getUrl());
+        }
         boolean isPG = dbUrl.startsWith("pg://") || dbUrl.startsWith("postgres");
         JdbiUtil.configure(dbi, isPG);
         this.tablesPrefix = "";
