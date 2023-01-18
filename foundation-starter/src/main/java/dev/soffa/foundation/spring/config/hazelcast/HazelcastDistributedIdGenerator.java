@@ -5,14 +5,11 @@ import com.hazelcast.flakeidgen.FlakeIdGenerator;
 import dev.soffa.foundation.commons.Hashids;
 import dev.soffa.foundation.commons.IdGenerator;
 import dev.soffa.foundation.config.AppConfig;
-import dev.soffa.foundation.helper.ID;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.context.annotation.Primary;
-import org.springframework.stereotype.Component;
 
-@Component
+// @Component
 //@ConditionalOnBean(HazelcastInstance.class)
-@Primary
+//@Primary
 public class HazelcastDistributedIdGenerator implements IdGenerator {
 
     private final FlakeIdGenerator idGenerator;
@@ -21,7 +18,6 @@ public class HazelcastDistributedIdGenerator implements IdGenerator {
     public HazelcastDistributedIdGenerator(AppConfig appConfig, HazelcastInstance instance) {
         idGenerator = instance.getFlakeIdGenerator(appConfig.getName());
         hashids = new Hashids(appConfig.getName());
-        ID.generator = this;
     }
 
     @Override
